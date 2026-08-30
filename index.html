@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="tr" data-tema="koyu">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kelimebul — Türkçe kelime bulmacası</title>
+<meta name="description" content="Gizli Türkçe kelimeyi 8 hakta bul. Her gün üç zorluk için üç yeni kelime; serbest modda sınırsız oyna, arşivden eski günleri çöz.">
+<link rel="stylesheet" href="assets/styles.css">
+</head>
+<body class="giris">
+
+<header>
+  <div class="marka">Kelime<span>bul</span></div>
+  <button class="simge" id="tema" type="button" title="Tema">☀</button>
+</header>
+
+<main class="giris-icerik">
+
+  <section class="kart">
+    <p class="kart-ust">İlk kez mi buradasın?</p>
+    <h2>Nasıl oynanır</h2>
+    <p class="kart-aciklama">
+      Gizli kelimeyi 8 hakta bul. Harflerin üstü boyanmaz — sana yalnızca kaç harfin
+      doğru yerde, kaç harfin yanlış yerde olduğu söylenir.
+    </p>
+    <a class="kart-dugme sari" href="oyna.html?yardim=1">Kuralları oku →</a>
+  </section>
+
+  <section class="kart">
+    <p class="kart-ust">Zorluk seç · her seviyenin kelimesi ayrıdır</p>
+    <div class="zorluk-secici" id="zorluk-secici">
+      <button type="button" data-zorluk="standart">
+        <b>Standart</b><span>tekrar harf yok · J F V Ğ yok</span>
+      </button>
+      <button type="button" data-zorluk="standarta">
+        <b>Standart+</b><span>tekrar harf yok</span>
+      </button>
+      <button type="button" data-zorluk="ileri">
+        <b>İleri</b><span>kural yok</span>
+      </button>
+    </div>
+  </section>
+
+  <section class="kart">
+    <p class="kart-ust">Günde bir kez</p>
+    <h2>Günlük kelime</h2>
+    <p class="kart-aciklama">
+      Her gün her zorluk için yeni bir kelime yayımlanır ve herkeste aynıdır.
+    </p>
+    <div class="durum-satiri" id="bugun-durum"></div>
+    <a class="kart-dugme yesil" id="baglanti-gunluk" href="oyna.html?mod=gunluk">Oyna →</a>
+  </section>
+
+  <section class="kart">
+    <p class="kart-ust">Sınırsız oyna</p>
+    <h2>Serbest</h2>
+    <p class="kart-aciklama">
+      Rastgele kelimeler, istediğin kadar. İstatistikler günlükten ayrı tutulur.
+    </p>
+    <a class="kart-dugme yesil" id="baglanti-serbest" href="oyna.html?mod=serbest">Oyna →</a>
+  </section>
+
+  <section class="kart">
+    <p class="kart-ust">Kaçırdığın günler</p>
+    <h2>Arşiv</h2>
+    <p class="kart-aciklama">
+      Geçmiş günlerin kelimelerini oyna; oyun içinde ‹ › ile günler arasında gezinebilirsin.
+    </p>
+    <a class="kart-dugme yesil" id="baglanti-arsiv" href="oyna.html?mod=gunluk">Arşive git →</a>
+  </section>
+
+</main>
+
+<footer>Hesap yok, sunucu yok — ilerlemen yalnızca bu tarayıcıda saklanır.</footer>
+
+<script src="src/giris.js"></script>
+</body>
+</html>

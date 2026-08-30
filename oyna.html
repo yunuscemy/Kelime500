@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="tr" data-tema="koyu">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<title>Kelimebul — Türkçe kelime bulmacası</title>
+<meta name="description" content="Gizli Türkçe kelimeyi 8 hakta bul. Her tahminde kaç harfin doğru yerde, kaç harfin yanlış yerde, kaç harfin kelimede hiç olmadığını öğrenirsin — hangileri olduğunu değil.">
+<link rel="stylesheet" href="assets/styles.css">
+</head>
+<body>
+
+<header>
+  <a class="simge" href="index.html" title="Ana sayfa">←</a>
+  <div class="marka">Kelime<span>bul</span></div>
+  <button class="simge" id="yeni" type="button" title="Yeni kelime" hidden>↻</button>
+  <button class="simge" id="yardim" type="button" title="Nasıl oynanır?">?</button>
+  <button class="simge" id="istatistik" type="button" title="İstatistikler">▤</button>
+  <button class="simge" id="tema" type="button" title="Tema">☀</button>
+</header>
+
+<div class="kontroller">
+  <span class="mod-etiket" id="mod-etiket"></span>
+  <select id="zorluk" title="Zorluk">
+    <option value="standart">Standart</option>
+    <option value="standarta">Standart+</option>
+    <option value="ileri">İleri</option>
+  </select>
+</div>
+
+<div class="tarih-nav" id="tarih-nav">
+  <button class="simge" id="onceki" type="button" title="Önceki gün">‹</button>
+  <input type="date" id="tarih" title="Arşiv: eski günleri oyna">
+  <button class="simge" id="sonraki" type="button" title="Sonraki gün">›</button>
+</div>
+
+<p id="hata" hidden></p>
+
+<main>
+  <div class="durum">
+    <span id="hak"></span>
+    <span id="olasi"></span>
+  </div>
+
+  <div id="tahta"></div>
+  <div id="klavye"></div>
+</main>
+
+<footer>
+  Harflere tıklayarak not al · klavye tuşuna sağ tıkla (veya basılı tut) elediklerini işaretle
+</footer>
+
+<div id="bildirim" role="status" aria-live="polite"></div>
+
+<dialog id="yardim-pencere">
+  <button class="simge kapat" type="button">✕</button>
+  <h2>Nasıl oynanır?</h2>
+  <p>Gizli Türkçe kelimeyi <b>8 hakta</b> bulmaya çalışıyorsun. Her tahminden sonra üç sayı görürsün:</p>
+  <div class="ornek">
+    <span class="rozet duz yer">3</span><p>harf doğru <b>ve yeri doğru</b></p>
+  </div>
+  <div class="ornek">
+    <span class="rozet duz harf">2</span><p>harf kelimede <b>var ama yeri yanlış</b></p>
+  </div>
+  <div class="ornek">
+    <span class="rozet duz yok">0</span><p>harf kelimede <b>hiç yok</b></p>
+  </div>
+  <p>Üçünün toplamı her zaman kelime uzunluğudur. <b>Hangi</b> harfler olduğu söylenmez — asıl iş
+     bunu çıkarmak. Yukarıdaki sayılar, gizli kelime <b>KALEM</b> iken <b>KELAM</b> tahmininin
+     sonucudur: K, L ve M yerli yerinde; A ile E kelimede var ama yerleri karışmış.</p>
+  <ul>
+    <li>Gönderilmiş tahminlerdeki harflere <b>tıklayarak</b> not al: sırayla kırmızı → sarı →
+        yeşil → boş. Klavye tuşuna <b>sağ tıkla</b> (dokunmatikte basılı tut) elediğin harfleri
+        işaretle. Notlar yalnızca senin için; oyuna etkisi yok. Bir tahminin üç sayısı da <b>0</b>
+        çıkarsa (hiçbir harfi kelimede yoksa), o harfler her yerde otomatik kırmızıya boyanır ve
+        bu değiştirilemez — çünkü bu artık bir tahmin değil, kesin bilgidir.</li>
+    <li>Satırın solundaki <b>↺</b> düğmesi o satırın notlarını sıfırlar (otomatik kırmızı olan
+        hücreler hariç). Klavyede daha önce denediğin harfler de kendiliğinden koyu gri
+        görünür.</li>
+    <li><b>Boşluk</b> tuşu bilinmeyen harfin yerini <b>·</b> ile boş bırakır; satırı böyle taslak
+        kurabilirsin (göndermek için hepsini doldurman gerekir).</li>
+    <li><b>💡</b> düğmesi, o ana kadarki bütün sayılarla uyumlu bir kelimeyi satıra yazar.
+        En az bir tahmin yapmış olman gerekir ve bedeli vardır: onayladığında oyun
+        <b>kayıp sayılır</b>, serin sıfırlanır.</li>
+    <li><b>◫</b> bütün notları temizler.</li>
+    <li>Sözlükte olmayan bir kelime yazdığında satır <b>kırmızı ve üstü çizili</b> görünür —
+        Enter'a basmana gerek yok, hemen anlarsın. Böyle bir tahmin hak yakmaz.</li>
+    <li>Günlük kelime her gece yenilenir ve herkeste aynıdır. Kaçırdığın günler
+        <b>Arşiv</b>'de durur; arşiv yalnızca düne kadar gider, bugünün kelimesi
+        Günlük'te oynanır.</li>
+    <li>Kelime her seviyede <b>5 harflidir</b>; değişen şey gizli kelimenin kuralları:
+      <b>Standart</b> — aynı harf iki kez geçmez, seyrek harfler (J, F, V, Ğ) çıkmaz;
+      <b>Standart+</b> — aynı harf iki kez geçmez;
+      <b>İleri</b> — her şey serbest. Seyrek harf kısıtı <b>tahminlerini de bağlar</b>:
+      Standart'ta J, F, V, Ğ içeren bir kelime tahmin olarak girilemez. Harf tekrarı
+      kısıtı yalnızca gizli kelime seçimini etkiler; tahmin olarak tekrarlı harfli bir
+      kelime her seviyede girilebilir.</li>
+  </ul>
+</dialog>
+
+<dialog id="ist-pencere">
+  <button class="simge kapat" type="button">✕</button>
+  <h2>İstatistikler</h2>
+  <p id="ist-baslik" style="margin:0"></p>
+  <div class="istatistikler" id="ist-ozet"></div>
+  <p style="margin:0 0 4px"><b>Kaç hakta bildin</b></p>
+  <div class="dagilim" id="ist-dagilim"></div>
+  <button class="tus genis" id="ist-paylas" type="button" style="width:100%;margin-top:14px;height:40px">
+    Sonucu kopyala
+  </button>
+  <span id="geri-sayim"></span>
+</dialog>
+
+<script src="src/turkish.js"></script>
+<script src="src/engine.js"></script>
+<script src="src/sozluk.js"></script>
+<script src="src/words.js"></script>
+<script src="src/app.js"></script>
+</body>
+</html>
