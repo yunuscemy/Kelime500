@@ -1,6 +1,7 @@
 var app = Application.currentApplication(); app.includeStandardAdditions = true;
 function read(p){ return app.doShellScript("cat " + JSON.stringify(p)); }
-var kok = "/Users/canberkdemircan/Desktop/development/kelimebul/";
+// Depo kokunden calistirilir; sabit yol yerine bulunulan dizin kullanilir.
+var kok = app.doShellScript("pwd") + "/";
 var window = {};
 ["src/turkish.js","src/engine.js","src/sozluk.js","src/words.js"].forEach(function(f){ eval(read(kok+f)); });
 var KB = window.KB, out = [], hata = 0;
