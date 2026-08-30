@@ -59,11 +59,11 @@
    * ayni ilerleme. Bu yuzden oyun kaydi moda degil tarihe baglanir. */
   function oyunAnahtari(mod, zorluk, tarih) {
     return mod === 'serbest'
-      ? 'kelimebul.oyun.serbest.' + zorluk
-      : 'kelimebul.oyun.gunluk.' + zorluk + '.' + tarih;
+      ? 'kelime500.oyun.serbest.' + zorluk
+      : 'kelime500.oyun.gunluk.' + zorluk + '.' + tarih;
   }
 
-  function istAnahtari(mod, zorluk) { return 'kelimebul.ist.' + mod + '.' + zorluk; }
+  function istAnahtari(mod, zorluk) { return 'kelime500.ist.' + mod + '.' + zorluk; }
 
   function bosIstatistik() {
     return { oynanan: 0, kazanilan: 0, seri: 0, enIyiSeri: 0, dagilim: {} };
@@ -83,16 +83,41 @@
 
   /* ---------- oyun kurulumu ---------- */
 
-  function yeniOyun(mod, zorluk, tarih, zorla) {
-    if (!ZORLUKLAR[zorluk]) { zorluk = 'standart'; }
+  /* Zorlugun kurallarina gore gizli kelime havuzu. */
+  function havuzKur(cozum, zorluk) {
     var z = ZORLUKLAR[zorluk];
-    sozluk = kelimeler.al(UZUNLUK);
-    havuz = sozluk.cozum.filter(function (k) {
+    var h = cozum.filter(function (k) {
       if (z.tekrarsiz && !motor.tekrarsiz(k)) { return false; }
       if (z.nadirYok && !motor.nadirsiz(k, NADIR)) { return false; }
       return true;
     });
-    if (!havuz.length) { havuz = sozluk.cozum.slice(); }
+    return h.length ? h : cozum.slice();
+  }
+
+  /* Ayni gun her zorluk icin AYRI bir kelime yayimlanir. Havuzlar ic ice
+   * oldugu icin (standart subset standart+ subset ileri) bagimsiz secim bazi
+   * gunler ayni kelimeyi veriyordu. Zorluklar sabit bir sirayla secilir ve her
+   * biri kendinden oncekilerin aldigi kelimeyi atlar. Sira sabit oldugu icin
+   * sonuc herkeste ayni kalir. */
+  var ZORLUK_SIRA = ['standart', 'standarta', 'ileri'];
+
+  function gununKelimesi(cozum, tarih, zorluk) {
+    var alinan = [];
+    for (var i = 0; i < ZORLUK_SIRA.length; i++) {
+      var z = ZORLUK_SIRA[i];
+      var k = motor.gunlukKelime(havuzKur(cozum, z), tarih, z, alinan);
+      if (z === zorluk) { return k; }
+      alinan.push(k);
+    }
+    /* bilinmeyen zorluk: eskisi gibi tek basina sec */
+    return motor.gunlukKelime(havuzKur(cozum, zorluk), tarih, zorluk, []);
+  }
+
+  function yeniOyun(mod, zorluk, tarih, zorla) {
+    if (!ZORLUKLAR[zorluk]) { zorluk = 'standart'; }
+    var z = ZORLUKLAR[zorluk];
+    sozluk = kelimeler.al(UZUNLUK);
+    havuz = havuzKur(sozluk.cozum, zorluk);
 
     var kayitli = zorla ? null : oku(oyunAnahtari(mod, zorluk, tarih), null);
 
@@ -102,7 +127,7 @@
       S.acikla = !!S.acikla;
     } else {
       S = {
-        gizli: mod === 'gunluk' ? motor.gunlukKelime(havuz, tarih, zorluk)
+        gizli: mod === 'gunluk' ? gununKelimesi(sozluk.cozum, tarih, zorluk)
                                 : motor.rastgeleKelime(havuz),
         gecmis: [], notlar: {}, tusNot: {}, bitti: false, kazandi: false, ipucu: 0,
         kayitli: false, acikla: false
@@ -564,7 +589,7 @@
   /* ---------- paylaşım ---------- */
 
   function paylasMetni() {
-    var satirlar = ['Kelimebul · ' + ZORLUKLAR[S.zorluk].ad +
+    var satirlar = ['Kelime500 · ' + ZORLUKLAR[S.zorluk].ad +
                     (S.mod === 'gunluk' ? ' · ' + S.tarih : ' · serbest'),
                     (S.kazandi ? S.gecmis.length : 'X') + '/' + HAK + (S.ipucu ? ' (ipuçlu)' : '')];
     S.gecmis.forEach(function (g) {
@@ -629,9 +654,24 @@
 
   /* ---------- başlangıç ---------- */
 
-  function tema(deger) {
-    document.documentElement.dataset.tema = deger;
-    yaz('kelimebul.tema', deger);
+  /* Tema uygulama. yumusak=true ise renkler kademeli doner (dugmeye basilinca);
+   * sayfa acilirken kayitli tema animasyonsuz uygulanir, yoksa her aciliste
+   * goze carpan bir gecis olurdu. Anahtar adi 'kelime500.tema' olarak kaliyor:
+   * degistirilirse oyuncularin kayitli tercihi sifirlanir. */
+  var TEMA_SURE = 320;   /* ms - assets/styles.css --tema-sure ile ayni */
+  var temaZaman = null;
+
+  function tema(deger, yumusak) {
+    var kok = document.documentElement;
+    if (yumusak) {
+      kok.classList.add('tema-gecis');
+      clearTimeout(temaZaman);
+      temaZaman = setTimeout(function () {
+        kok.classList.remove('tema-gecis');
+      }, TEMA_SURE + 60);
+    }
+    kok.dataset.tema = deger;
+    yaz('kelime500.tema', deger);
     $('#tema').textContent = deger === 'acik' ? '☾' : '☀';
   }
 
@@ -647,7 +687,7 @@
     var hedef = gunEkle(S.tarih, gun);
     if (hedef > enGecTarih(S.mod)) { return; }
     $('#tarih').value = hedef;
-    yaz('kelimebul.tarih', hedef);
+    yaz('kelime500.tarih', hedef);
     yeniOyun(S.mod, S.zorluk, hedef);
   }
 
@@ -673,14 +713,14 @@
   }
 
   function baslat() {
-    tema(oku('kelimebul.tema', 'koyu'));
+    tema(oku('kelime500.tema', 'koyu'));
     klavyeKur();
 
     var p = adresOku();
     var mod = p.mod === 'serbest' ? 'serbest'
             : p.mod === 'arsiv'   ? 'arsiv'
             : 'gunluk';
-    var zorluk = ZORLUKLAR[p.zorluk] ? p.zorluk : oku('kelimebul.zorluk', 'standart');
+    var zorluk = ZORLUKLAR[p.zorluk] ? p.zorluk : oku('kelime500.zorluk', 'standart');
     if (!ZORLUKLAR[zorluk]) { zorluk = 'standart'; }
 
     var tarih = p.tarih && /^\d{4}-\d{2}-\d{2}$/.test(p.tarih) ? p.tarih : enGecTarih(mod);
@@ -691,7 +731,7 @@
     tarihGirdi.max = enGecTarih(mod);                    // arsivde bugune donulemez
     tarihGirdi.value = tarih;
     $('#zorluk').value = zorluk;
-    yaz('kelimebul.zorluk', zorluk);
+    yaz('kelime500.zorluk', zorluk);
 
     yeniOyun(mod, zorluk, tarih);
 
@@ -699,14 +739,14 @@
     $('#tahta').addEventListener('click', tahtaTikla);
 
     $('#zorluk').addEventListener('change', function () {
-      yaz('kelimebul.zorluk', this.value);
+      yaz('kelime500.zorluk', this.value);
       yeniOyun(S.mod, this.value, $('#tarih').value);
     });
 
     tarihGirdi.addEventListener('change', function () {
       var enGec = enGecTarih(S.mod);
       if (!this.value || this.value > enGec) { this.value = enGec; }
-      yaz('kelimebul.tarih', this.value);
+      yaz('kelime500.tarih', this.value);
       yeniOyun(S.mod, S.zorluk, this.value);
     });
 
@@ -722,7 +762,7 @@
     $('#istatistik').addEventListener('click', istatistikGoster);
     $('#ist-paylas').addEventListener('click', paylas);
     $('#tema').addEventListener('click', function () {
-      tema(document.documentElement.dataset.tema === 'acik' ? 'koyu' : 'acik');
+      tema(document.documentElement.dataset.tema === 'acik' ? 'koyu' : 'acik', true);
     });
 
     $('#ist-pencere').addEventListener('close', function () { clearInterval(sayimZaman); });

@@ -106,21 +106,27 @@ ok("günlük kelime sabit", g1===g2, g1);
 ok("ertesi gün değişiyor", g1!==g3, g1+" / "+g3);
 
 // Ayni gun her zorluk icin ayri kelime yayimlanir (gunde 3 kelime)
-var gunun = Object.keys(havuzlar).map(function(ad){
-  var kod = {"Standart":"standart","Standart+":"standarta","İleri":"ileri"}[ad];
-  return KB.motor.gunlukKelime(havuzlar[ad], "2026-08-29", kod);
-});
-ok("günde 3 zorluk = 3 ayrı kelime", new Set(gunun).size===3, gunun.join(" / "));
-ok("30 gün boyunca da ayrı kalıyor", (function(){
-  for(var g=1; g<=30; g++){
-    var t = "2026-09-" + String(g).padStart(2,"0");
-    var uc = ["standart","standarta","ileri"].map(function(kod,i){
-      return KB.motor.gunlukKelime(havuzlar[["Standart","Standart+","İleri"][i]], t, kod);
-    });
-    if(new Set(uc).size!==3) return false;
+// Uygulamadaki (src/app.js gununKelimesi) sirayla ayni mantik.
+var SIRA = ["standart","standarta","ileri"], SIRA_AD = ["Standart","Standart+","İleri"];
+function gununUcu(t){
+  var alinan = [];
+  for (var i=0; i<SIRA.length; i++){
+    alinan.push(KB.motor.gunlukKelime(havuzlar[SIRA_AD[i]], t, SIRA[i], alinan.slice()));
   }
-  return true;
-})());
+  return alinan;
+}
+ok("günde 3 zorluk = 3 ayrı kelime",
+   new Set(gununUcu("2026-08-29")).size===3, gununUcu("2026-08-29").join(" / "));
+// Bir ay degil tam yil taranir: eski test yalnizca Eylul 2026'ya bakiyordu ve
+// carpisan gunleri kaciriyordu.
+ok("yıl boyunca 3 zorluk hep ayrı kelime", (function(){
+  var kotu = [];
+  for(var ay=1; ay<=12; ay++) for(var g=1; g<=28; g++){
+    var t = "2026-" + String(ay).padStart(2,"0") + "-" + String(g).padStart(2,"0");
+    if(new Set(gununUcu(t)).size!==3) kotu.push(t);
+  }
+  return kotu.length===0 ? true : kotu.slice(0,5).join(", ");
+})()===true, "");
 
 
 // Çözücü: geri bildirimler daralttıkça tek cevaba iniyor mu (8 hakta bitiyor mu)

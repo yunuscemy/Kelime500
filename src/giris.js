@@ -34,15 +34,30 @@
             String(d.getDate()).padStart(2, '0')].join('-');
   }
 
-  function tema(deger) {
-    document.documentElement.dataset.tema = deger;
-    yaz('kelimebul.tema', deger);
+  /* Tema uygulama. yumusak=true ise renkler kademeli doner (dugmeye basilinca);
+   * sayfa acilirken kayitli tema animasyonsuz uygulanir, yoksa her aciliste
+   * goze carpan bir gecis olurdu. Anahtar adi 'kelime500.tema' olarak kaliyor:
+   * degistirilirse oyuncularin kayitli tercihi sifirlanir. */
+  var TEMA_SURE = 320;   /* ms - assets/styles.css --tema-sure ile ayni */
+  var temaZaman = null;
+
+  function tema(deger, yumusak) {
+    var kok = document.documentElement;
+    if (yumusak) {
+      kok.classList.add('tema-gecis');
+      clearTimeout(temaZaman);
+      temaZaman = setTimeout(function () {
+        kok.classList.remove('tema-gecis');
+      }, TEMA_SURE + 60);
+    }
+    kok.dataset.tema = deger;
+    yaz('kelime500.tema', deger);
     $('#tema').textContent = deger === 'acik' ? '☾' : '☀';
   }
 
   /* Bugun her zorlukta ne durumdayiz? Oyun sayfasiyla ayni depolama anahtarlari. */
   function gunDurumu(zorluk) {
-    var kayit = oku('kelimebul.oyun.gunluk.' + zorluk + '.' + bugun(), null);
+    var kayit = oku('kelime500.oyun.gunluk.' + zorluk + '.' + bugun(), null);
     if (!kayit) { return { metin: 'oynanmadı', sinif: '' }; }
     if (kayit.bitti) {
       return kayit.kazandi
@@ -70,9 +85,9 @@
   }
 
   function baslat() {
-    tema(oku('kelimebul.tema', 'koyu'));
+    tema(oku('kelime500.tema', 'koyu'));
 
-    var zorluk = oku('kelimebul.zorluk', 'standart');
+    var zorluk = oku('kelime500.zorluk', 'standart');
     if (ZORLUKLAR.indexOf(zorluk) === -1) { zorluk = 'standart'; }
     secimCiz(zorluk);
     durumCiz();
@@ -80,12 +95,12 @@
     $('#zorluk-secici').addEventListener('click', function (e) {
       var d = e.target.closest('button');
       if (!d) { return; }
-      yaz('kelimebul.zorluk', d.dataset.zorluk);
+      yaz('kelime500.zorluk', d.dataset.zorluk);
       secimCiz(d.dataset.zorluk);
     });
 
     $('#tema').addEventListener('click', function () {
-      tema(document.documentElement.dataset.tema === 'acik' ? 'koyu' : 'acik');
+      tema(document.documentElement.dataset.tema === 'acik' ? 'koyu' : 'acik', true);
     });
   }
 

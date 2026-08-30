@@ -12,6 +12,7 @@
   --gri: #4a5160;
   --yuvarlak: 9px;
   --gecis: 120ms ease;
+  --tema-sure: 320ms;    /* acik<->koyu gecis suresi - src/*.js TEMA_SURE ile ayni */
   --kart-sure: 460ms;   /* kart cevirme suresi - src/app.js KART_SURE ile ayni */
 
   --bosluk: clamp(4px, 0.8vh, 7px);
@@ -65,6 +66,21 @@ button {
 :focus { outline: none; }
 :focus-visible { outline: 2px solid var(--vurgu); outline-offset: 2px; }
 
+/* --- tema gecisi ---
+   Acik/koyu gecisi aniden olunca goz yoruyor. Tema dugmesine basildiginda
+   JS kisa sureligine .tema-gecis sinifini ekler, renkler yumusakca doner,
+   sonra sinif kalkar. Kalici birakilmaz: her hover/tiklama da gecikirdi.
+   Kart cevirme animasyonlari (transform) disarida tutulur ki bozulmasinlar. */
+.tema-gecis, .tema-gecis *:not(.rozet-ic):not(.kutu-ic) {
+  transition: background-color var(--tema-sure) ease,
+              border-color     var(--tema-sure) ease,
+              color            var(--tema-sure) ease,
+              fill             var(--tema-sure) ease !important;
+}
+@media (prefers-reduced-motion: reduce) {
+  .tema-gecis, .tema-gecis *:not(.rozet-ic):not(.kutu-ic) { transition: none !important; }
+}
+
 /* --- üst bar --- */
 header, .kontroller, main { width: 100%; max-width: 480px; padding-inline: 14px; }
 
@@ -83,8 +99,63 @@ header {
   display: flex; align-items: center; gap: 8px;
 }
 
-.marka { font-size: 20px; font-weight: 800; letter-spacing: -0.5px; margin-right: auto; }
-.marka span { color: var(--vurgu); }
+/* --- marka --- */
+
+/* Oyun sayfasi basligi: kompakt yazi markasi. Tam kutucuklu logo giris
+   sayfasina ait; oyun sayfasinda 5 dugmeyle yan yana sigmaz ve tahtadaki
+   gercek kutucuklarla gorsel olarak yarisir. */
+.marka {
+  font-size: 20px; font-weight: 800; letter-spacing: -0.5px;
+  margin-right: auto; white-space: nowrap;
+}
+.marka i { font-style: normal; }
+.marka .s1 { color: var(--yesil); }
+.marka .s2 { color: var(--sari); }
+.marka .s3 { color: var(--kirmizi); }
+
+/* --- kutucuklu logo (giris sayfasi) ---
+   KELIME: cengel bulmaca izgarasi - koseli, bitisik, kenarlari paylasan
+   kutucuklar; bir bolumu dolu.
+   500: oyundaki puan rozetleri - yuvarlak koseli, arali, yesil/sari/kirmizi.
+   Iki farkli bicim bilerek: biri tek parca bir yapi, digeri uc ayri okuma. */
+.logo {
+  display: flex; align-items: center; gap: calc(var(--logo-kutu) * 0.34);
+  --logo-kutu: 26px;
+  text-decoration: none; color: inherit;
+  margin-right: auto;
+}
+.logo b {
+  display: grid; place-items: center;
+  width: var(--logo-kutu); height: var(--logo-kutu);
+  font-size: calc(var(--logo-kutu) * 0.62);
+  font-weight: 800; line-height: 1;
+  letter-spacing: 0;
+}
+
+/* cengel bulmaca izgarasi: kutucuklar kenar paylassin diye 1px bindiriliyor */
+.logo-kelime { display: flex; }
+.logo-kelime b {
+  border: 1.5px solid var(--metin);
+  margin-left: -1.5px;
+  color: var(--metin);
+  background: transparent;
+}
+.logo-kelime b:first-child { margin-left: 0; }
+/* donusumlu dolu kutular: izgaraya ritim verir */
+.logo-kelime b:nth-child(even) {
+  background: var(--metin);
+  color: var(--bg-yuksek);
+}
+
+/* puan rozetleri */
+.logo-sayi { display: flex; gap: calc(var(--logo-kutu) * 0.15); }
+.logo-sayi b {
+  border-radius: calc(var(--logo-kutu) * 0.26);
+  color: #fff;
+}
+.logo-sayi b:nth-child(1) { background: var(--yesil); }
+.logo-sayi b:nth-child(2) { background: var(--sari); color: #17181c; }
+.logo-sayi b:nth-child(3) { background: var(--kirmizi); }
 
 .simge {
   width: 34px; height: 34px;
@@ -345,6 +416,18 @@ dialog ul { padding-left: 18px; }
 
 /* --- giris sayfasi --- */
 body.giris { padding-bottom: 8px; }
+
+/* Giris sayfasinda baslik da bir kart: logo solda, tema dugmesi sagda.
+   Genislik asagidaki kartlarla birebir ayni olsun diye kart gorunumu
+   header'in kendisine degil, icindeki sarmalayiciya veriliyor. */
+.marka-kart {
+  flex: 1 1 auto;
+  display: flex; align-items: center; gap: 8px;
+  background: var(--bg-yuksek);
+  border: 1px solid var(--cizgi);
+  border-radius: 14px;
+  padding: 12px 16px;
+}
 .giris-icerik {
   display: grid; gap: 12px;
   margin-top: 6px;

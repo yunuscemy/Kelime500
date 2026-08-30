@@ -62,8 +62,19 @@
     return h >>> 0;
   }
 
-  function gunlukKelime(liste, tarih, zorlukAdi) {
-    return liste[tohum(tarih + '|' + zorlukAdi + '|kelimebul') % liste.length];
+  /* Gunun kelimesi. kacinilacak verilirse (ayni gun baska bir zorlugun aldigi
+   * kelimeler) o kelimeler atlanir: tohumun gosterdigi yerden baslanir ve
+   * listede ilerleyerek ilk uygun kelime secilir. Deterministik kalir, yani
+   * ayni gun herkeste ayni sonucu verir. */
+  function gunlukKelime(liste, tarih, zorlukAdi, kacinilacak) {
+    if (!liste.length) { return null; }
+    var basla = tohum(tarih + '|' + zorlukAdi + '|kelime500') % liste.length;
+    if (!kacinilacak || !kacinilacak.length) { return liste[basla]; }
+    for (var i = 0; i < liste.length; i++) {
+      var k = liste[(basla + i) % liste.length];
+      if (kacinilacak.indexOf(k) === -1) { return k; }
+    }
+    return liste[basla];   /* havuz tamamen tukendi (pratikte olmaz) */
   }
 
   function rastgeleKelime(liste) {

@@ -1,0 +1,23 @@
+BU KLASORU DUZENLEME.
+
+Bu klasor otomatik uretilir. Asil proje su klasordedir:
+
+    Masaustu/kelimebul 13.27.52
+
+Butun degisiklikler orada yapilir; burasi yalnizca GitHub'a
+yuklemek icin hazirlanmis temiz bir kopyadir.
+
+NEDEN AYRI BIR KLASOR VAR?
+Projede tools/.tdk-onbellek.json diye 2.4 MB'lik bir sozluk
+onbellegi var. GitHub'in web yukleyicisi .gitignore dosyasina
+bakmaz, bu yuzden asil klasoru surukleseydin o dosya da
+yuklenecekti. Bu klasorde o dosya yok.
+
+GITHUB'A NASIL YUKLENIR?
+1. GitHub'da depoya git
+2. Add file > Upload files
+3. BU klasoru AC, icindekilerin hepsini sec (Cmd+A) ve surukle
+   (klasorun kendisini degil, ICINDEKILERI)
+4. Asagida Commit changes'e bas
+
+Bu dosyayi (OKU-BENI.txt) yuklemene gerek yok, secmesen de olur.

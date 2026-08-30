@@ -1,4 +1,4 @@
-# Kelimebul
+# Kelime500
 
 Türkçe kelime çıkarım oyunu. Gizli kelimeyi 8 hakta bulmaya çalışırsın; her tahminden
 sonra üç sayı görürsün: **kaç harf doğru yerde** (yeşil), **kaç harf kelimede var ama yeri
@@ -20,7 +20,10 @@ Derleme adımı yok, bağımlılık yok. `index.html` (giriş sayfası) tarayıc
 - **Giriş sayfası** (`index.html`): zorluk seçimi, günlük / serbest / arşiv kartları ve
   bugün her zorlukta hangi durumda olduğunu gösteren rozetler.
 - **Günlük**: kelime `tarih + zorluk` çiftinden türetilir, yani **her gün üç zorluk için
-  üç ayrı kelime** yayımlanır ve herkeste aynıdır.
+  üç ayrı kelime** yayımlanır ve herkeste aynıdır. Havuzlar iç içe olduğu için
+  (Standart ⊂ Standart+ ⊂ İleri) bağımsız seçim bazı günler aynı kelimeyi
+  veriyordu; zorluklar sabit bir sırayla seçilir ve her biri kendinden
+  öncekilerin aldığı kelimeyi atlar.
 - **Arşiv**: kaçırılan günler oynanabilir; `‹ ›` düğmeleri ve tarih seçiciyle günler
   arasında gezinilir. Arşiv **yalnızca düne kadar** gider — bugünün kelimesi Günlük'e
   aittir, arşivden oraya dönülmez. Günlükte tek bir bulmaca olduğu için orada tarih
