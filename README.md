@@ -40,7 +40,7 @@ Derleme adımı yok, bağımlılık yok. `index.html` (giriş sayfası) tarayıc
   Satırın solundaki `↺` yalnızca o satırın notlarını sıfırlar. Bir tahminin üç sayısı
   da (yer/harf/yok'un ilk ikisi) sıfırsa, o harfler kelimede kesinlikle yoktur — bu
   durumda ilgili hücreler otomatik kırmızıya boyanır ve değiştirilemez. Klavyede de
-  daha önce denenmiş harfler otomatik olarak koyu gri görünür.
+  daha önce denenmiş harfler otomatik olarak gri görünür.
 - **Boşluk tuşu**: bilinmeyen harfin yerini `·` ile boş bırakır, satırı taslak kurmanı sağlar.
 - **İpucu** (`💡`): o ana kadarki bütün sayılarla uyumlu bir kelimeyi satıra yazar.
   En az bir tahmin gerektirir ve onay ister; kullanıldığında oyun kayıp sayılıp seri

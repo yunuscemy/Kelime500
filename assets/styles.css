@@ -14,9 +14,13 @@
   --gecis: 120ms ease;
   --kart-sure: 460ms;   /* kart cevirme suresi - src/app.js KART_SURE ile ayni */
 
-  /* Tahta + klavye her zaman ekrana sığsın diye kutu boyu yükseklikten türetiliyor. */
-  --kutu: clamp(30px, min(11vw, 5.6vh), 52px);
   --bosluk: clamp(4px, 0.8vh, 7px);
+  /* Yardim penceresindeki ornek rozetler icin varsayilan olcu.
+     Tahtadaki gercek kutu boyu #tahta icinde satir genisliginden cozuluyor. */
+  --kutu: clamp(30px, min(11vw, 5.6vh), 52px);
+
+  /* Daha once denenmis harf: koyu temada karartilir, acik temada grilestirilir. */
+  --tus-kullanilmis: color-mix(in srgb, var(--tus-bg) 55%, #000 45%);
 }
 
 :root[data-tema="acik"] {
@@ -27,6 +31,9 @@
   --metin: #171a21;
   --soluk: #5d6675;
   --gri: #b3bac6;
+  /* Acik temada karartma tusu orta griye cevirip bozuk gosteriyordu;
+     bunun yerine hafifce grilestiriliyor. */
+  --tus-kullanilmis: color-mix(in srgb, var(--tus-bg) 70%, var(--soluk) 30%);
 }
 
 * { box-sizing: border-box; }
@@ -60,6 +67,16 @@ button {
 
 /* --- üst bar --- */
 header, .kontroller, main { width: 100%; max-width: 480px; padding-inline: 14px; }
+
+/* Oyun sayfasi: main artan dikey alani yutar. Tahta yukarida, kontrollerin
+   hemen altinda kalir; klavye asagi itilir (telefonda basparmaga daha yakin).
+   Boylece altta olu bosluk kalmaz. (Giris sayfasinin kendi izgarasi var.) */
+body:not(.giris) main {
+  flex: 1 1 auto;
+  display: flex; flex-direction: column;
+  container-type: inline-size;   /* kutu boyu bu genislikten hesaplanir */
+}
+body:not(.giris) #klavye { margin-top: auto; }
 
 header {
   padding-top: 12px;
@@ -114,12 +131,19 @@ select, input[type="date"] {
 }
 .durum b { color: var(--metin); }
 
-#tahta { display: grid; gap: var(--bosluk); justify-content: center; }
+/* Bir satirin genisligi: 0.42 (↺) + 5 (harf kutusu) + 3 x 0.66 (rozet) = 7.4 kutu,
+   aralarinda 8 bosluk, rozetlerden once 4px. Kutu boyu bu denklemden cozuluyor;
+   boylece satir hicbir ekran genisliginde tasmaz. Ayrica 5.6vh ile sinirli ki
+   tahta + klavye dikeyde de sigsin. */
+#tahta {
+  display: grid; gap: var(--bosluk); justify-content: center;
+  --kutu: clamp(28px, min(calc((100cqw - 8 * var(--bosluk) - 5px) / 7.4), 5.6vh), 52px);
+}
 
 .satir { display: flex; gap: var(--bosluk); align-items: center; }
 
 .satir-sifirla {
-  width: calc(var(--kutu) * 0.5); height: calc(var(--kutu) * 0.5);
+  width: calc(var(--kutu) * 0.42); height: calc(var(--kutu) * 0.5);
   flex: 0 0 auto;
   display: grid; place-items: center;
   border: 1px solid var(--cizgi); border-radius: var(--yuvarlak);
@@ -154,12 +178,12 @@ select, input[type="date"] {
 /* Enter'a basmadan, kelime tamamlanir tamamlanmaz: sozlukte olmayan kelime */
 .satir.gecersiz .kutu.dolu { color: var(--kirmizi); border-color: var(--kirmizi); text-decoration: line-through; }
 
-.rozetler { display: flex; gap: var(--bosluk); margin-left: 6px; }
+.rozetler { display: flex; gap: var(--bosluk); margin-left: 4px; }
 
 /* --- cevrilebilir kartlar (rozetler + perde acilisinda harfler) --- */
 /* Kart dikey ekseninin ortasindan, yukaridan asagiya donerek arka yuzunu gosterir. */
 .rozet {
-  width: calc(var(--kutu) * 0.82); height: var(--kutu);
+  width: calc(var(--kutu) * 0.66); height: var(--kutu);
   perspective: 700px;
   background: none;
 }
@@ -183,8 +207,13 @@ select, input[type="date"] {
 .rozet.yer  .rozet-yuz { background: var(--yesil); }
 .rozet.harf .rozet-yuz { background: var(--sari); color: #17181c; }
 .rozet.yok  .rozet-yuz { background: var(--kirmizi); }
-/* tahmin gonderilmeden once kartlar sonuk durur */
-.rozetler.bos .rozet .rozet-yuz { opacity: .22; }
+/* Henuz oynanmamis satirin rozetleri bilgi tasimadigi icin renkli durmaz;
+   bos harf kutulariyla ayni bos gorunumu alir. */
+.rozetler.bos .rozet .rozet-yuz {
+  background: var(--bg-yuksek);
+  box-shadow: inset 0 0 0 2px var(--cizgi);
+  opacity: 1;
+}
 
 /* perde acilisinda harf kutulari da ayni sekilde doner */
 .kutu.cevrilir { perspective: 700px; background: none; border: 0; padding: 0; }
@@ -255,7 +284,7 @@ select, input[type="date"] {
 .tus.not-var  { background: var(--yesil); color: #fff; }
 .tus.not-belki{ background: var(--sari); color: #17181c; }
 /* otomatik: bu harf simdiye kadar bir tahminde kullanildi */
-.tus.kullanilmis { background: color-mix(in srgb, var(--tus-bg) 55%, #000 45%); }
+.tus.kullanilmis { background: var(--tus-kullanilmis); }
 
 footer { color: var(--soluk); font-size: 11px; padding: 0 14px 18px; text-align: center; max-width: 480px; }
 
