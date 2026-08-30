@@ -71,14 +71,22 @@ button {
    JS kisa sureligine .tema-gecis sinifini ekler, renkler yumusakca doner,
    sonra sinif kalkar. Kalici birakilmaz: her hover/tiklama da gecikirdi.
    Kart cevirme animasyonlari (transform) disarida tutulur ki bozulmasinlar. */
-.tema-gecis, .tema-gecis *:not(.rozet-ic):not(.kutu-ic) {
+/* Kart cevirme yapisindaki ogeler (perspective + backface-visibility) disarida
+   birakilir: onlara gecis eklendiginde tarayici 3B katmani yeniden olusturuyor
+   ve rozetlerde bir karelik titreme oluyordu. Zaten gerek de yok - yesil/sari/
+   kirmizi iki temada da ayni renk, degisen bir sey olmuyor. */
+.tema-gecis,
+.tema-gecis *:not(.rozet, .rozet-ic, .rozet-yuz, .kutu-ic, .kutu-yuz) {
   transition: background-color var(--tema-sure) ease,
               border-color     var(--tema-sure) ease,
               color            var(--tema-sure) ease,
               fill             var(--tema-sure) ease !important;
 }
 @media (prefers-reduced-motion: reduce) {
-  .tema-gecis, .tema-gecis *:not(.rozet-ic):not(.kutu-ic) { transition: none !important; }
+  .tema-gecis,
+  .tema-gecis *:not(.rozet, .rozet-ic, .rozet-yuz, .kutu-ic, .kutu-yuz) {
+    transition: none !important;
+  }
 }
 
 /* --- üst bar --- */
@@ -101,18 +109,6 @@ header {
 
 /* --- marka --- */
 
-/* Oyun sayfasi basligi: kompakt yazi markasi. Tam kutucuklu logo giris
-   sayfasina ait; oyun sayfasinda 5 dugmeyle yan yana sigmaz ve tahtadaki
-   gercek kutucuklarla gorsel olarak yarisir. */
-.marka {
-  font-size: 20px; font-weight: 800; letter-spacing: -0.5px;
-  margin-right: auto; white-space: nowrap;
-}
-.marka i { font-style: normal; }
-.marka .s1 { color: var(--yesil); }
-.marka .s2 { color: var(--sari); }
-.marka .s3 { color: var(--kirmizi); }
-
 /* --- kutucuklu logo (giris sayfasi) ---
    KELIME: cengel bulmaca izgarasi - koseli, bitisik, kenarlari paylasan
    kutucuklar; bir bolumu dolu.
@@ -120,7 +116,8 @@ header {
    Iki farkli bicim bilerek: biri tek parca bir yapi, digeri uc ayri okuma. */
 .logo {
   display: flex; align-items: center; gap: calc(var(--logo-kutu) * 0.34);
-  --logo-kutu: 26px;
+  --logo-kutu: 30px;                                   /* KELIME kutucugu */
+  --logo-sayi: calc(var(--logo-kutu) * 1.15);          /* 500 %15 daha buyuk */
   text-decoration: none; color: inherit;
   margin-right: auto;
 }
@@ -150,11 +147,13 @@ header {
 /* puan rozetleri */
 .logo-sayi { display: flex; gap: calc(var(--logo-kutu) * 0.15); }
 .logo-sayi b {
-  border-radius: calc(var(--logo-kutu) * 0.26);
-  color: #fff;
+  width: var(--logo-sayi); height: var(--logo-sayi);
+  font-size: calc(var(--logo-sayi) * 0.62);
+  border-radius: calc(var(--logo-sayi) * 0.26);
+  color: #fff;                       /* uc rakam da beyaz */
 }
 .logo-sayi b:nth-child(1) { background: var(--yesil); }
-.logo-sayi b:nth-child(2) { background: var(--sari); color: #17181c; }
+.logo-sayi b:nth-child(2) { background: var(--sari); }
 .logo-sayi b:nth-child(3) { background: var(--kirmizi); }
 
 .simge {
@@ -399,6 +398,17 @@ dialog ul { padding-left: 18px; }
 .cubuk u.aktif { background: var(--yesil); }
 #geri-sayim { display: block; text-align: center; margin-top: 12px; font-size: 12px; color: var(--soluk); }
 
+/* Oyun sayfasi basligi: solda kutucuklu logo, sagda dugmeler (geri dahil).
+   Logo kutucugu, dugmelerden artan genislikten hesaplanir - bir satirda
+   5 dugme (30px) + aralarindaki 5 bosluk (6px) = 180px yer tutar.
+   10.09 katsayisi logonun kutu boyu cinsinden genisligi:
+   KELIME 6 kutu (1.5px bindirmeli) + ara + 500'un 3 buyuk kutusu. */
+body:not(.giris) header { gap: 6px; container-type: inline-size; }
+body:not(.giris) .simge { width: 30px; height: 30px; font-size: 14px; }
+body:not(.giris) .logo {
+  --logo-kutu: clamp(11px, calc((100cqw - 184px) / 10.09), 26px);
+}
+
 /* --- oyun sayfasi: mod etiketi ve tarih gezinmesi --- */
 .mod-etiket {
   flex: 1 1 auto;
@@ -426,7 +436,7 @@ body.giris { padding-bottom: 8px; }
   background: var(--bg-yuksek);
   border: 1px solid var(--cizgi);
   border-radius: 14px;
-  padding: 12px 16px;
+  padding: 20px 16px;
 }
 .giris-icerik {
   display: grid; gap: 12px;
