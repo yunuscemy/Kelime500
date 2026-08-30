@@ -34,25 +34,29 @@
             String(d.getDate()).padStart(2, '0')].join('-');
   }
 
-  /* Tema uygulama. yumusak=true ise renkler kademeli doner (dugmeye basilinca);
-   * sayfa acilirken kayitli tema animasyonsuz uygulanir, yoksa her aciliste
-   * goze carpan bir gecis olurdu. Anahtar adi 'kelime500.tema' olarak kaliyor:
-   * degistirilirse oyuncularin kayitli tercihi sifirlanir. */
-  var TEMA_SURE = 320;   /* ms - assets/styles.css --tema-sure ile ayni */
-  var temaZaman = null;
+  /* Tema uygulama. yumusak=true ise sayfa capraz-gecisle doner (View
+   * Transitions); destegi olmayan tarayicida ani gecer. Sayfa acilirken
+   * kayitli tema animasyonsuz uygulanir. */
+  var GUNES = '<svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true">' +
+    '<circle cx="12" cy="12" r="4.6" fill="currentColor"/>' +
+    '<g stroke="currentColor" stroke-width="2" stroke-linecap="round">' +
+    '<path d="M12 1.9v3M12 19.1v3M1.9 12h3M19.1 12h3' +
+    'M4.9 4.9 7 7M17 17l2.1 2.1M19.1 4.9 17 7M7 17l-2.1 2.1"/></g></svg>';
+  var AY = '<svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true">' +
+    '<path fill="currentColor" d="M21 13.2A9 9 0 1 1 10.8 3a7.2 7.2 0 0 0 10.2 10.2z"/></svg>';
 
   function tema(deger, yumusak) {
-    var kok = document.documentElement;
-    if (yumusak) {
-      kok.classList.add('tema-gecis');
-      clearTimeout(temaZaman);
-      temaZaman = setTimeout(function () {
-        kok.classList.remove('tema-gecis');
-      }, TEMA_SURE + 60);
+    function uygula() {
+      document.documentElement.dataset.tema = deger;
+      var d = $('#tema');
+      if (d) { d.innerHTML = deger === 'acik' ? AY : GUNES; }
     }
-    kok.dataset.tema = deger;
+    if (yumusak && document.startViewTransition) {
+      document.startViewTransition(uygula);
+    } else {
+      uygula();
+    }
     yaz('kelime500.tema', deger);
-    $('#tema').textContent = deger === 'acik' ? '☾' : '☀';
   }
 
   /* Bugun her zorlukta ne durumdayiz? Oyun sayfasiyla ayni depolama anahtarlari. */

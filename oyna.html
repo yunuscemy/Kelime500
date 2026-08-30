@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 <title>Kelime500 — Türkçe kelime bulmacası</title>
 <meta name="description" content="Gizli Türkçe kelimeyi 8 hakta bul. Her tahminde kaç harfin doğru yerde, kaç harfin yanlış yerde, kaç harfin kelimede hiç olmadığını öğrenirsin — hangileri olduğunu değil.">
-<link rel="stylesheet" href="assets/styles.css?v=3">
+<link rel="stylesheet" href="assets/styles.css?v=4">
 </head>
 <body>
 
@@ -14,20 +14,42 @@
     <span class="logo-kelime" aria-hidden="true"><b>K</b><b>E</b><b>L</b><b>İ</b><b>M</b><b>E</b></span>
     <span class="logo-sayi" aria-hidden="true"><b>5</b><b>0</b><b>0</b></span>
   </span>
-  <button class="simge" id="yeni" type="button" title="Yeni kelime" hidden>↻</button>
-  <button class="simge" id="yardim" type="button" title="Nasıl oynanır?">?</button>
-  <button class="simge" id="istatistik" type="button" title="İstatistikler">▤</button>
-  <button class="simge" id="tema" type="button" title="Gece/Gündüz">☀</button>
+
+  <div class="acilir-sarmal">
+    <button class="simge zorluk-dugme" id="zorluk-dugme" type="button"
+            aria-haspopup="true" aria-expanded="false" title="Zorluk"></button>
+    <div class="acilir" id="zorluk-menu" hidden role="menu">
+      <button type="button" role="menuitem" data-zorluk="standart"><i class="nokta standart"></i>Standart</button>
+      <button type="button" role="menuitem" data-zorluk="standarta"><i class="nokta standarta"></i>Standart+</button>
+      <button type="button" role="menuitem" data-zorluk="ileri"><i class="nokta ileri"></i>İleri</button>
+    </div>
+  </div>
+
+  <div class="acilir-sarmal">
+    <button class="simge" id="menu-dugme" type="button"
+            aria-haspopup="true" aria-expanded="false" title="Menü">
+      <svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"
+           fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
+        <path d="M4 7h16M4 12h16M4 17h16"/>
+      </svg>
+    </button>
+    <div class="acilir" id="ana-menu" hidden role="menu">
+      <button type="button" role="menuitem" data-mod="gunluk">Günlük</button>
+      <button type="button" role="menuitem" data-mod="serbest">Serbest</button>
+      <button type="button" role="menuitem" data-mod="arsiv">Arşiv</button>
+      <hr>
+      <button type="button" role="menuitem" id="menu-yeni">Yeni kelime</button>
+      <button type="button" role="menuitem" id="menu-istatistik">İstatistik</button>
+      <button type="button" role="menuitem" id="menu-yardim">Nasıl oynanır</button>
+      <button type="button" role="menuitem" id="menu-tema">Gece/Gündüz</button>
+    </div>
+  </div>
+
   <a class="simge" href="index.html" title="Ana sayfa">←</a>
 </header>
 
 <div class="kontroller">
   <span class="mod-etiket" id="mod-etiket"></span>
-  <select id="zorluk" title="Zorluk">
-    <option value="standart">Standart</option>
-    <option value="standarta">Standart+</option>
-    <option value="ileri">İleri</option>
-  </select>
 </div>
 
 <div class="tarih-nav" id="tarih-nav">
@@ -39,18 +61,9 @@
 <p id="hata" hidden></p>
 
 <main>
-  <div class="durum">
-    <span id="hak"></span>
-    <span id="olasi"></span>
-  </div>
-
   <div id="tahta"></div>
   <div id="klavye"></div>
 </main>
-
-<footer>
-  Harflere tıklayarak not al · klavye tuşuna sağ tıkla (veya basılı tut) elediklerini işaretle
-</footer>
 
 <div id="bildirim" role="status" aria-live="polite"></div>
 
@@ -113,10 +126,10 @@
   <span id="geri-sayim"></span>
 </dialog>
 
-<script src="src/turkish.js?v=3"></script>
-<script src="src/engine.js?v=3"></script>
-<script src="src/sozluk.js?v=3"></script>
-<script src="src/words.js?v=3"></script>
-<script src="src/app.js?v=3"></script>
+<script src="src/turkish.js?v=4"></script>
+<script src="src/engine.js?v=4"></script>
+<script src="src/sozluk.js?v=4"></script>
+<script src="src/words.js?v=4"></script>
+<script src="src/app.js?v=4"></script>
 </body>
 </html>

@@ -67,26 +67,19 @@ button {
 :focus-visible { outline: 2px solid var(--vurgu); outline-offset: 2px; }
 
 /* --- tema gecisi ---
-   Acik/koyu gecisi aniden olunca goz yoruyor. Tema dugmesine basildiginda
-   JS kisa sureligine .tema-gecis sinifini ekler, renkler yumusakca doner,
-   sonra sinif kalkar. Kalici birakilmaz: her hover/tiklama da gecikirdi.
-   Kart cevirme animasyonlari (transform) disarida tutulur ki bozulmasinlar. */
-/* Kart cevirme yapisindaki ogeler (perspective + backface-visibility) disarida
-   birakilir: onlara gecis eklendiginde tarayici 3B katmani yeniden olusturuyor
-   ve rozetlerde bir karelik titreme oluyordu. Zaten gerek de yok - yesil/sari/
-   kirmizi iki temada da ayni renk, degisen bir sey olmuyor. */
-.tema-gecis,
-.tema-gecis *:not(.rozet, .rozet-ic, .rozet-yuz, .kutu-ic, .kutu-yuz) {
-  transition: background-color var(--tema-sure) ease,
-              border-color     var(--tema-sure) ease,
-              color            var(--tema-sure) ease,
-              fill             var(--tema-sure) ease !important;
+   Sayfanin tamami tek parca capraz-gecis yapar (View Transitions).
+   Onceki yontem her ogeye ayri renk gecisi veriyordu; rengini kalitimla alan
+   yazilar (kart basliklari gibi) hem govdenin gecisini takip edip hem kendi
+   gecislerini uyguladigi icin geride kaliyordu. Tek snapshot gecisinde
+   butun pikseller ayni hizda doner. Destegi olmayan tarayicida ani gecis. */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: var(--tema-sure);
+  animation-timing-function: ease;
 }
 @media (prefers-reduced-motion: reduce) {
-  .tema-gecis,
-  .tema-gecis *:not(.rozet, .rozet-ic, .rozet-yuz, .kutu-ic, .kutu-yuz) {
-    transition: none !important;
-  }
+  ::view-transition-old(root),
+  ::view-transition-new(root) { animation: none; }
 }
 
 /* --- üst bar --- */
@@ -100,7 +93,6 @@ body:not(.giris) main {
   display: flex; flex-direction: column;
   container-type: inline-size;   /* kutu boyu bu genislikten hesaplanir */
 }
-body:not(.giris) #klavye { margin-top: auto; }
 
 header {
   padding-top: 12px;
@@ -158,6 +150,7 @@ header {
 
 .simge {
   width: 34px; height: 34px;
+  color: inherit; text-decoration: none;   /* <a> olan geri tusu mavi cikmasin */
   display: grid; place-items: center;
   background: var(--bg-yuksek);
   border: 1px solid var(--cizgi);
@@ -219,6 +212,9 @@ select, input[type="date"] {
   border: 1px solid var(--cizgi); border-radius: var(--yuvarlak);
   background: var(--bg-yuksek); color: var(--soluk);
   font-size: calc(var(--kutu) * 0.28);
+  /* Dugmenin varsayilan ic boslugu ve govdeden gelen 1.4 satir yuksekligi
+     ↺ simgesini kutunun ortasindan kaydiriyordu. */
+  padding: 0; line-height: 1;
 }
 @media (hover: hover) { .satir-sifirla:hover { border-color: var(--vurgu); color: var(--metin); } }
 .satir-sifirla.bos { visibility: hidden; }
@@ -334,6 +330,12 @@ select, input[type="date"] {
 
 /* --- klavye --- */
 #klavye { display: grid; gap: var(--bosluk); margin: 10px 0 14px; }
+
+/* Tahtanin otomatik alt/ust kenar boslugu artan dikey alani ikiye esit boler:
+   basliktan tahtaya olan bosluk ile tahtadan klavyeye olan bosluk esitlenir,
+   klavye de alta oturur. */
+body:not(.giris) #tahta { margin-block: auto; }
+body:not(.giris) #klavye { margin-top: 0; }
 .klavye-satir { display: flex; gap: 4px; justify-content: center; }
 
 .tus {
@@ -403,11 +405,47 @@ dialog ul { padding-left: 18px; }
    5 dugme (30px) + aralarindaki 5 bosluk (6px) = 180px yer tutar.
    10.09 katsayisi logonun kutu boyu cinsinden genisligi:
    KELIME 6 kutu (1.5px bindirmeli) + ara + 500'un 3 buyuk kutusu. */
-body:not(.giris) header { gap: 6px; container-type: inline-size; }
-body:not(.giris) .simge { width: 30px; height: 30px; font-size: 14px; }
+body:not(.giris) header { container-type: inline-size; }
+/* Baslikta 3 dugme (34px) + aralarindaki 3 bosluk (8px) = 126px yer tutuyor.
+   Logo kutucugu kalan genislikten cozulur; 10.09 katsayisi logonun kutu boyu
+   cinsinden genisligi (KELIME 6 kutu + ara + 500'un 3 buyuk kutusu). */
 body:not(.giris) .logo {
-  --logo-kutu: clamp(11px, calc((100cqw - 184px) / 10.09), 26px);
+  --logo-kutu: clamp(12px, calc((100cqw - 130px) / 10.09), 26px);
 }
+
+/* --- baslik acilir menuleri --- */
+.acilir-sarmal { position: relative; display: flex; }
+.acilir {
+  position: absolute; top: calc(100% + 6px); right: 0; z-index: 30;
+  min-width: 168px;
+  display: grid; gap: 2px;
+  padding: 6px;
+  background: var(--bg-yuksek);
+  border: 1px solid var(--cizgi);
+  border-radius: 12px;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, .38);
+}
+.acilir[hidden] { display: none; }
+.acilir button {
+  display: flex; align-items: center; gap: 9px;
+  width: 100%; text-align: left;
+  background: transparent; border: 0;
+  padding: 9px 10px; border-radius: 8px;
+  font-size: 14px; font-weight: 600; color: var(--metin);
+}
+.acilir hr { border: 0; border-top: 1px solid var(--cizgi); margin: 4px 2px; }
+@media (hover: hover) { .acilir button:hover { background: var(--tus-bg); } }
+.acilir button[aria-current="true"] { background: color-mix(in srgb, var(--vurgu) 18%, transparent); }
+.acilir .nokta { width: 10px; height: 10px; border-radius: 3px; flex: 0 0 auto; }
+.nokta.standart  { background: var(--yesil); }
+.nokta.standarta { background: var(--sari); }
+.nokta.ileri     { background: var(--kirmizi); }
+
+/* Zorluk dugmesi: kapaliyken seviyenin rengini ve harfini tasir. */
+.zorluk-dugme { border-color: transparent; font-weight: 800; font-size: 15px; }
+.zorluk-dugme[data-zorluk="standart"]  { background: var(--yesil);   color: #fff; }
+.zorluk-dugme[data-zorluk="standarta"] { background: var(--sari);    color: #17181c; }
+.zorluk-dugme[data-zorluk="ileri"]     { background: var(--kirmizi); color: #fff; }
 
 /* --- oyun sayfasi: mod etiketi ve tarih gezinmesi --- */
 .mod-etiket {

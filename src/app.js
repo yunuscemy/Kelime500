@@ -198,7 +198,7 @@
   function gonder() {
     if (S.bitti) { return; }
     var n = uzunluk(), t = aktifKelime();
-    if (t === null) { return uyar('Kelimeyi tamamla', false); }
+    if (t === null) { return uyar('Kelimeyi tamamla', false, undefined, true); }
     if (sozluk.gecerli.indexOf(t) === -1) { return uyar('Kelime listede yok', true); }
     if (S.gecmis.some(function (g) { return g.tahmin === t; })) { return uyar('Bunu zaten denedin', true); }
 
@@ -428,15 +428,6 @@
     cevrilecekSatir = -1;
     aciklaAnim = false;
 
-    $('#hak').innerHTML = S.bitti
-      ? (S.kazandi ? 'Kazandın · <b>' + S.gecmis.length + '/' + HAK + '</b>'
-                   : 'Bitti · cevap <b>' + S.gizli + '</b>')
-      : 'Kalan hak <b>' + (HAK - S.gecmis.length) + '</b>' +
-        (S.ipucu ? ' · ipuçlu' : '');
-
-    $('#olasi').textContent = (S.gecmis.length && !S.bitti)
-      ? 'Olası cevap: ' + olasiCevaplar().length : '';
-
     tuslariBoya();
     modYaz();
   }
@@ -462,7 +453,10 @@
   }
 
   var bildirimZaman = null, hataZaman = null;
-  function uyar(metin, satirBoya, sure) {
+  /* satirBoya: satiri gecici kirmizi yapar. salla: satiri sallar.
+   * Bilgi amacli mesajlarda (not temizleme, yeni kelime, sonuc kopyalandi)
+   * sallama olmaz - yalnizca gercek hatalarda. */
+  function uyar(metin, satirBoya, sure, salla) {
     var b = $('#bildirim');
     b.textContent = metin;
     b.classList.add('gorunur');
@@ -470,11 +464,13 @@
     bildirimZaman = setTimeout(function () { b.classList.remove('gorunur'); }, sure || 1600);
 
     if (satirBoya) { hataliSatir = true; ciz(); }
-    var satir = document.querySelectorAll('.satir')[S.gecmis.length];
-    if (satir) {
-      satir.classList.remove('sallan');
-      void satir.offsetWidth;
-      satir.classList.add('sallan');
+    if (satirBoya || salla) {
+      var satir = document.querySelectorAll('.satir')[S.gecmis.length];
+      if (satir) {
+        satir.classList.remove('sallan');
+        void satir.offsetWidth;
+        satir.classList.add('sallan');
+      }
     }
     if (satirBoya) {
       clearTimeout(hataZaman);
@@ -577,7 +573,6 @@
     }
     kaydet();
     ciz();
-    uyar('Satır notları sıfırlandı');
   }
 
   function tahtaTikla(e) {
@@ -654,25 +649,29 @@
 
   /* ---------- başlangıç ---------- */
 
-  /* Tema uygulama. yumusak=true ise renkler kademeli doner (dugmeye basilinca);
-   * sayfa acilirken kayitli tema animasyonsuz uygulanir, yoksa her aciliste
-   * goze carpan bir gecis olurdu. Anahtar adi 'kelime500.tema' olarak kaliyor:
-   * degistirilirse oyuncularin kayitli tercihi sifirlanir. */
-  var TEMA_SURE = 320;   /* ms - assets/styles.css --tema-sure ile ayni */
-  var temaZaman = null;
+  /* Tema uygulama. yumusak=true ise sayfa capraz-gecisle doner (View
+   * Transitions); destegi olmayan tarayicida ani gecer. Sayfa acilirken
+   * kayitli tema animasyonsuz uygulanir. */
+  var GUNES = '<svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true">' +
+    '<circle cx="12" cy="12" r="4.6" fill="currentColor"/>' +
+    '<g stroke="currentColor" stroke-width="2" stroke-linecap="round">' +
+    '<path d="M12 1.9v3M12 19.1v3M1.9 12h3M19.1 12h3' +
+    'M4.9 4.9 7 7M17 17l2.1 2.1M19.1 4.9 17 7M7 17l-2.1 2.1"/></g></svg>';
+  var AY = '<svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true">' +
+    '<path fill="currentColor" d="M21 13.2A9 9 0 1 1 10.8 3a7.2 7.2 0 0 0 10.2 10.2z"/></svg>';
 
   function tema(deger, yumusak) {
-    var kok = document.documentElement;
-    if (yumusak) {
-      kok.classList.add('tema-gecis');
-      clearTimeout(temaZaman);
-      temaZaman = setTimeout(function () {
-        kok.classList.remove('tema-gecis');
-      }, TEMA_SURE + 60);
+    function uygula() {
+      document.documentElement.dataset.tema = deger;
+      var d = $('#tema');
+      if (d) { d.innerHTML = deger === 'acik' ? AY : GUNES; }
     }
-    kok.dataset.tema = deger;
+    if (yumusak && document.startViewTransition) {
+      document.startViewTransition(uygula);
+    } else {
+      uygula();
+    }
     yaz('kelime500.tema', deger);
-    $('#tema').textContent = deger === 'acik' ? '☾' : '☀';
   }
 
   function gunEkle(tarih, gun) {
@@ -693,13 +692,57 @@
 
   /* Baslik satiri: hangi moddayiz, hangi gunun kelimesi.
    * Gunlukte tek bir bulmaca var (bugun), o yuzden tarih gezinmesi yalnizca arsivde. */
+  var ZORLUK_ISARET = { standart: 'S', standarta: '+', ileri: 'İ' };
+
   function modYaz() {
     var arsiv = S.mod === 'arsiv';
     $('#tarih-nav').hidden = !arsiv;
-    $('#yeni').hidden = S.mod !== 'serbest';
     $('#sonraki').disabled = S.tarih >= dun();
     $('#mod-etiket').textContent = arsiv ? 'Arşiv · ' + S.tarih
-      : (S.mod === 'serbest' ? 'Serbest · sınırsız' : 'Günlük');
+      : (S.mod === 'serbest' ? 'Serbest' : 'Günlük');
+
+    /* Zorluk dugmesi kapaliyken seviyenin rengini ve harfini tasir. */
+    var zd = $('#zorluk-dugme');
+    zd.dataset.zorluk = S.zorluk;
+    zd.textContent = ZORLUK_ISARET[S.zorluk];
+    zd.title = 'Zorluk: ' + ZORLUKLAR[S.zorluk].ad;
+
+    menuIsaretle('#zorluk-menu', '[data-zorluk]', 'zorluk', S.zorluk);
+    menuIsaretle('#ana-menu', '[data-mod]', 'mod', S.mod);
+
+    /* Kelime degistirme yalnizca serbest modda: gunlukte herkes ayni
+     * kelimeyi oynadigi icin yenilemek anlamsiz. */
+    $('#menu-yeni').hidden = S.mod !== 'serbest';
+  }
+
+  function menuIsaretle(menu, secici, alan, deger) {
+    Array.prototype.forEach.call($(menu).querySelectorAll(secici), function (b) {
+      b.setAttribute('aria-current', b.dataset[alan] === deger ? 'true' : 'false');
+    });
+  }
+
+  /* ---------- baslik acilir menuleri ---------- */
+
+  function menuKapat() {
+    Array.prototype.forEach.call(document.querySelectorAll('.acilir'), function (m) {
+      m.hidden = true;
+      var d = m.parentNode.querySelector('.simge');
+      if (d) { d.setAttribute('aria-expanded', 'false'); }
+    });
+  }
+
+  function menuAc(id, dugme) {
+    var m = $(id), acik = !m.hidden;
+    menuKapat();
+    if (acik) { return; }
+    m.hidden = false;
+    dugme.setAttribute('aria-expanded', 'true');
+  }
+
+  /* Mod degistirme adres uzerinden yapilir: acilis kodu zaten tarih/zorluk
+   * dogrulamasini orada yapiyor, ayni mantigi ikinci kez yazmaya gerek yok. */
+  function modaGit(mod) {
+    location.href = 'oyna.html?mod=' + mod + '&zorluk=' + S.zorluk;
   }
 
   function adresOku() {
@@ -730,18 +773,12 @@
     var tarihGirdi = $('#tarih');
     tarihGirdi.max = enGecTarih(mod);                    // arsivde bugune donulemez
     tarihGirdi.value = tarih;
-    $('#zorluk').value = zorluk;
     yaz('kelime500.zorluk', zorluk);
 
     yeniOyun(mod, zorluk, tarih);
 
     document.addEventListener('keydown', fizikselKlavye);
     $('#tahta').addEventListener('click', tahtaTikla);
-
-    $('#zorluk').addEventListener('change', function () {
-      yaz('kelime500.zorluk', this.value);
-      yeniOyun(S.mod, this.value, $('#tarih').value);
-    });
 
     tarihGirdi.addEventListener('change', function () {
       var enGec = enGecTarih(S.mod);
@@ -753,16 +790,52 @@
     $('#onceki').addEventListener('click', function () { tarihGit(-1); });
     $('#sonraki').addEventListener('click', function () { tarihGit(1); });
 
-    $('#yeni').addEventListener('click', function () {
-      yeniOyun('serbest', S.zorluk, S.tarih, true);
-      uyar('Yeni kelime');
+    $('#ist-paylas').addEventListener('click', paylas);
+
+    /* --- baslik menuleri --- */
+    var zorlukDugme = $('#zorluk-dugme'), menuDugme = $('#menu-dugme');
+    zorlukDugme.addEventListener('click', function (e) {
+      e.stopPropagation();
+      menuAc('#zorluk-menu', zorlukDugme);
+    });
+    menuDugme.addEventListener('click', function (e) {
+      e.stopPropagation();
+      menuAc('#ana-menu', menuDugme);
     });
 
-    $('#yardim').addEventListener('click', function () { $('#yardim-pencere').showModal(); });
-    $('#istatistik').addEventListener('click', istatistikGoster);
-    $('#ist-paylas').addEventListener('click', paylas);
-    $('#tema').addEventListener('click', function () {
-      tema(document.documentElement.dataset.tema === 'acik' ? 'koyu' : 'acik', true);
+    $('#zorluk-menu').addEventListener('click', function (e) {
+      var b = e.target.closest('[data-zorluk]');
+      if (!b) { return; }
+      menuKapat();
+      if (b.dataset.zorluk === S.zorluk) { return; }
+      yaz('kelime500.zorluk', b.dataset.zorluk);
+      yeniOyun(S.mod, b.dataset.zorluk, S.tarih);
+    });
+
+    $('#ana-menu').addEventListener('click', function (e) {
+      var b = e.target.closest('button');
+      if (!b) { return; }
+      menuKapat();
+      if (b.dataset.mod) {
+        if (b.dataset.mod !== S.mod) { modaGit(b.dataset.mod); }
+        return;
+      }
+      if (b.id === 'menu-yeni') {
+        yeniOyun('serbest', S.zorluk, S.tarih, true);
+        uyar('Yeni kelime');
+      } else if (b.id === 'menu-istatistik') {
+        istatistikGoster();
+      } else if (b.id === 'menu-yardim') {
+        $('#yardim-pencere').showModal();
+      } else if (b.id === 'menu-tema') {
+        tema(document.documentElement.dataset.tema === 'acik' ? 'koyu' : 'acik', true);
+      }
+    });
+
+    /* Disariya tiklayinca ve Esc ile menuler kapanir. */
+    document.addEventListener('click', menuKapat);
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape') { menuKapat(); }
     });
 
     $('#ist-pencere').addEventListener('close', function () { clearInterval(sayimZaman); });
