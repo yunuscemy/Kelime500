@@ -60,8 +60,13 @@
     pencere.id = 'yardim-pencere';
     pencere.innerHTML = BASLIK + '<div class="pencere-govde">' + GOVDE + '</div>';
     document.body.appendChild(pencere);
-    pencere.querySelector('.kapat').addEventListener('click', function () {
-      pencere.close();
+    /* Kapatma tek bir dugmeye bagli kalmasin: olay pencereye baglanir
+     * (icerik yeniden olussa bile calisir) ve pencerenin disina, yani
+     * karartilmis zemine tiklamak da kapatir. Esc zaten yerlesik. */
+    pencere.addEventListener('click', function (e) {
+      if (e.target.closest('.kapat')) { pencere.close(); return; }
+      /* dialog'un kendisi hedefse tiklama govdenin disina, zemine dusmustur */
+      if (e.target === pencere) { pencere.close(); }
     });
     return pencere;
   }
