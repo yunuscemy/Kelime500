@@ -4,10 +4,13 @@
 (function (global) {
   'use strict';
 
-  var ICERIK = [
-    '<button class="simge kapat" type="button" title="Kapat">✕</button>',
-    '<h2>KELİME500 nasıl oynanır?</h2>',
+  var BASLIK =
+    '<div class="pencere-baslik">' +
+    '  <h2>KELİME500 nasıl oynanır?</h2>' +
+    '  <button class="simge kapat" type="button" title="Kapat">✕</button>' +
+    '</div>';
 
+  var GOVDE = [
     '<p>Gizli Türkçe kelimeyi <b>8 veya daha az</b> sayıda tahminde bulmaya çalışıyorsun.',
     '   Her tahminden sonra tahmin kelimesinin yanında 3 farklı sayı göreceksin:</p>',
 
@@ -48,13 +51,14 @@
     '</ul>'
   ].join('\n');
 
+
   var pencere = null;
 
   function kur() {
     if (pencere) { return pencere; }
     pencere = document.createElement('dialog');
     pencere.id = 'yardim-pencere';
-    pencere.innerHTML = ICERIK;
+    pencere.innerHTML = BASLIK + '<div class="pencere-govde">' + GOVDE + '</div>';
     document.body.appendChild(pencere);
     pencere.querySelector('.kapat').addEventListener('click', function () {
       pencere.close();
@@ -62,11 +66,11 @@
     return pencere;
   }
 
-  /* Giris sayfasinda pencerenin ust kenari "Günlük kelime" kartinin ust
+  /* Giris sayfasinda pencerenin ust kenari "Nasıl oynanır" kartinin ust
    * kenariyla hizalanir. Asagida yeterli yer kalmiyorsa (dar/kisa ekran)
    * varsayilan ortalanmis konum korunur. */
   function hizala(p) {
-    var kart = document.getElementById('gunluk-kart');
+    var kart = document.getElementById('nasil-kart');
     p.style.marginTop = '';
     p.style.maxHeight = '';
     if (!kart) { return; }

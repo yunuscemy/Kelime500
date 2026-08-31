@@ -377,8 +377,24 @@ dialog {
   max-width: 440px; width: calc(100% - 28px); padding: 20px;
 }
 /* Nasil oynanir penceresi giris sayfasi kartlariyla ayni genislikte:
-   main 576px, ic genislik 576 - 28 = 548. */
-#yardim-pencere { max-width: 548px; }
+   main 576px, ic genislik 576 - 28 = 548.
+   Baslik ve kapatma tusu sabit kalir, yalnizca metin kayar - yoksa okumak
+   icin asagi inince kapatma tusuna donmek gerekiyordu. */
+#yardim-pencere {
+  max-width: 548px; max-height: 85vh;
+  padding: 0; overflow: hidden;
+  display: flex; flex-direction: column;
+}
+.pencere-baslik {
+  flex: 0 0 auto;
+  display: flex; align-items: center; gap: 10px;
+  padding: 18px 20px 12px;
+  border-bottom: 1px solid var(--cizgi);
+}
+.pencere-baslik h2 { margin: 0; flex: 1 1 auto; }
+#yardim-pencere .kapat { position: static; flex: 0 0 auto; }
+.pencere-govde { flex: 1 1 auto; overflow-y: auto; padding: 14px 20px 20px; }
+.pencere-govde > p:first-child { margin-top: 0; }
 dialog::backdrop { background: rgba(0,0,0,.6); }
 dialog h2 { margin: 0 0 8px; font-size: 18px; }
 dialog p, dialog li { color: var(--soluk); font-size: 13.5px; }
