@@ -38,7 +38,7 @@
   var cevrilecekSatir = -1;
   var aciklaAnim = false;
   var KART_GECIKME = 140;    // ms, rozet kartlari arasindaki fark
-  var ACILIS_GECIKME = 0;    // ms, perde acilisinda harfler arasi fark (0 = hepsi ayni anda)
+  var ACILIS_GECIKME = 150;  // ms, perde acilisinda SATIRLAR arasi fark
   var KART_SURE = 460;       // ms, tek bir kartin donus suresi (CSS ile ayni)
   var OYUN_SONU_SURE = 2000; // ms, oyun bitisinden istatistik penceresine kadar
 
@@ -309,7 +309,9 @@
                 '<div class="kutu-yuz on ' + onSinif + '">' + harf + '</div>' +
                 '<div class="kutu-yuz arka ' + NOT_SINIF[gercek] + '">' + harf + '</div>' +
               '</div>';
-            if (aciklaAnim) { cevrilecek.push({ el: kutu, sira: r * n + c }); }
+            /* Perde acilisinda sira satir numarasi: bir satirin harfleri
+             * birlikte, satirlar sirayla doner. */
+            if (aciklaAnim) { cevrilecek.push({ el: kutu, sira: r }); }
             else { kutu.classList.add('cevrik'); }
           } else {
             kutu.textContent = harf;
@@ -676,6 +678,8 @@
    * Gunlukte tek bir bulmaca var (bugun), o yuzden tarih gezinmesi yalnizca arsivde. */
   var ZORLUK_ISARET = { standart: 'S', ileri: 'İ' };
 
+  function digerZorluk() { return S.zorluk === 'standart' ? 'ileri' : 'standart'; }
+
   /* 2026-08-31 -> 31-08-2026 */
   function tarihYaz(t) {
     var p = String(t).split('-');
@@ -694,7 +698,7 @@
     var bitti = S.bitti && cevabiGoster;
     kutu.classList.toggle('cevap-modu', bitti);
     if (bitti) {
-      etiket.innerHTML = 'Cevap: <b>' + S.gizli + '</b>';
+      etiket.innerHTML = 'Gizli kelime: <b>' + S.gizli + '</b>';
     } else {
       var mod = arsiv ? 'Arşiv · ' + tarihYaz(S.tarih)
               : (S.mod === 'serbest' ? 'Serbest Mod' : 'Günlük');
@@ -705,14 +709,16 @@
     var zd = $('#zorluk-dugme');
     zd.dataset.zorluk = S.zorluk;
     zd.textContent = ZORLUK_ISARET[S.zorluk];
-    zd.title = 'Zorluk: ' + ZORLUKLAR[S.zorluk].ad;
+    zd.title = ZORLUKLAR[S.zorluk].ad + ' · ' + ZORLUKLAR[digerZorluk()].ad + ' seviyeye geç';
 
-    menuIsaretle('#zorluk-menu', '[data-zorluk]', 'zorluk', S.zorluk);
     menuIsaretle('#ana-menu', '[data-mod]', 'mod', S.mod);
 
-    /* Kelime degistirme yalnizca serbest modda: gunlukte herkes ayni
-     * kelimeyi oynadigi icin yenilemek anlamsiz. */
-    $('#menu-yeni').hidden = S.mod !== 'serbest';
+    /* Kelime degistirme yalnizca serbest modda: gunlukte ve arsivde herkes
+     * ayni kelimeyi oynadigi icin yenilemek anlamsiz. Ayrac da satirla
+     * birlikte gizlenir, yoksa menude bos bir cizgi kaliyor. */
+    var serbest = S.mod === 'serbest';
+    $('#menu-yeni').hidden = !serbest;
+    $('#menu-ayrac').hidden = !serbest;
   }
 
   function menuIsaretle(menu, secici, alan, deger) {
@@ -794,23 +800,20 @@
     $('#ist-paylas').addEventListener('click', paylas);
 
     /* --- baslik menuleri --- */
-    var zorlukDugme = $('#zorluk-dugme'), menuDugme = $('#menu-dugme');
-    zorlukDugme.addEventListener('click', function (e) {
-      e.stopPropagation();
-      menuAc('#zorluk-menu', zorlukDugme);
-    });
+    var menuDugme = $('#menu-dugme');
     menuDugme.addEventListener('click', function (e) {
       e.stopPropagation();
       menuAc('#ana-menu', menuDugme);
     });
 
-    $('#zorluk-menu').addEventListener('click', function (e) {
-      var b = e.target.closest('[data-zorluk]');
-      if (!b) { return; }
+    /* Tek dokunusta diger seviyeye gecilir. Her seviyenin oyunu ayri
+     * anahtarda kayitli oldugu icin geri donuldugunde tahminler durur. */
+    $('#zorluk-dugme').addEventListener('click', function (e) {
+      e.stopPropagation();
       menuKapat();
-      if (b.dataset.zorluk === S.zorluk) { return; }
-      yaz('kelime500.zorluk', b.dataset.zorluk);
-      yeniOyun(S.mod, b.dataset.zorluk, S.tarih);
+      var yeni = digerZorluk();
+      yaz('kelime500.zorluk', yeni);
+      yeniOyun(S.mod, yeni, S.tarih);
     });
 
     $('#ana-menu').addEventListener('click', function (e) {

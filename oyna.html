@@ -3,9 +3,9 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-<title>Kelime500 — Türkçe kelime bulmacası</title>
+<title>Kelime500</title>
 <meta name="description" content="Gizli Türkçe kelimeyi 8 hakta bul. Her tahminde kaç harfin doğru yerde, kaç harfin yanlış yerde, kaç harfin kelimede hiç olmadığını öğrenirsin — hangileri olduğunu değil.">
-<link rel="stylesheet" href="assets/styles.css?v=13">
+<link rel="stylesheet" href="assets/styles.css?v=14">
 <script>
 /* Tema ilk boyamadan once uygulanir; yoksa sabit yazili koyu tema bir an
    gorunup acik temaya gecerdi. Kayitli bir secim varsa o, yoksa cihazin
@@ -29,14 +29,7 @@
     <span class="logo-sayi" aria-hidden="true"><b>5</b><b>0</b><b>0</b></span>
   </span>
 
-  <div class="acilir-sarmal">
-    <button class="simge zorluk-dugme" id="zorluk-dugme" type="button"
-            aria-haspopup="true" aria-expanded="false" title="Zorluk"></button>
-    <div class="acilir" id="zorluk-menu" hidden role="menu">
-      <button type="button" role="menuitem" data-zorluk="standart"><i class="nokta standart"></i>Standart</button>
-      <button type="button" role="menuitem" data-zorluk="ileri"><i class="nokta ileri"></i>İleri</button>
-    </div>
-  </div>
+  <button class="simge zorluk-dugme" id="zorluk-dugme" type="button"></button>
 
   <div class="acilir-sarmal">
     <button class="simge" id="menu-dugme" type="button"
@@ -50,7 +43,7 @@
       <button type="button" role="menuitem" data-mod="gunluk">Günlük</button>
       <button type="button" role="menuitem" data-mod="serbest">Serbest Mod</button>
       <button type="button" role="menuitem" data-mod="arsiv">Arşiv</button>
-      <hr>
+      <hr id="menu-ayrac">
       <button type="button" role="menuitem" id="menu-yeni">Yeni kelime</button>
       <button type="button" role="menuitem" id="menu-istatistik">İstatistik</button>
       <button type="button" role="menuitem" id="menu-yardim">Nasıl oynanır?</button>
@@ -95,11 +88,11 @@
   <span id="geri-sayim"></span>
 </dialog>
 
-<script src="src/yardim.js?v=13"></script>
-<script src="src/turkish.js?v=13"></script>
-<script src="src/engine.js?v=13"></script>
-<script src="src/sozluk.js?v=13"></script>
-<script src="src/words.js?v=13"></script>
-<script src="src/app.js?v=13"></script>
+<script src="src/yardim.js?v=14"></script>
+<script src="src/turkish.js?v=14"></script>
+<script src="src/engine.js?v=14"></script>
+<script src="src/sozluk.js?v=14"></script>
+<script src="src/words.js?v=14"></script>
+<script src="src/app.js?v=14"></script>
 </body>
 </html>

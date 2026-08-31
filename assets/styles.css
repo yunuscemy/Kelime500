@@ -163,8 +163,11 @@ header {
 .kontroller { display: flex; gap: 6px; align-items: center; margin-top: 8px; }
 /* Istatistik penceresi kapatilinca dogru cevap burada ortada durur. */
 .kontroller.cevap-modu { justify-content: center; }
-.kontroller.cevap-modu .mod-etiket { flex: 0 0 auto; text-align: center; font-size: 15px; }
-.kontroller.cevap-modu .mod-etiket b { color: var(--yesil); letter-spacing: .5px; }
+.kontroller.cevap-modu .mod-etiket {
+  flex: 0 0 auto; text-align: center;
+  font-size: 15px;   /* govde tipografisi - ayri bir harf araligi verilmiyor */
+}
+.kontroller.cevap-modu .mod-etiket b { color: var(--yesil); }
 
 .sekmeler {
   display: flex; gap: 3px; padding: 3px;
@@ -343,8 +346,10 @@ select, input[type="date"] {
 #klavye { display: grid; gap: calc(var(--bosluk) * 0.8); margin: 10px 0 14px; }
 
 /* Tahta ve klavye yukariya hizalanir; kucultmeden artan alan altta toplanir
-   (reklam yerlesimi icin). */
-body:not(.giris) #tahta { margin-block: 0; }
+   (reklam yerlesimi icin).
+   Ust boslugu .kontroller'in margin-top'u ile ayni: logo -> mod etiketi ve
+   mod etiketi -> tahta araliklari esit gorunsun. */
+body:not(.giris) #tahta { margin-block: 8px 0; }
 body:not(.giris) #klavye { margin-top: 12px; }
 .klavye-satir { display: flex; gap: 4px; justify-content: center; }
 
@@ -475,6 +480,7 @@ body:not(.giris) .logo {
 
 /* Zorluk dugmesi: kapaliyken seviyenin rengini ve harfini tasir. */
 .zorluk-dugme { border-color: transparent; font-weight: 800; font-size: 15px; }
+/* Tek dokunusta seviye degistirir; acilir menusu yok. */
 .zorluk-dugme[data-zorluk="standart"]  { background: var(--yesil);   color: #fff; }
 .zorluk-dugme[data-zorluk="ileri"]     { background: var(--kirmizi); color: #fff; }
 
