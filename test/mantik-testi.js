@@ -93,35 +93,55 @@ ok("cevap havuzu sözlükten çok daha dar", besli.cozum.length < besli.gecerli.
    besli.cozum.length + " / " + besli.gecerli.length);
 
 // Günlük kelime kararlılığı
-var liste = havuzlar["Standart"];
-var g1 = KB.motor.gunlukKelime(liste,"2026-08-29","standart");
-var g2 = KB.motor.gunlukKelime(liste,"2026-08-29","standart");
-var g3 = KB.motor.gunlukKelime(liste,"2026-08-30","standart");
+var HAVUZLAR = { standart: havuzlar["Standart"], ileri: havuzlar["İleri"] };
+var liste = havuzlar["Standart"];   // cozucu testleri bu havuzu kullanir
+var g1 = KB.motor.gunlukKelime(HAVUZLAR,"2026-08-29","standart");
+var g2 = KB.motor.gunlukKelime(HAVUZLAR,"2026-08-29","standart");
+var g3 = KB.motor.gunlukKelime(HAVUZLAR,"2026-08-30","standart");
 ok("günlük kelime sabit", g1===g2, g1);
 ok("ertesi gün değişiyor", g1!==g3, g1+" / "+g3);
 
 // Ayni gun her zorluk icin ayri kelime yayimlanir (gunde 3 kelime)
-// Uygulamadaki (src/app.js gununKelimesi) sirayla ayni mantik.
-var SIRA = ["standart","ileri"], SIRA_AD = ["Standart","İleri"];
-function gununUcu(t){
-  var alinan = [];
-  for (var i=0; i<SIRA.length; i++){
-    alinan.push(KB.motor.gunlukKelime(havuzlar[SIRA_AD[i]], t, SIRA[i], alinan.slice()));
-  }
-  return alinan;
-}
-ok("günde her seviye için ayrı kelime",
-   new Set(gununUcu("2026-08-29")).size===SIRA.length, gununUcu("2026-08-29").join(" / "));
-// Bir ay degil tam yil taranir: eski test yalnizca Eylul 2026'ya bakiyordu ve
-// carpisan gunleri kaciriyordu.
-ok("yıl boyunca seviyeler hep ayrı kelime", (function(){
-  var kotu = [];
-  for(var ay=1; ay<=12; ay++) for(var g=1; g<=28; g++){
-    var t = "2026-" + String(ay).padStart(2,"0") + "-" + String(g).padStart(2,"0");
-    if(new Set(gununUcu(t)).size!==SIRA.length) kotu.push(t);
-  }
-  return kotu.length===0 ? true : kotu.slice(0,5).join(", ");
+// Iki kural birden: (1) ayni gun iki seviye ayni kelimeyi vermez,
+// (2) havuz tamamlanmadan hicbir kelime tekrar etmez.
+function gunEkle_(t, n){ var p=t.split("-"); var x=new Date(+p[0],+p[1]-1,+p[2]+n);
+  return x.getFullYear()+"-"+String(x.getMonth()+1).padStart(2,"0")+"-"+String(x.getDate()).padStart(2,"0"); }
+function gunun(kod, gun){ return KB.motor.gunlukKelime(HAVUZLAR, gunEkle_("2026-01-01", gun), kod); }
+
+// (1) hicbir gun iki seviye ayni olmamali
+ok("2000 gun boyunca iki seviye hep ayrı kelime", (function(){
+  for (var g=0; g<2000; g++){ if (gunun("standart",g) === gunun("ileri",g)) return g; }
+  return true;
 })()===true, "");
+
+[["standart","Standart"],["ileri","İleri"]].forEach(function(z){
+  var kod=z[0], ad=z[1], n=HAVUZLAR[kod].length, gun;
+
+  // (2a) ardisik n gun havuzun tamamini birer kez vermeli
+  var kume={};
+  for (gun=0; gun<n; gun++){ kume[gunun(kod,gun)] = 1; }
+  ok(ad+": "+n+" gunde havuzun tamami birer kez", Object.keys(kume).length===n,
+     Object.keys(kume).length+"/"+n);
+
+  // (2b) ilk tekrar tam olarak n+1. gunde
+  var ilk=null, gorulen={};
+  for (gun=0; gun<n+5; gun++){
+    var k=gunun(kod,gun);
+    if (gorulen[k] && ilk===null) ilk=gun+1;
+    gorulen[k]=1;
+  }
+  ok(ad+": ilk tekrar tam olarak "+(n+1)+". gunde", ilk===n+1, ilk+". gun");
+
+  // (2c) kayan pencerede de gecerli (dongu sinirini asan araliklar dahil)
+  [137, 499, 913].forEach(function(bas){
+    var k2={};
+    for (gun=bas; gun<bas+n; gun++){ k2[gunun(kod,gun)] = 1; }
+    ok(ad+": "+bas+". gunden baslayan pencerede tam kapsama",
+       Object.keys(k2).length===n, Object.keys(k2).length+"/"+n);
+  });
+});
+
+ok("gunluk kelime tarihe gore sabit", gunun("standart",240)===gunun("standart",240));
 
 
 // Çözücü: geri bildirimler daralttıkça tek cevaba iniyor mu (8 hakta bitiyor mu)

@@ -20,10 +20,13 @@ Derleme adımı yok, bağımlılık yok. `index.html` (giriş sayfası) tarayıc
 - **Giriş sayfası** (`index.html`): zorluk seçimi, günlük / serbest / arşiv kartları ve
   bugün her zorlukta hangi durumda olduğunu gösteren rozetler.
 - **Günlük**: kelime `tarih + zorluk` çiftinden türetilir, yani **her gün iki seviye için
-  iki ayrı kelime** yayımlanır ve herkeste aynıdır. Havuzlar iç içe olduğu için
-  (Standart ⊂ İleri) bağımsız seçim bazı günler aynı kelimeyi veriyordu;
-  seviyeler sabit bir sırayla seçilir ve her biri kendinden öncekinin aldığı
-  kelimeyi atlar.
+  iki ayrı kelime** yayımlanır ve herkeste aynıdır. İki kural birlikte
+  sağlanır: (1) aynı gün Standart ve İleri asla aynı kelimeyi vermez,
+  (2) bir seviyede havuzun tamamı birer kez çıkmadan hiçbiri tekrar etmez —
+  Standart 288 gün, İleri 500 gün. Kelime rastgele seçilmez: her havuz bir kez
+  karılır ve günler bu sabit sırada ilerler. Çakışma olduğunda sıradaki
+  kelimeye atlanmaz (atlamak diziyi kaydırıp ikinci kuralı bozuyordu); aynı
+  döngü içinde iki günün kelimesi takas edilir.
 - **Arşiv**: kaçırılan günler oynanabilir; `‹ ›` düğmeleri ve tarih seçiciyle günler
   arasında gezinilir. Arşiv **yalnızca düne kadar** gider — bugünün kelimesi Günlük'e
   aittir, arşivden oraya dönülmez. Günlükte tek bir bulmaca olduğu için orada tarih

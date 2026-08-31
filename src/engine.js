@@ -52,29 +52,114 @@
     return out;
   }
 
-  /* Tarih + zorluk için sabit sayı üreten hash (FNV-1a). Aynı gün herkeste aynı kelime. */
+  /* Tarih + zorluk icin sabit sayi ureten hash (FNV-1a + son karistirma).
+   * Math.imul sart: h * 16777619 JS'in guvenli tamsayi sinirini asiyor,
+   * kayan nokta aritmetigi dusuk bitleri atiyordu. Bu yuzden eski surumde
+   * secilen havuz indeksleri hep 4'un kati cikiyor, havuzun dortte biri hic
+   * kullanilmiyordu. Sondaki karistirma dusuk bitlerin de degismesini saglar. */
   function tohum(metin) {
-    var h = 2166136261;
-    for (var i = 0; i < metin.length; i++) {
+    var h = 2166136261, i;
+    for (i = 0; i < metin.length; i++) {
       h ^= metin.charCodeAt(i);
-      h = (h * 16777619) >>> 0;
+      h = Math.imul(h, 16777619);
     }
+    h ^= h >>> 16; h = Math.imul(h, 2246822507);
+    h ^= h >>> 13; h = Math.imul(h, 3266489909);
+    h ^= h >>> 16;
     return h >>> 0;
   }
 
-  /* Gunun kelimesi. kacinilacak verilirse (ayni gun baska bir zorlugun aldigi
-   * kelimeler) o kelimeler atlanir: tohumun gosterdigi yerden baslanir ve
-   * listede ilerleyerek ilk uygun kelime secilir. Deterministik kalir, yani
-   * ayni gun herkeste ayni sonucu verir. */
-  function gunlukKelime(liste, tarih, zorlukAdi, kacinilacak) {
-    if (!liste.length) { return null; }
-    var basla = tohum(tarih + '|' + zorlukAdi + '|kelime500') % liste.length;
-    if (!kacinilacak || !kacinilacak.length) { return liste[basla]; }
-    for (var i = 0; i < liste.length; i++) {
-      var k = liste[(basla + i) % liste.length];
-      if (kacinilacak.indexOf(k) === -1) { return k; }
+  /* Tohumdan deterministik sayi dizisi ureten jenerator (mulberry32). */
+  function uretec(baslangic) {
+    var a = baslangic >>> 0;
+    return function () {
+      a = (a + 0x6D2B79F5) >>> 0;
+      var t = a;
+      t = Math.imul(t ^ (t >>> 15), t | 1);
+      t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    };
+  }
+
+  /* Havuzun deterministik karilmis sirasi (Fisher-Yates). Ayni anahtar
+   * her cihazda ayni sirayi verir. */
+  function permutasyon(n, anahtar) {
+    var rnd = uretec(tohum(anahtar)), dizi = [], i, j, g;
+    for (i = 0; i < n; i++) { dizi[i] = i; }
+    for (i = n - 1; i > 0; i--) {
+      j = Math.floor(rnd() * (i + 1));
+      g = dizi[i]; dizi[i] = dizi[j]; dizi[j] = g;
     }
-    return liste[basla];   /* havuz tamamen tukendi (pratikte olmaz) */
+    return dizi;
+  }
+
+  var BASLANGIC = '2026-01-01';   /* gun sayacinin sifir noktasi */
+
+  function gunNumarasi(tarih) {
+    var a = tarih.split('-'), b = BASLANGIC.split('-');
+    return Math.round((Date.UTC(+a[0], +a[1] - 1, +a[2]) -
+                       Date.UTC(+b[0], +b[1] - 1, +b[2])) / 86400000);
+  }
+
+  /* --- gunun kelimeleri ---
+   *
+   * Iki kural birden saglanir:
+   *   1) Ayni gun Standart ve Ileri asla ayni kelimeyi vermez.
+   *   2) Bir seviyede havuzun tamami birer kez cikmadan hicbiri tekrar etmez.
+   *
+   * Yontem: her havuz bir kez karilir, gunler bu sabit sirada ilerler (2. kural).
+   * Cakisma oldugunda siradaki kelimeye ATLANMAZ - atlamak diziyi kaydirip
+   * 2. kurali bozuyordu. Bunun yerine ayni dongu icinde iki gunun kelimesi
+   * TAKAS edilir; takas her kelimenin dongude bir kez cikmasini bozmaz.
+   * Sonuc deterministiktir: ayni gun her cihazda ayni kelime. */
+
+  var STANDART_ANAHTAR = 'standart|kelime500';
+  var ILERI_ANAHTAR = 'ileri|kelime500';
+  var sıraOnbellek = {};
+
+  function dongudeSira(gun, n) { return gun - Math.floor(gun / n) * n; }
+
+  function standartKelime(havuzlar, gun) {
+    var n = havuzlar.standart.length;
+    return havuzlar.standart[permutasyon(n, STANDART_ANAHTAR)[dongudeSira(gun, n)]];
+  }
+
+  /* Ileri havuzunun bir dongudeki sirasi, cakismalar takasla giderilmis hali. */
+  function ileriSirasi(havuzlar, tur) {
+    var anahtar = tur + ':' + havuzlar.ileri.length + ':' + havuzlar.standart.length;
+    if (sıraOnbellek[anahtar]) { return sıraOnbellek[anahtar]; }
+
+    var n = havuzlar.ileri.length;
+    var sira = permutasyon(n, ILERI_ANAHTAR).slice();
+    var kelime = function (i) { return havuzlar.ileri[sira[i]]; };
+
+    for (var i = 0; i < n; i++) {
+      var gun = tur * n + i;
+      if (kelime(i) !== standartKelime(havuzlar, gun)) { continue; }
+      /* Takas edilecek gunu ara: takastan sonra iki gun de temiz kalmali. */
+      for (var d = 1; d < n; d++) {
+        var j = (i + d) % n, gunJ = tur * n + j;
+        if (kelime(j) !== standartKelime(havuzlar, gun) &&
+            kelime(i) !== standartKelime(havuzlar, gunJ)) {
+          var g = sira[i]; sira[i] = sira[j]; sira[j] = g;
+          break;
+        }
+      }
+    }
+    sıraOnbellek[anahtar] = sira;
+    return sira;
+  }
+
+  /* Gunun kelimesi. havuzlar: { standart: [...], ileri: [...] } */
+  function gunlukKelime(havuzlar, tarih, zorlukAdi) {
+    var gun = gunNumarasi(tarih);
+    if (zorlukAdi === 'standart') {
+      return havuzlar.standart.length ? standartKelime(havuzlar, gun) : null;
+    }
+    var n = havuzlar.ileri.length;
+    if (!n) { return null; }
+    var tur = Math.floor(gun / n);
+    return havuzlar.ileri[ileriSirasi(havuzlar, tur)[dongudeSira(gun, n)]];
   }
 
   function rastgeleKelime(liste) {

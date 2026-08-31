@@ -92,23 +92,13 @@
     return h.length ? h : cozum.slice();
   }
 
-  /* Ayni gun her zorluk icin AYRI bir kelime yayimlanir. Havuzlar ic ice
-   * oldugu icin (standart subset standart+ subset ileri) bagimsiz secim bazi
-   * gunler ayni kelimeyi veriyordu. Zorluklar sabit bir sirayla secilir ve her
-   * biri kendinden oncekilerin aldigi kelimeyi atlar. Sira sabit oldugu icin
-   * sonuc herkeste ayni kalir. */
-  var ZORLUK_SIRA = ['standart', 'ileri'];
-
+  /* Gunun kelimesi iki havuzu birlikte ister: motor, ayni gun iki seviyenin
+   * ayni kelimeyi vermemesini bu sayede garanti ediyor. */
   function gununKelimesi(cozum, tarih, zorluk) {
-    var alinan = [];
-    for (var i = 0; i < ZORLUK_SIRA.length; i++) {
-      var z = ZORLUK_SIRA[i];
-      var k = motor.gunlukKelime(havuzKur(cozum, z), tarih, z, alinan);
-      if (z === zorluk) { return k; }
-      alinan.push(k);
-    }
-    /* bilinmeyen zorluk: eskisi gibi tek basina sec */
-    return motor.gunlukKelime(havuzKur(cozum, zorluk), tarih, zorluk, []);
+    return motor.gunlukKelime({
+      standart: havuzKur(cozum, 'standart'),
+      ileri: havuzKur(cozum, 'ileri')
+    }, tarih, zorluk);
   }
 
   function yeniOyun(mod, zorluk, tarih, zorla) {
