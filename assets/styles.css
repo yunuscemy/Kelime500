@@ -465,6 +465,12 @@ body:not(.giris) .logo {
 /* --- giris sayfasi --- */
 body.giris { padding-bottom: 8px; }
 
+/* Giris sayfasi kartlari oyun sayfasindan %20 genis (480 -> 576).
+   Oyun sayfasi 480'de kaliyor: orada genislik tahtanin kutu boyunu
+   belirliyor, buyutmek kutulari da buyutup dikeyde tasmaya yol acar. */
+body.giris header,
+body.giris main { max-width: 576px; }
+
 /* Giris sayfasinda baslik da bir kart: logo solda, tema dugmesi sagda.
    Genislik asagidaki kartlarla birebir ayni olsun diye kart gorunumu
    header'in kendisine degil, icindeki sarmalayiciya veriliyor. */
@@ -499,25 +505,7 @@ body.giris { padding-bottom: 8px; }
 }
 @media (hover: hover) { .kart-dugme:hover { filter: brightness(1.08); } }
 .kart-dugme.yesil { background: var(--yesil); color: #fff; }
-.kart-dugme.sari  { background: var(--vurgu); color: #17181c; }
-
-.zorluk-secici { display: grid; gap: 6px; margin-top: 10px; }
-.zorluk-secici button {
-  display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap;
-  text-align: left;
-  background: transparent;
-  border: 1px solid var(--cizgi);
-  border-radius: var(--yuvarlak);
-  padding: 10px 12px;
-  transition: border-color var(--gecis), background var(--gecis);
-}
-.zorluk-secici button b { font-size: 14.5px; }
-.zorluk-secici button span { font-size: 12px; color: var(--soluk); }
-@media (hover: hover) { .zorluk-secici button:hover { border-color: var(--soluk); } }
-.zorluk-secici button[aria-selected="true"] {
-  border-color: var(--vurgu);
-  background: color-mix(in srgb, var(--vurgu) 12%, transparent);
-}
+.kart-dugme.sari  { background: var(--sari); color: #17181c; }   /* oyun ici sari */
 
 .durum-satiri { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 14px; }
 .durum-etiket {

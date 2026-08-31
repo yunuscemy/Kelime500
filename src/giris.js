@@ -79,10 +79,9 @@
     }).join('');
   }
 
-  function secimCiz(zorluk) {
-    Array.prototype.forEach.call(document.querySelectorAll('#zorluk-secici button'), function (b) {
-      b.setAttribute('aria-selected', b.dataset.zorluk === zorluk);
-    });
+  /* Zorluk artik yalnizca oyun icinde secilir; giris sayfasi kayitli
+   * tercihi okuyup baglantilara ekler. */
+  function baglantilariKur(zorluk) {
     $('#baglanti-gunluk').href  = 'oyna.html?mod=gunluk&zorluk=' + zorluk;
     $('#baglanti-serbest').href = 'oyna.html?mod=serbest&zorluk=' + zorluk;
     $('#baglanti-arsiv').href   = 'oyna.html?mod=arsiv&zorluk=' + zorluk + '&tarih=' + dun();
@@ -93,15 +92,8 @@
 
     var zorluk = oku('kelime500.zorluk', 'standart');
     if (ZORLUKLAR.indexOf(zorluk) === -1) { zorluk = 'standart'; }
-    secimCiz(zorluk);
+    baglantilariKur(zorluk);
     durumCiz();
-
-    $('#zorluk-secici').addEventListener('click', function (e) {
-      var d = e.target.closest('button');
-      if (!d) { return; }
-      yaz('kelime500.zorluk', d.dataset.zorluk);
-      secimCiz(d.dataset.zorluk);
-    });
 
     $('#tema').addEventListener('click', function () {
       tema(document.documentElement.dataset.tema === 'acik' ? 'koyu' : 'acik', true);
