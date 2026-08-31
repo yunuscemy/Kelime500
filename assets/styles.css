@@ -380,11 +380,15 @@ dialog {
    main 576px, ic genislik 576 - 28 = 548.
    Baslik ve kapatma tusu sabit kalir, yalnizca metin kayar - yoksa okumak
    icin asagi inince kapatma tusuna donmek gerekiyordu. */
+/* DIKKAT: display yalnizca [open] durumunda verilir. Kimlik secicisi
+   tarayicinin "dialog:not([open]) { display: none }" kuralini ezdigi icin,
+   kosulsuz bir "display: flex" pencereyi kapandiktan sonra da ekranda
+   birakiyordu (zemin karartmasi kalkiyor ama pencere duruyordu). */
 #yardim-pencere {
   max-width: 548px; max-height: 85vh;
   padding: 0; overflow: hidden;
-  display: flex; flex-direction: column;
 }
+#yardim-pencere[open] { display: flex; flex-direction: column; }
 .pencere-baslik {
   flex: 0 0 auto;
   display: flex; align-items: center; gap: 10px;
