@@ -230,13 +230,18 @@
      * istatistik penceresi acilir. */
     uyar(kazandi ? 'Doğru! ' + S.gizli + ' · ' + S.gecmis.length + '/' + HAK
                  : 'Kelime: ' + S.gizli, false, OYUN_SONU_SURE);
-    /* Kaybedilen oyunda gizli kelime ustte yazili kalir; istatistik penceresi
-     * kapatildiginda oyuncu onu orada bulur. Kazanilan oyunda gerek yok -
-     * son satir zaten dogru cevap. Bir olaya baglamiyoruz: pencerenin 'close'
-     * olayi her ortamda tetiklenmiyor. */
-    cevabiGoster = !kazandi;
     perdeyiAc();
-    setTimeout(istatistikGoster, OYUN_SONU_SURE);
+
+    /* Kaybedilen oyunda gizli kelime ustteki etikette yazili kalir; istatistik
+     * penceresi kapatildiginda oyuncu onu orada bulur. Etiket, bildirim
+     * kaybolurken yaziliyor - ikisi ayni anda gorunurse ayni kelime ust uste
+     * iki kez ifsa edilmis oluyordu. Kazanilan oyunda gerek yok: son satir
+     * zaten dogru cevap. Bir olaya baglamiyoruz, cunku pencerenin 'close'
+     * olayi her ortamda tetiklenmiyor. */
+    setTimeout(function () {
+      if (!kazandi) { cevabiGoster = true; modYaz(); }
+      istatistikGoster();
+    }, OYUN_SONU_SURE);
   }
 
   /* Oyun kazanılınca bütün tahminlerdeki harflerin gerçek rengini açar. */
