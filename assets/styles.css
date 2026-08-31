@@ -94,7 +94,10 @@ header, .kontroller, main { width: 100%; max-width: 480px; padding-inline: 14px;
    hemen altinda kalir; klavye asagi itilir (telefonda basparmaga daha yakin).
    Boylece altta olu bosluk kalmaz. (Giris sayfasinin kendi izgarasi var.) */
 body:not(.giris) main {
-  flex: 1 1 auto;
+  /* Buyumez: artan dikey alan reklam yuvasinin ALTINDA kalsin. Buyuseydi
+     bosluk klavye ile reklam arasina gider, reklam da ekranin dibine
+     dusup gorunmez olurdu. */
+  flex: 0 0 auto;
   display: flex; flex-direction: column;
   container-type: inline-size;   /* kutu boyu bu genislikten hesaplanir */
 }
@@ -586,3 +589,110 @@ body.giris main { max-width: 576px; }
   font-size: 13px; font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
 }
 #hata[hidden] { display: none; }
+
+
+/* ==========================================================================
+   REKLAM YUVALARI
+   Hepsi sabit olculu: reklam gec yuklense de sayfa kaymaz (CLS = 0).
+   Bos haldeyken soluk bir cerceve gorunur - reklam kodu eklenince
+   .reklam { background: none; border: 0; } yapip bu izi kaldirabilirsin.
+   ========================================================================== */
+.reklam {
+  /* bos yuvanin gorunumu - yalnizca gelistirme sirasinda ise yarar */
+  border: 1px dashed color-mix(in srgb, var(--soluk) 35%, transparent);
+  border-radius: var(--yuvarlak);
+  display: grid; place-items: center;
+  overflow: hidden;
+}
+.reklam::after {
+  content: "reklam";
+  font-size: 11px; letter-spacing: .5px;
+  color: color-mix(in srgb, var(--soluk) 55%, transparent);
+}
+.reklam:not(:empty)::after { content: none; }   /* reklam gelince etiket kalkar */
+
+/* --- icerik ici yuva (mobil): 320x100 --- */
+.reklam-icerik {
+  width: 100%; max-width: 336px; height: 100px;
+  margin-inline: auto;
+}
+/* Oyun sayfasinda klavyeyle arasinda 40px dokunulamaz bosluk: gonder tusuna
+   basarken kazayla tiklanmasin (kaza tiklamalari gecersiz trafik sayilir). */
+#reklam-oyun { margin-top: 40px; margin-bottom: 14px; }
+
+/* --- masaustu yan bantlar: 300x600 --- */
+.reklam-yan {
+  position: fixed; top: 50%; transform: translateY(-50%);
+  width: 300px; height: 600px;
+  z-index: 5;
+}
+.reklam-yan.sol { left: 24px; }
+.reklam-yan.sag { right: 24px; }
+
+/* --- masaustu alt bant: 728x90 --- */
+.reklam-alt {
+  width: 728px; height: 90px;
+  margin: 18px auto 24px;
+}
+
+/* --- istatistik penceresi ici: 320x100 --- */
+.reklam-pencere {
+  width: 100%; max-width: 336px; height: 100px;
+  margin: 14px auto 2px;
+}
+
+/* --- gorunurluk kesme noktalari ---
+   Mobilde yalnizca icerik ici yuva, masaustunde bant + yan bantlar. */
+.reklam-yan, .reklam-alt { display: none; }
+
+@media (min-width: 760px) {
+  .reklam-icerik { display: none; }
+  .reklam-alt { display: grid; }
+}
+/* Yan bantlar ancak icerik + 2x300 + bosluk sigdiginda acilir. */
+@media (min-width: 1200px) {
+  .reklam-yan { display: grid; }
+}
+/* Kisa ekranda 600px'lik bant tasar. */
+@media (max-height: 680px) {
+  .reklam-yan { display: none; }
+}
+
+
+/* --- cerez bildirimi --- */
+#cerez-bildirimi {
+  position: fixed; left: 50%; bottom: 14px; transform: translateX(-50%);
+  z-index: 40;
+  width: calc(100% - 28px); max-width: 560px;
+  display: flex; flex-wrap: wrap; align-items: center; gap: 12px;
+  padding: 14px 16px;
+  background: var(--bg-yuksek);
+  border: 1px solid var(--cizgi); border-radius: 14px;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, .4);
+}
+#cerez-bildirimi p { margin: 0; flex: 1 1 260px; font-size: 13px; color: var(--soluk); }
+#cerez-bildirimi a { color: var(--vurgu); }
+.cerez-dugmeler { display: flex; gap: 8px; flex: 0 0 auto; }
+.cerez-dugmeler .tus {
+  flex: 0 0 auto; height: 36px; padding: 0 14px;
+  border-radius: var(--yuvarlak); font-size: 13.5px;
+}
+.cerez-dugmeler .tus.vurgulu { background: var(--yesil); color: #fff; }
+
+/* --- gizlilik sayfasi --- */
+.kart.yazi h1 { margin: 0 0 4px; font-size: 24px; letter-spacing: -0.3px; }
+.kart.yazi h2 { margin: 22px 0 6px; font-size: 16px; }
+.kart.yazi p, .kart.yazi li { font-size: 14px; color: var(--soluk); line-height: 1.6; }
+.kart.yazi b { color: var(--metin); }
+.kart.yazi a { color: var(--vurgu); }
+.kart.yazi ul { padding-left: 18px; margin: 6px 0; }
+.kart.yazi code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 13px; }
+.kart.yazi .guncelleme { font-size: 12.5px; margin: 0 0 4px; }
+.kart.yazi .kart-dugme { margin-top: 24px; }
+
+/* alt bilgi bagalantisi */
+.alt-baglanti {
+  width: 100%; max-width: 576px; padding: 0 14px 18px;
+  text-align: center; font-size: 12px;
+}
+.alt-baglanti a { color: var(--soluk); }

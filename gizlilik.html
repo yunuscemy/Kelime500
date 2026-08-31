@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="tr" data-tema="koyu">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Gizlilik ve Çerez Politikası — Kelime500</title>
+<meta name="description" content="Kelime500'ün hangi verileri sakladığı, çerez kullanımı ve haklarınız.">
+<link rel="icon" href="assets/favicon.svg?v=25" type="image/svg+xml">
+<meta name="theme-color" content="#0f1115">
+<script>
+(function () {
+  var t = null;
+  try { t = JSON.parse(localStorage.getItem('kelime500.tema')); } catch (e) { /* yoksay */ }
+  if (t !== 'acik' && t !== 'koyu') {
+    t = window.matchMedia && matchMedia('(prefers-color-scheme: light)').matches ? 'acik' : 'koyu';
+  }
+  document.documentElement.dataset.tema = t;
+}());
+</script>
+<link rel="stylesheet" href="assets/styles.css?v=25">
+</head>
+<body class="giris">
+
+<header>
+  <div class="marka-kart">
+    <a class="logo" href="index.html" aria-label="Kelime500 ana sayfa">
+      <span class="logo-kelime" aria-hidden="true"><b>K</b><b>E</b><b>L</b><b>İ</b><b>M</b><b>E</b></span>
+      <span class="logo-sayi" aria-hidden="true"><b>5</b><b>0</b><b>0</b></span>
+    </a>
+  </div>
+</header>
+
+<main class="giris-icerik">
+  <section class="kart yazi">
+    <h1>Gizlilik ve Çerez Politikası</h1>
+    <p class="guncelleme">Son güncelleme: <!-- TARİH --></p>
+
+    <h2>Kısaca</h2>
+    <p>Kelime500'de <b>hesap yok, sunucu yok</b>. Oyun ilerlemen ve istatistiklerin
+       yalnızca kendi tarayıcında saklanır, bize hiç ulaşmaz. Sitede yalnızca
+       <b>reklam ağının</b> topladığı veriler dış bir tarafa gider.</p>
+
+    <h2>Tarayıcında sakladıklarımız</h2>
+    <p>Aşağıdakiler cihazının yerel deposunda (<code>localStorage</code>) tutulur.
+       Sunucuya gönderilmez, tarafımızca görülmez:</p>
+    <ul>
+      <li><b>Oyun durumu</b> — o günün tahminleri, aldığın notlar, oyunun bitip bitmediği</li>
+      <li><b>İstatistikler</b> — oynanan oyun sayısı, kazanma oranı, seri, kaç hakta bildiğin</li>
+      <li><b>Tercihler</b> — açık/koyu tema, seçtiğin seviye, arşivde baktığın tarih</li>
+    </ul>
+    <p>Bu veriler kimliğini belirlemez. Tarayıcının site verilerini temizlersen
+       hepsi silinir; geri getirmenin bir yolu yoktur, çünkü bizde bir kopyası yok.</p>
+
+    <h2>Çerezler ve reklamlar</h2>
+    <p>Sitede Google AdSense üzerinden reklam gösterilir. Google ve iş ortakları,
+       ilgi alanlarına göre reklam sunmak ve reklam performansını ölçmek için
+       <b>çerez</b> kullanabilir ve IP adresi, cihaz ve tarayıcı bilgisi gibi
+       verileri işleyebilir.</p>
+    <p>Bu veriler Google tarafından, kendi gizlilik politikası kapsamında işlenir:
+       <a href="https://policies.google.com/technologies/ads" rel="noopener" target="_blank">
+       Google reklam ve gizlilik ilkeleri</a>.</p>
+    <p>Kişiselleştirilmiş reklam tercihini
+       <a href="https://myadcenter.google.com" rel="noopener" target="_blank">Google Reklam Merkezi</a>
+       üzerinden istediğin zaman değiştirebilirsin. Siteye ilk girişte gösterilen
+       çerez bildiriminde <b>reddet</b> dersen kişiselleştirilmiş reklam çerezleri
+       yüklenmez.</p>
+    <p>Ayrıca istatistik veya izleme aracı (Google Analytics vb.) <b>kullanmıyoruz</b>.</p>
+
+    <h2>Haklarınız</h2>
+    <p>KVKK ve GDPR kapsamında verilerine erişme, düzeltme ve silinmesini isteme
+       hakkın var. Sakladığımız veri cihazından çıkmadığı için, oyun verisini
+       silmek tarayıcının site verilerini temizlemekle olur. Reklam ağının işlediği
+       veriler için Google'ın kanallarını kullanabilir veya bize yazabilirsin.</p>
+
+    <h2>İletişim</h2>
+    <p>Soru ve talepler için: <b><!-- İLETİŞİM E-POSTASI --></b></p>
+    <p>Veri sorumlusu: <b><!-- AD SOYAD / ŞİRKET --></b></p>
+
+    <a class="kart-dugme yesil" href="index.html">← Oyuna dön</a>
+  </section>
+</main>
+
+<script src="src/cerez.js?v=25"></script>
+</body>
+</html>

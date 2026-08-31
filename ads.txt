@@ -1,0 +1,5 @@
+# AdSense hesabi onaylandiktan sonra bu dosyanin icerigi asagidaki gibi olmali.
+# XXXXXXXXXXXXXXXX yerine AdSense yayinci kimligin (pub- ile baslayan numara) gelir.
+# Dogru satiri AdSense panelinde "Siteler > ads.txt" bolumunde bulursun.
+#
+# google.com, pub-XXXXXXXXXXXXXXXX, DIRECT, f08c47fec0942fa0

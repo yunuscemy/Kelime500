@@ -74,6 +74,9 @@ Derleme adımı yok, bağımlılık yok. `index.html` (giriş sayfası) tarayıc
 | `src/words.js` | Cevap havuzu; yüklemede büyütülür, uzunluğu tutmayan elenir |
 | `src/sozluk.js` | Tahmin olarak kabul edilen geniş sözlük (üretilmiş dosya) |
 | `kelime-listesi.md` | Cevap havuzunun tamamı (üretilmiş dosya) |
+| `gizlilik.html` | Gizlilik ve çerez politikası (yayın öncesi doldurulacak yerler var) |
+| `src/cerez.js` | Çerez bildirimi ve reklam yükleme kapısı |
+| `ads.txt` | AdSense onayından sonra yayıncı kimliğiyle doldurulur |
 | `tools/` | Sözlüğü indiren ve kelime listesini çıkaran betikler |
 | `src/app.js` | Arayüz, girdi, kayıt, istatistik |
 
