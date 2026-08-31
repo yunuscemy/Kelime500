@@ -2,8 +2,8 @@
 (function () {
   'use strict';
 
-  var ZORLUKLAR = ['standart', 'standarta', 'ileri'];
-  var ADLAR = { standart: 'Standart', standarta: 'Standart+', ileri: 'İleri' };
+  var ZORLUKLAR = ['standart', 'ileri'];
+  var ADLAR = { standart: 'Standart', ileri: 'İleri' };
   var HAK = 8;
 
   var $ = function (s) { return document.querySelector(s); };

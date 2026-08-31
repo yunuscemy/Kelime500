@@ -1,53 +1,51 @@
-/* Nasil oynanir penceresi. Giris sayfasi ve oyun sayfasi ayni pencereyi
+/* "Nasil oynanir" penceresi. Giris sayfasi ve oyun sayfasi ayni pencereyi
  * kullanir; metin tek yerde dursun diye markup burada tutuluyor.
- * Pencere ilk acilista sayfaya eklenir, sonra tekrar kullanilir. */
+ * Pencere ilk acilista sayfaya eklenir, sonrasinda yeniden kullanilir. */
 (function (global) {
   'use strict';
 
   var ICERIK = [
-    '  <button class="simge kapat" type="button">✕</button>',
-    '  <h2>Nasıl oynanır?</h2>',
-    '  <p>Gizli Türkçe kelimeyi <b>8 hakta</b> bulmaya çalışıyorsun. Her tahminden sonra üç sayı görürsün:</p>',
-    '  <div class="ornek">',
-    '    <span class="rozet duz yer">3</span><p>harf doğru <b>ve yeri doğru</b></p>',
-    '  </div>',
-    '  <div class="ornek">',
-    '    <span class="rozet duz harf">2</span><p>harf kelimede <b>var ama yeri yanlış</b></p>',
-    '  </div>',
-    '  <div class="ornek">',
-    '    <span class="rozet duz yok">0</span><p>harf kelimede <b>hiç yok</b></p>',
-    '  </div>',
-    '  <p>Üçünün toplamı her zaman kelime uzunluğudur. <b>Hangi</b> harfler olduğu söylenmez — asıl iş',
-    '     bunu çıkarmak. Yukarıdaki sayılar, gizli kelime <b>KALEM</b> iken <b>KELAM</b> tahmininin',
-    '     sonucudur: K, L ve M yerli yerinde; A ile E kelimede var ama yerleri karışmış.</p>',
-    '  <ul>',
-    '    <li>Gönderilmiş tahminlerdeki harflere <b>tıklayarak</b> not al: sırayla kırmızı → sarı →',
-    '        yeşil → boş. Klavye tuşuna <b>sağ tıkla</b> (dokunmatikte basılı tut) elediğin harfleri',
-    '        işaretle. Notlar yalnızca senin için; oyuna etkisi yok. Bir tahminin üç sayısı da <b>0</b>',
-    '        çıkarsa (hiçbir harfi kelimede yoksa), o harfler her yerde otomatik kırmızıya boyanır ve',
-    '        bu değiştirilemez — çünkü bu artık bir tahmin değil, kesin bilgidir.</li>',
-    '    <li>Satırın solundaki <b>↺</b> düğmesi o satırın notlarını sıfırlar (otomatik kırmızı olan',
-    '        hücreler hariç). Klavyede daha önce denediğin harfler de kendiliğinden gri',
-    '        görünür.</li>',
-    '    <li><b>Boşluk</b> tuşu bilinmeyen harfin yerini <b>·</b> ile boş bırakır; satırı böyle taslak',
-    '        kurabilirsin (göndermek için hepsini doldurman gerekir).</li>',
-    '    <li><b>💡</b> düğmesi, o ana kadarki bütün sayılarla uyumlu bir kelimeyi satıra yazar.',
-    '        En az bir tahmin yapmış olman gerekir ve bedeli vardır: onayladığında oyun',
-    '        <b>kayıp sayılır</b>, serin sıfırlanır.</li>',
-    '    <li><b>◫</b> bütün notları temizler.</li>',
-    '    <li>Sözlükte olmayan bir kelime yazdığında satır <b>kırmızı ve üstü çizili</b> görünür —',
-    '        Enter\'a basmana gerek yok, hemen anlarsın. Böyle bir tahmin hak yakmaz.</li>',
-    '    <li>Günlük kelime her gece yenilenir ve herkeste aynıdır. Kaçırdığın günler',
-    '        <b>Arşiv</b>\'de durur; arşiv yalnızca düne kadar gider, bugünün kelimesi',
-    '        Günlük\'te oynanır.</li>',
-    '    <li>Kelime her seviyede <b>5 harflidir</b>; değişen şey gizli kelimenin kuralları:',
-    '      <b>Standart</b> — aynı harf iki kez geçmez, seyrek harfler (J, F, V, Ğ) çıkmaz;',
-    '      <b>Standart+</b> — aynı harf iki kez geçmez;',
-    '      <b>İleri</b> — her şey serbest. Seyrek harf kısıtı <b>tahminlerini de bağlar</b>:',
-    '      Standart\'ta J, F, V, Ğ içeren bir kelime tahmin olarak girilemez. Harf tekrarı',
-    '      kısıtı yalnızca gizli kelime seçimini etkiler; tahmin olarak tekrarlı harfli bir',
-    '      kelime her seviyede girilebilir.</li>',
-    '  </ul>'
+    '<button class="simge kapat" type="button" title="Kapat">✕</button>',
+    '<h2>KELİME500 nasıl oynanır?</h2>',
+
+    '<p>Gizli Türkçe kelimeyi <b>8 veya daha az</b> sayıda tahminde bulmaya çalışıyorsun.',
+    '   Her tahminden sonra tahmin kelimesinin yanında 3 farklı sayı göreceksin:</p>',
+
+    '<div class="ornek"><span class="rozet duz yer">3</span>',
+    '  <p>tane harf gizli kelimede <b>var ve yerleri doğru</b>.</p></div>',
+    '<div class="ornek"><span class="rozet duz harf">2</span>',
+    '  <p>tane harf gizli kelimede <b>var ama yerleri doğru değil</b>.</p></div>',
+    '<div class="ornek"><span class="rozet duz yok">0</span>',
+    '  <p>tane harf gizli kelimede <b>yok</b>.</p></div>',
+
+    '<p>Yeşil, sarı ve kırmızı kutucuklardaki rakamların toplamı, her zaman kelime',
+    '   uzunluğu olan <b>5</b>’e eşit olacak. Tahmin sonuçlarının <b>hangi</b> harfler',
+    '   için olduğunu söylemiyoruz, asıl iş bunu bulmak! Örneğin yukarıdaki sayılar',
+    '   gizli kelime <b>KALEM</b> iken <b>KELAM</b> tahmininin sonucu; K, L ve M yeşil,',
+    '   A ve E’nin yerleri farklı.</p>',
+
+    '<ul>',
+    '  <li>Tahmin ettiğin kelimelerin içindeki harflere <b>tıklayarak</b>, harflere ait',
+    '      tahminleri not alabilirsin. Harflerin renkleri üzerlerine tıkladıkça sırasıyla',
+    '      değişir: kırmızı → sarı → yeşil → boş. Bu sayede tahminlerin için farklı',
+    '      senaryolar deneyebilirsin. Bir tahmininin içindeki harflerin hiçbiri gizli',
+    '      kelimede yoksa, o harfler otomatik olarak tüm tahminlerde kırmızıya boyanır ve',
+    '      bu değiştirilemez — çünkü bu artık bir tahmin değil, kesin bilgidir.</li>',
+    '  <li>Eğer bir satırdaki tahminlerini sıfırlamak istersen, satırın solundaki',
+    '      <b>↺</b> tuşuna basabilirsin.</li>',
+    '  <li>Daha önceki tahminlerinde kullandığın harfler <b>gri</b> görünür ki onları daha',
+    '      önce denediğini anlamak daha kolay olsun.</li>',
+    '  <li>Yeni bir tahminde bulunurken, <b>Boşluk</b> tuşunu bilmediğin harfin yerine',
+    '      <b>·</b> koymak için kullanabilirsin. Böylece taslak oluşturabilirsin.</li>',
+    '  <li><b>◫</b> bütün notlarını temizler.</li>',
+    '  <li>Sözlükte olmayan bir kelime yazdığında tüm harfler <b>kırmızı ve üstü çizili</b>',
+    '      olarak görünür.</li>',
+    '  <li><b>Günlük kelime</b> her seviye için günde bir yeni kelime bulundurur ve tüm',
+    '      oyuncular için aynıdır. Kaçırdığın günler <b>Arşiv</b>’de durur.</li>',
+    '  <li><b>Standart</b> ve <b>İleri</b> olmak üzere 2 farklı seviye var. Standart’ta',
+    '      gizli kelime içinde aynı harf iki kez geçmez ve tahmin ederken aynı harfi iki',
+    '      kez bulunduran kelimeleri kullanamazsın. İleri için herhangi bir kural yok.</li>',
+    '</ul>'
   ].join('\n');
 
   var pencere = null;
@@ -64,6 +62,26 @@
     return pencere;
   }
 
+  /* Giris sayfasinda pencerenin ust kenari "Günlük kelime" kartinin ust
+   * kenariyla hizalanir. Asagida yeterli yer kalmiyorsa (dar/kisa ekran)
+   * varsayilan ortalanmis konum korunur. */
+  function hizala(p) {
+    var kart = document.getElementById('gunluk-kart');
+    p.style.marginTop = '';
+    p.style.maxHeight = '';
+    if (!kart) { return; }
+    var ust = Math.round(kart.getBoundingClientRect().top);
+    if (ust < 40 || window.innerHeight - ust < 420) { return; }
+    p.style.marginTop = ust + 'px';
+    p.style.maxHeight = (window.innerHeight - ust - 24) + 'px';
+  }
+
   global.KB = global.KB || {};
-  global.KB.yardim = { ac: function () { kur().showModal(); } };
+  global.KB.yardim = {
+    ac: function () {
+      var p = kur();
+      hizala(p);
+      p.showModal();
+    }
+  };
 }(window));

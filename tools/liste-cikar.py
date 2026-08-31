@@ -6,7 +6,6 @@ KOK = pathlib.Path(__file__).resolve().parent.parent
 ALF = 'ABCÇDEFGĞHIİJKLMNOÖPRSŞTUÜVYZ'
 SIRA = {c: i for i, c in enumerate(ALF)}
 BUYUK = {'i': 'İ', 'ı': 'I'}
-NADIR = set('JFVĞ')
 
 def buyut(w):
     return ''.join(BUYUK.get(c, c) for c in w).upper()
@@ -40,9 +39,7 @@ for tur in ('cozum', 'ekstra'):
 hepsi.sort(key=anahtar)
 
 tekrarsiz  = lambda w: len(set(w)) == len(w)
-nadirsiz   = lambda w: not (set(w) & NADIR)
-standart   = [w for w in cevaplar if tekrarsiz(w) and nadirsiz(w)]
-standarta  = [w for w in cevaplar if tekrarsiz(w)]
+standart   = [w for w in cevaplar if tekrarsiz(w)]
 
 satir = [
     '# Kelime listesi (5 harf)', '',
@@ -52,8 +49,7 @@ satir = [
     '', '| | adet |', '| --- | --- |',
     f'| Tahmin olarak kabul edilen kelimeler | {sozluk.get(5, 0) or len(hepsi)} |',
     f'| **Cevap havuzu** (asagidaki liste) | {len(cevaplar)} |',
-    f'| — **Standart** seviyede cikabilenler (tekrarsiz, J/F/V/G yok) | {len(standart)} |',
-    f'| — **Standart+** (tekrarsiz) | {len(standarta)} |',
+    f'| — **Standart** seviyede cikabilenler (ayni harf iki kez gecmez) | {len(standart)} |',
     f'| — **Ileri** (hepsi) | {len(cevaplar)} |',
     '',
     'Bu dosya `python3 tools/liste-cikar.py` ile uretilir.', '',
@@ -74,5 +70,5 @@ if grup:
 
 (KOK / 'kelime-listesi.md').write_text('\n'.join(satir), encoding='utf-8')
 print(f'kelime-listesi.md: {len(cevaplar)} cevap '
-      f'(Standart {len(standart)} · Standart+ {len(standarta)}), '
+      f'(Standart {len(standart)}), '
       f'sozlukte {sozluk.get(5, 0)} kabul edilen tahmin')

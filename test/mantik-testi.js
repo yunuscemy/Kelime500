@@ -74,17 +74,12 @@ ok("renkler puanla ile tutarli", (function(){
 
 // Zorluk havuzları: hepsi 5 harf, değişen şey kurallar
 var besli = KB.kelimeler.al(5);
-var NADIR = "JFVĞ";
 var havuzlar = {
-  "Standart":  besli.cozum.filter(function(k){ return KB.motor.tekrarsiz(k) && KB.motor.nadirsiz(k,NADIR); }),
-  "Standart+": besli.cozum.filter(KB.motor.tekrarsiz),
-  "İleri":     besli.cozum.slice()
+  "Standart": besli.cozum.filter(KB.motor.tekrarsiz),
+  "İleri":    besli.cozum.slice()
 };
-ok("Standart havuzunda seyrek harf yok", havuzlar["Standart"].every(function(k){ return KB.motor.nadirsiz(k,NADIR); }));
 ok("Standart havuzunda tekrar harf yok", havuzlar["Standart"].every(KB.motor.tekrarsiz));
-ok("Standart+ havuzunda tekrar harf yok", havuzlar["Standart+"].every(KB.motor.tekrarsiz));
-ok("havuzlar Standart < Standart+ < İleri", havuzlar["Standart"].length < havuzlar["Standart+"].length
-   && havuzlar["Standart+"].length < havuzlar["İleri"].length);
+ok("havuzlar Standart < İleri", havuzlar["Standart"].length < havuzlar["İleri"].length);
 ok("her havuz yeterince büyük", Object.keys(havuzlar).every(function(a){ return havuzlar[a].length >= 100; }),
    Object.keys(havuzlar).map(function(a){ return a+": "+havuzlar[a].length; }).join(" · "));
 ok("geniş sözlük yüklendi", besli.gecerli.length > 4000, besli.gecerli.length + " kabul edilen");
@@ -107,7 +102,7 @@ ok("ertesi gün değişiyor", g1!==g3, g1+" / "+g3);
 
 // Ayni gun her zorluk icin ayri kelime yayimlanir (gunde 3 kelime)
 // Uygulamadaki (src/app.js gununKelimesi) sirayla ayni mantik.
-var SIRA = ["standart","standarta","ileri"], SIRA_AD = ["Standart","Standart+","İleri"];
+var SIRA = ["standart","ileri"], SIRA_AD = ["Standart","İleri"];
 function gununUcu(t){
   var alinan = [];
   for (var i=0; i<SIRA.length; i++){
@@ -115,15 +110,15 @@ function gununUcu(t){
   }
   return alinan;
 }
-ok("günde 3 zorluk = 3 ayrı kelime",
-   new Set(gununUcu("2026-08-29")).size===3, gununUcu("2026-08-29").join(" / "));
+ok("günde her seviye için ayrı kelime",
+   new Set(gununUcu("2026-08-29")).size===SIRA.length, gununUcu("2026-08-29").join(" / "));
 // Bir ay degil tam yil taranir: eski test yalnizca Eylul 2026'ya bakiyordu ve
 // carpisan gunleri kaciriyordu.
-ok("yıl boyunca 3 zorluk hep ayrı kelime", (function(){
+ok("yıl boyunca seviyeler hep ayrı kelime", (function(){
   var kotu = [];
   for(var ay=1; ay<=12; ay++) for(var g=1; g<=28; g++){
     var t = "2026-" + String(ay).padStart(2,"0") + "-" + String(g).padStart(2,"0");
-    if(new Set(gununUcu(t)).size!==3) kotu.push(t);
+    if(new Set(gununUcu(t)).size!==SIRA.length) kotu.push(t);
   }
   return kotu.length===0 ? true : kotu.slice(0,5).join(", ");
 })()===true, "");

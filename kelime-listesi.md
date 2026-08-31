@@ -8,8 +8,7 @@ edilir (`src/sozluk.js`), bu yuzden listede gormedigin bir kelimeyi de deneyebil
 | --- | --- |
 | Tahmin olarak kabul edilen kelimeler | 5745 |
 | **Cevap havuzu** (asagidaki liste) | 500 |
-| — **Standart** seviyede cikabilenler (tekrarsiz, J/F/V/G yok) | 233 |
-| — **Standart+** (tekrarsiz) | 288 |
+| — **Standart** seviyede cikabilenler (ayni harf iki kez gecmez) | 288 |
 | — **Ileri** (hepsi) | 500 |
 
 Bu dosya `python3 tools/liste-cikar.py` ile uretilir.

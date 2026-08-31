@@ -15,12 +15,12 @@
 
   var HAK = 8;
   var UZUNLUK = 5;              // her seviyede kelime 5 harfli; değişen şey kurallar
-  var NADIR = 'JFVĞ';           // Türkçenin en seyrek harfleri
 
+  /* Iki seviye. Standart'ta ayni harf iki kez gecmez - bu kural hem gizli
+   * kelimeyi hem de girilebilecek tahminleri baglar. Ileri'de kural yok. */
   var ZORLUKLAR = {
-    standart:  { ad: 'Standart',  tekrarsiz: true,  nadirYok: true  },
-    standarta: { ad: 'Standart+', tekrarsiz: true,  nadirYok: false },
-    ileri:     { ad: 'İleri',     tekrarsiz: false, nadirYok: false }
+    standart: { ad: 'Standart', tekrarsiz: true  },
+    ileri:    { ad: 'İleri',    tekrarsiz: false }
   };
 
   var NOT_SINIF = ['', 'not-kirmizi', 'not-sari', 'not-yesil'];
@@ -87,9 +87,7 @@
   function havuzKur(cozum, zorluk) {
     var z = ZORLUKLAR[zorluk];
     var h = cozum.filter(function (k) {
-      if (z.tekrarsiz && !motor.tekrarsiz(k)) { return false; }
-      if (z.nadirYok && !motor.nadirsiz(k, NADIR)) { return false; }
-      return true;
+      return !z.tekrarsiz || motor.tekrarsiz(k);
     });
     return h.length ? h : cozum.slice();
   }
@@ -99,7 +97,7 @@
    * gunler ayni kelimeyi veriyordu. Zorluklar sabit bir sirayla secilir ve her
    * biri kendinden oncekilerin aldigi kelimeyi atlar. Sira sabit oldugu icin
    * sonuc herkeste ayni kalir. */
-  var ZORLUK_SIRA = ['standart', 'standarta', 'ileri'];
+  var ZORLUK_SIRA = ['standart', 'ileri'];
 
   function gununKelimesi(cozum, tarih, zorluk) {
     var alinan = [];
@@ -129,7 +127,7 @@
       S = {
         gizli: mod === 'gunluk' ? gununKelimesi(sozluk.cozum, tarih, zorluk)
                                 : motor.rastgeleKelime(havuz),
-        gecmis: [], notlar: {}, tusNot: {}, bitti: false, kazandi: false, ipucu: 0,
+        gecmis: [], notlar: {}, tusNot: {}, bitti: false, kazandi: false,
         kayitli: false, acikla: false
       };
     }
@@ -145,7 +143,7 @@
   function kaydet() {
     yaz(oyunAnahtari(S.mod, S.zorluk, S.tarih), {
       gizli: S.gizli, gecmis: S.gecmis, notlar: S.notlar, tusNot: S.tusNot,
-      bitti: S.bitti, kazandi: S.kazandi, ipucu: S.ipucu, kayitli: S.kayitli,
+      bitti: S.bitti, kazandi: S.kazandi, kayitli: S.kayitli,
       acikla: S.acikla
     });
   }
@@ -202,12 +200,10 @@
     if (sozluk.gecerli.indexOf(t) === -1) { return uyar('Kelime listede yok', true); }
     if (S.gecmis.some(function (g) { return g.tahmin === t; })) { return uyar('Bunu zaten denedin', true); }
 
-    /* Harf tekrarı kısıtı yalnızca gizli kelime havuzunu belirler; tahmin olarak
-     * tekrarlı harfli bir kelime her seviyede girilebilir. Seyrek harf (J, F, V, Ğ)
-     * kısıtı ise Standart'ta tahminleri de bağlamaya devam eder. */
+    /* Standart'ta harf tekrari kisiti tahminleri de baglar. */
     var z = ZORLUKLAR[S.zorluk];
-    if (z.nadirYok && !motor.nadirsiz(t, NADIR)) {
-      return uyar(z.ad + ' seviyesinde J, F, V, Ğ harfleri yok', true);
+    if (z.tekrarsiz && !motor.tekrarsiz(t)) {
+      return uyar('Standart seviyede aynı harf iki kez kullanılamaz', true);
     }
 
     var p = motor.puanla(t, S.gizli);
@@ -268,42 +264,6 @@
       ist.seri = 0;
     }
     yaz(a, ist);
-  }
-
-  /* ---------- ipucu ---------- */
-
-  function olasiCevaplar() { return motor.adaylar(havuz, S.gecmis, 0); }
-
-  function ipucuVer() {
-    if (S.bitti) { return; }
-    if (!S.gecmis.length) {
-      return uyar('İpucu için önce bir tahmin yapmalısın');
-    }
-
-    var adaylar = olasiCevaplar();
-    if (!adaylar.length) { return uyar('Uygun kelime bulunamadı'); }
-
-    var onay = window.confirm(
-      'İpucu, o ana kadarki sayılarla uyumlu bir kelimeyi satıra yazar.\n\n' +
-      'Karşılığında bu oyun kayıp sayılır ve serin sıfırlanır.\n\n' +
-      'Devam edilsin mi?');
-    if (!onay) { return; }
-
-    /* Ipucu bedelini hemen ode: oyun kayip yazilir, seri sifirlanir.
-     * Oyunun geri kalani oynanmaya devam edebilir ama istatistik bir daha islenmez. */
-    if (!S.kayitli) {
-      istatistikGuncelle(false, 0);
-      S.kayitli = true;
-    }
-
-    var secim = adaylar[Math.floor(Math.random() * adaylar.length)];
-    S.girdi = secim.split('');
-    S.imlec = secim.length;
-    S.ipucu++;
-    hataliSatir = false;
-    kaydet();
-    ciz();
-    uyar('Sayılarla uyumlu bir kelime yazıldı · oyun kayıp sayıldı');
   }
 
   /* ---------- çizim ---------- */
@@ -526,7 +486,6 @@
     var son = document.createElement('div');
     son.className = 'klavye-satir';
     son.appendChild(tus('◫', '', notlariTemizle, 'Notları temizle'));
-    son.appendChild(tus('💡', '', ipucuVer, 'İpucu'));
     son.appendChild(tus('boşluk', 'genis', atla, 'Bilinmeyen harfi atla'));
     son.appendChild(tus('✓', 'genis', gonder, 'Gönder'));
     k.appendChild(son);
@@ -586,7 +545,7 @@
   function paylasMetni() {
     var satirlar = ['Kelime500 · ' + ZORLUKLAR[S.zorluk].ad +
                     (S.mod === 'gunluk' ? ' · ' + S.tarih : ' · serbest'),
-                    (S.kazandi ? S.gecmis.length : 'X') + '/' + HAK + (S.ipucu ? ' (ipuçlu)' : '')];
+                    (S.kazandi ? S.gecmis.length : 'X') + '/' + HAK];
     S.gecmis.forEach(function (g) {
       satirlar.push('🟩' + g.yer + ' 🟨' + g.harf + ' 🟥' + g.yok);
     });
@@ -719,7 +678,7 @@
 
   /* Baslik satiri: hangi moddayiz, hangi gunun kelimesi.
    * Gunlukte tek bir bulmaca var (bugun), o yuzden tarih gezinmesi yalnizca arsivde. */
-  var ZORLUK_ISARET = { standart: 'S', standarta: '+', ileri: 'İ' };
+  var ZORLUK_ISARET = { standart: 'S', ileri: 'İ' };
 
   function modYaz() {
     var arsiv = S.mod === 'arsiv';

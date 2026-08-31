@@ -441,13 +441,11 @@ body:not(.giris) .logo {
 .acilir button[aria-current="true"] { background: color-mix(in srgb, var(--vurgu) 18%, transparent); }
 .acilir .nokta { width: 10px; height: 10px; border-radius: 3px; flex: 0 0 auto; }
 .nokta.standart  { background: var(--yesil); }
-.nokta.standarta { background: var(--sari); }
 .nokta.ileri     { background: var(--kirmizi); }
 
 /* Zorluk dugmesi: kapaliyken seviyenin rengini ve harfini tasir. */
 .zorluk-dugme { border-color: transparent; font-weight: 800; font-size: 15px; }
 .zorluk-dugme[data-zorluk="standart"]  { background: var(--yesil);   color: #fff; }
-.zorluk-dugme[data-zorluk="standarta"] { background: var(--sari);    color: #17181c; }
 .zorluk-dugme[data-zorluk="ileri"]     { background: var(--kirmizi); color: #fff; }
 
 /* --- oyun sayfasi: mod etiketi ve tarih gezinmesi --- */

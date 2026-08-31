@@ -19,11 +19,11 @@ Derleme adımı yok, bağımlılık yok. `index.html` (giriş sayfası) tarayıc
 
 - **Giriş sayfası** (`index.html`): zorluk seçimi, günlük / serbest / arşiv kartları ve
   bugün her zorlukta hangi durumda olduğunu gösteren rozetler.
-- **Günlük**: kelime `tarih + zorluk` çiftinden türetilir, yani **her gün üç zorluk için
-  üç ayrı kelime** yayımlanır ve herkeste aynıdır. Havuzlar iç içe olduğu için
-  (Standart ⊂ Standart+ ⊂ İleri) bağımsız seçim bazı günler aynı kelimeyi
-  veriyordu; zorluklar sabit bir sırayla seçilir ve her biri kendinden
-  öncekilerin aldığı kelimeyi atlar.
+- **Günlük**: kelime `tarih + zorluk` çiftinden türetilir, yani **her gün iki seviye için
+  iki ayrı kelime** yayımlanır ve herkeste aynıdır. Havuzlar iç içe olduğu için
+  (Standart ⊂ İleri) bağımsız seçim bazı günler aynı kelimeyi veriyordu;
+  seviyeler sabit bir sırayla seçilir ve her biri kendinden öncekinin aldığı
+  kelimeyi atlar.
 - **Arşiv**: kaçırılan günler oynanabilir; `‹ ›` düğmeleri ve tarih seçiciyle günler
   arasında gezinilir. Arşiv **yalnızca düne kadar** gider — bugünün kelimesi Günlük'e
   aittir, arşivden oraya dönülmez. Günlükte tek bir bulmaca olduğu için orada tarih
@@ -32,11 +32,9 @@ Derleme adımı yok, bağımlılık yok. `index.html` (giriş sayfası) tarayıc
   ilerleme de ortaktır, ama istatistikleri günlük serisini bozmasın diye ayrı tutulur.
 - **Serbest**: sınırsız rastgele kelime, istatistikleri günlükten ayrı tutulur.
 - Kelime her seviyede **5 harflidir**; zorluk gizli kelimenin kurallarını değiştirir:
-  **Standart** (aynı harf iki kez geçmez, seyrek harfler J/F/V/Ğ çıkmaz),
-  **Standart+** (aynı harf iki kez geçmez), **İleri** (kural yok). Seyrek harf kısıtı
-  **tahminleri de bağlar**: Standart'ta J/F/V/Ğ içeren bir kelime tahmin olarak
-  girilemez. Harf tekrarı kısıtı yalnızca gizli kelime seçimini etkiler; tahmin
-  olarak `SAHİH` gibi tekrarlı harfli bir kelime her seviyede kabul edilir.
+  **Standart** (aynı harf iki kez geçmez), **İleri** (kural yok). Standart'ın harf
+  tekrarı kısıtı **tahminleri de bağlar**: o seviyede aynı harfi iki kez içeren bir
+  kelime tahmin olarak girilemez.
 - **Not alma**: gönderilmiş tahminlerdeki harflere tıklayarak kırmızı/sarı/yeşil
   işaretle, klavye tuşlarına sağ tıklayarak (dokunmatikte basılı tutarak) elediğin
   harfleri boya. Kâğıt kalem yerine geçer, oyuna etkisi yoktur; `◫` hepsini temizler.
@@ -45,9 +43,6 @@ Derleme adımı yok, bağımlılık yok. `index.html` (giriş sayfası) tarayıc
   durumda ilgili hücreler otomatik kırmızıya boyanır ve değiştirilemez. Klavyede de
   daha önce denenmiş harfler otomatik olarak gri görünür.
 - **Boşluk tuşu**: bilinmeyen harfin yerini `·` ile boş bırakır, satırı taslak kurmanı sağlar.
-- **İpucu** (`💡`): o ana kadarki bütün sayılarla uyumlu bir kelimeyi satıra yazar.
-  En az bir tahmin gerektirir ve onay ister; kullanıldığında oyun kayıp sayılıp seri
-  sıfırlanır, oyunun kalanı oynanmaya devam edebilir.
 - **Kart çevirme**: tahmin gönderilince yeşil/sarı/kırmızı rozetler dikey eksenlerinde
   sırayla dönüp arka yüzlerindeki sayıları gösterir. Oyun kazanılınca önce doğru cevap
   duyurulur, üç saniye sonra **perde açılır**: bütün tahminlerdeki harfler aynı
@@ -82,7 +77,7 @@ Derleme adımı yok, bağımlılık yok. `index.html` (giriş sayfası) tarayıc
   kelimeler. Geniş olması gerekir, yoksa gerçek kelimeler reddedilir.
 - **Cevap havuzu** (`src/words.js`, 500 kelime): gizli kelimenin seçildiği liste. Elle
   derlenmiştir ve tanıdık kelimelerden oluşur — cevap, kimsenin bilmediği bir kelime
-  olmamalı. Zorluk kuralları bu havuzu süzer (Standart 233, Standart+ 288, İleri 500).
+  olmamalı. Seviye kuralları bu havuzu süzer (Standart 288, İleri 500).
 
 Cevap havuzunun tamamı [kelime-listesi.md](kelime-listesi.md) dosyasında listelidir.
 Havuza kelime eklemek için `src/words.js` düzenlenir; yanlış uzunlukta veya alfabe dışı
