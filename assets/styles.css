@@ -376,6 +376,9 @@ dialog {
   background: var(--bg-yuksek); color: var(--metin);
   max-width: 440px; width: calc(100% - 28px); padding: 20px;
 }
+/* Nasil oynanir penceresi giris sayfasi kartlariyla ayni genislikte:
+   main 576px, ic genislik 576 - 28 = 548. */
+#yardim-pencere { max-width: 548px; }
 dialog::backdrop { background: rgba(0,0,0,.6); }
 dialog h2 { margin: 0 0 8px; font-size: 18px; }
 dialog p, dialog li { color: var(--soluk); font-size: 13.5px; }
@@ -498,7 +501,8 @@ body.giris main { max-width: 576px; }
 .kart-aciklama { margin: 0 0 14px; font-size: 13.5px; color: var(--soluk); }
 
 .kart-dugme {
-  display: block; text-align: center; text-decoration: none;
+  display: block; width: 100%; border: 0;
+  text-align: center; text-decoration: none;
   padding: 12px 14px; border-radius: var(--yuvarlak);
   font-size: 15px; font-weight: 700;
   transition: filter var(--gecis);

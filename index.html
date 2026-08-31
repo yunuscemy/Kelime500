@@ -3,9 +3,23 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Kelime500 — Türkçe kelime bulmacası</title>
+<title>Kelime500</title>
 <meta name="description" content="Gizli Türkçe kelimeyi 8 hakta bul. Her gün üç zorluk için üç yeni kelime; serbest modda sınırsız oyna, arşivden eski günleri çöz.">
-<link rel="stylesheet" href="assets/styles.css?v=5">
+<link rel="stylesheet" href="assets/styles.css?v=7">
+<script>
+/* Tema ilk boyamadan once uygulanir; yoksa sabit yazili koyu tema bir an
+   gorunup acik temaya gecerdi. Kayitli bir secim varsa o, yoksa cihazin
+   tercihi kullanilir. Ayni mantik src/giris.js ve src/app.js icinde de var. */
+(function () {
+  var t = null;
+  try { t = JSON.parse(localStorage.getItem('kelime500.tema')); } catch (e) { /* yoksay */ }
+  if (t !== 'acik' && t !== 'koyu') {
+    t = window.matchMedia && matchMedia('(prefers-color-scheme: light)').matches
+      ? 'acik' : 'koyu';
+  }
+  document.documentElement.dataset.tema = t;
+}());
+</script>
 </head>
 <body class="giris">
 
@@ -24,43 +38,31 @@
   <section class="kart">
     <p class="kart-ust">İlk kez mi buradasın?</p>
     <h2>Nasıl oynanır</h2>
-    <p class="kart-aciklama">
-      Gizli kelimeyi 8 hakta bul. Harflerin üstü boyanmaz — sana yalnızca kaç harfin
-      doğru yerde, kaç harfin yanlış yerde olduğu söylenir.
-    </p>
-    <a class="kart-dugme sari" href="oyna.html?yardim=1">Kuralları oku →</a>
+    <button class="kart-dugme sari" id="yardim-ac" type="button">Kuralları oku →</button>
   </section>
 
   <section class="kart">
-    <p class="kart-ust">Günde bir kez</p>
+    <p class="kart-ust">Günde bir kez oyna</p>
     <h2>Günlük kelime</h2>
-    <p class="kart-aciklama">
-      Her gün her zorluk için yeni bir kelime yayımlanır ve herkeste aynıdır.
-    </p>
     <div class="durum-satiri" id="bugun-durum"></div>
     <a class="kart-dugme yesil" id="baglanti-gunluk" href="oyna.html?mod=gunluk">Oyna →</a>
   </section>
 
   <section class="kart">
     <p class="kart-ust">Sınırsız oyna</p>
-    <h2>Serbest</h2>
-    <p class="kart-aciklama">
-      Rastgele kelimeler, istediğin kadar. İstatistikler günlükten ayrı tutulur.
-    </p>
+    <h2>Serbest Mod</h2>
     <a class="kart-dugme yesil" id="baglanti-serbest" href="oyna.html?mod=serbest">Oyna →</a>
   </section>
 
   <section class="kart">
     <p class="kart-ust">Kaçırdığın günler</p>
     <h2>Arşiv</h2>
-    <p class="kart-aciklama">
-      Geçmiş günlerin kelimelerini oyna; oyun içinde ‹ › ile günler arasında gezinebilirsin.
-    </p>
     <a class="kart-dugme yesil" id="baglanti-arsiv" href="oyna.html?mod=gunluk">Arşive git →</a>
   </section>
 
 </main>
 
-<script src="src/giris.js?v=5"></script>
+<script src="src/yardim.js?v=7"></script>
+<script src="src/giris.js?v=7"></script>
 </body>
 </html>

@@ -45,7 +45,10 @@
   var AY = '<svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true">' +
     '<path fill="currentColor" d="M21 13.2A9 9 0 1 1 10.8 3a7.2 7.2 0 0 0 10.2 10.2z"/></svg>';
 
-  function tema(deger, yumusak) {
+  /* kaydet=true yalnizca kullanici dugmeye bastiginda verilir. Sayfa
+   * acilisinda kaydetmiyoruz: yoksa ilk ziyarette cihazdan gelen deger
+   * hemen kalici olur ve site cihazi takip etmeyi birakirdi. */
+  function tema(deger, yumusak, kaydet) {
     function uygula() {
       document.documentElement.dataset.tema = deger;
       var d = $('#tema');
@@ -56,7 +59,31 @@
     } else {
       uygula();
     }
-    yaz('kelime500.tema', deger);
+    if (kaydet) { yaz('kelime500.tema', deger); }
+  }
+
+  function kullaniciSecti() {
+    var k = oku('kelime500.tema', null);
+    return k === 'acik' || k === 'koyu';
+  }
+
+  function cihazTemasi() {
+    return window.matchMedia && matchMedia('(prefers-color-scheme: light)').matches
+      ? 'acik' : 'koyu';
+  }
+
+  /* Ilk ziyarette cihazin tercihi, sonrasinda kullanicinin secimi. */
+  function baslangicTemasi() {
+    return kullaniciSecti() ? oku('kelime500.tema', 'koyu') : cihazTemasi();
+  }
+
+  /* Kullanici henuz secim yapmadiysa cihaz temasi degistikce site de uyar. */
+  function cihaziIzle() {
+    if (!window.matchMedia) { return; }
+    var mq = matchMedia('(prefers-color-scheme: light)');
+    var dinle = function () { if (!kullaniciSecti()) { tema(cihazTemasi(), true); } };
+    if (mq.addEventListener) { mq.addEventListener('change', dinle); }
+    else if (mq.addListener) { mq.addListener(dinle); }
   }
 
   /* Bugun her zorlukta ne durumdayiz? Oyun sayfasiyla ayni depolama anahtarlari. */
@@ -88,15 +115,21 @@
   }
 
   function baslat() {
-    tema(oku('kelime500.tema', 'koyu'));
+    tema(baslangicTemasi());
+    cihaziIzle();
 
     var zorluk = oku('kelime500.zorluk', 'standart');
     if (ZORLUKLAR.indexOf(zorluk) === -1) { zorluk = 'standart'; }
     baglantilariKur(zorluk);
     durumCiz();
 
+    /* Kurallar giris sayfasinin uzerinde acilir. Onceden oyun sayfasina
+     * gidip pencereyi orada aciyordu; kapatinca oyun ekrani bir an gorunup
+     * geri donuyordu. */
+    $('#yardim-ac').addEventListener('click', function () { KB.yardim.ac(); });
+
     $('#tema').addEventListener('click', function () {
-      tema(document.documentElement.dataset.tema === 'acik' ? 'koyu' : 'acik', true);
+      tema(document.documentElement.dataset.tema === 'acik' ? 'koyu' : 'acik', true, true);
     });
   }
 
