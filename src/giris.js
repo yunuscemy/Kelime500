@@ -114,6 +114,18 @@
     $('#baglanti-arsiv').href   = 'oyna.html?mod=arsiv&zorluk=' + zorluk + '&tarih=' + dun();
   }
 
+  /* Gece yarisina kalan sure: gunluk kelime o an yenilenir.
+   * Oyun sayfasindaki istatistik penceresinde de ayni bilgi var. */
+  function geriSayim() {
+    var simdi = new Date();
+    var yarin = new Date(simdi.getFullYear(), simdi.getMonth(), simdi.getDate() + 1);
+    var kalan = Math.max(0, Math.floor((yarin - simdi) / 1000));
+    var ss = String(Math.floor(kalan / 3600)).padStart(2, '0');
+    var dd = String(Math.floor(kalan % 3600 / 60)).padStart(2, '0');
+    var sn = String(kalan % 60).padStart(2, '0');
+    $('#sayac').textContent = 'Yeni günlük kelimeye ' + ss + ':' + dd + ':' + sn;
+  }
+
   function baslat() {
     tema(baslangicTemasi());
     cihaziIzle();
@@ -122,6 +134,8 @@
     if (ZORLUKLAR.indexOf(zorluk) === -1) { zorluk = 'standart'; }
     baglantilariKur(zorluk);
     durumCiz();
+    geriSayim();
+    setInterval(geriSayim, 1000);
 
     /* Kurallar giris sayfasinin uzerinde acilir. Onceden oyun sayfasina
      * gidip pencereyi orada aciyordu; kapatinca oyun ekrani bir an gorunup

@@ -592,7 +592,36 @@
     geriSayim();
     clearInterval(sayimZaman);
     sayimZaman = setInterval(geriSayim, 1000);
-    $('#ist-pencere').showModal();
+    var pencere = $('#ist-pencere');
+    istPencereKonumla(pencere);
+    pencere.showModal();
+  }
+
+  /* Oyun ekranin ust yarisinda durdugu icin, ekranin tamamina gore ortalanan
+   * pencere asagida kaliyordu. Genis ekranlarda pencere "ekranin ustu -
+   * klavyenin alti" araliginin ortasina alinir. Dar ekranlarda (telefon)
+   * oyun zaten ekrani doldurdugu icin varsayilan ortalama korunur. */
+  function istPencereKonumla(pencere) {
+    pencere.style.marginTop = '';
+    pencere.style.marginBottom = '';
+    if (window.innerWidth < 640) { return; }
+
+    var klavye = $('#klavye');
+    if (!klavye) { return; }
+    var alt = klavye.getBoundingClientRect().bottom;
+    if (alt <= 0 || alt >= window.innerHeight) { return; }
+
+    /* Pencere yuksekligi acilmadan bilinmedigi icin gecici olarak olculur. */
+    pencere.style.visibility = 'hidden';
+    pencere.show();
+    var boy = pencere.getBoundingClientRect().height;
+    pencere.close();
+    pencere.style.visibility = '';
+
+    var ust = Math.round((alt - boy) / 2);
+    if (ust < 12) { return; }                 /* sigmiyorsa varsayilana birak */
+    pencere.style.marginTop = ust + 'px';
+    pencere.style.marginBottom = 'auto';
   }
 
   function geriSayim() {
@@ -719,11 +748,9 @@
     menuIsaretle('#ana-menu', '[data-mod]', 'mod', S.mod);
 
     /* Kelime degistirme yalnizca serbest modda: gunlukte ve arsivde herkes
-     * ayni kelimeyi oynadigi icin yenilemek anlamsiz. Ayrac da satirla
-     * birlikte gizlenir, yoksa menude bos bir cizgi kaliyor. */
-    var serbest = S.mod === 'serbest';
-    $('#menu-yeni').hidden = !serbest;
-    $('#menu-ayrac').hidden = !serbest;
+     * ayni kelimeyi oynadigi icin yenilemek anlamsiz. Ayrac her modda durur -
+     * mod secimi ile islemleri ayirir, yalnizca "Yeni kelime"ye ait degil. */
+    $('#menu-yeni').hidden = S.mod !== 'serbest';
   }
 
   function menuIsaretle(menu, secici, alan, deger) {

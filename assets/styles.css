@@ -443,6 +443,13 @@ dialog ul { padding-left: 18px; }
 .cubuk u.aktif { background: var(--yesil); }
 #geri-sayim { display: block; text-align: center; margin-top: 12px; font-size: 12px; color: var(--soluk); }
 
+/* Giris sayfasinin altindaki gunluk kelime sayaci. */
+#sayac {
+  width: 100%; max-width: 576px;
+  margin: 14px 0 4px; padding-inline: 14px;
+  text-align: center; font-size: 12.5px; color: var(--soluk);
+}
+
 /* Oyun sayfasi basligi: solda kutucuklu logo, sagda dugmeler (geri dahil).
    Logo kutucugu, dugmelerden artan genislikten hesaplanir - bir satirda
    5 dugme (30px) + aralarindaki 5 bosluk (6px) = 180px yer tutar.
