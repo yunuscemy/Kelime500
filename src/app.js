@@ -137,7 +137,7 @@
     hataliSatir = false;
     cevrilecekSatir = -1;
     aciklaAnim = false;
-    cevabiGoster = false;
+    cevabiGoster = !!(S.bitti && !S.kazandi);
     ciz();
   }
 
@@ -230,6 +230,11 @@
      * istatistik penceresi acilir. */
     uyar(kazandi ? 'Doğru! ' + S.gizli + ' · ' + S.gecmis.length + '/' + HAK
                  : 'Kelime: ' + S.gizli, false, OYUN_SONU_SURE);
+    /* Kaybedilen oyunda gizli kelime ustte yazili kalir; istatistik penceresi
+     * kapatildiginda oyuncu onu orada bulur. Kazanilan oyunda gerek yok -
+     * son satir zaten dogru cevap. Bir olaya baglamiyoruz: pencerenin 'close'
+     * olayi her ortamda tetiklenmiyor. */
+    cevabiGoster = !kazandi;
     perdeyiAc();
     setTimeout(istatistikGoster, OYUN_SONU_SURE);
   }
@@ -842,10 +847,7 @@
       if (e.key === 'Escape') { menuKapat(); }
     });
 
-    $('#ist-pencere').addEventListener('close', function () {
-      clearInterval(sayimZaman);
-      if (S.bitti) { cevabiGoster = true; modYaz(); }
-    });
+    $('#ist-pencere').addEventListener('close', function () { clearInterval(sayimZaman); });
     Array.prototype.forEach.call(document.querySelectorAll('.kapat'), function (b) {
       b.addEventListener('click', function () { b.closest('dialog').close(); });
     });
