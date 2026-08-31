@@ -38,9 +38,9 @@
   var cevrilecekSatir = -1;
   var aciklaAnim = false;
   var KART_GECIKME = 140;    // ms, rozet kartlari arasindaki fark
-  var ACILIS_GECIKME = 55;   // ms, perde acilisinda harfler arasi fark (cok kart var)
+  var ACILIS_GECIKME = 0;    // ms, perde acilisinda harfler arasi fark (0 = hepsi ayni anda)
   var KART_SURE = 460;       // ms, tek bir kartin donus suresi (CSS ile ayni)
-  var ACILIS_BEKLEME = 3000; // ms, kazandiktan sonra perdenin acilmasina kalan sure
+  var OYUN_SONU_SURE = 2000; // ms, oyun bitisinden istatistik penceresine kadar
 
   /* ---------- depolama ---------- */
 
@@ -137,6 +137,7 @@
     hataliSatir = false;
     cevrilecekSatir = -1;
     aciklaAnim = false;
+    cevabiGoster = false;
     ciz();
   }
 
@@ -216,9 +217,6 @@
     else { kaydet(); ciz(); }
   }
 
-  /* Rozetlerin dönüşü bittikten sonraki ana kadar geçen süre. */
-  function rozetSuresi() { return 2 * KART_GECIKME + KART_SURE; }
-
   function bitir(kazandi) {
     S.bitti = true;
     S.kazandi = kazandi;
@@ -227,21 +225,13 @@
       istatistikGuncelle(kazandi, S.gecmis.length);
       S.kayitli = true;
     }
-    ciz();
-
-    if (kazandi) {
-      /* Önce doğru cevap duyurulur, sonra perde açılır: bütün tahminlerdeki
-       * harfler gerçek renklerine döner. İstatistik penceresi en sona kalır. */
-      uyar('Doğru! ' + S.gizli + ' · ' + S.gecmis.length + '/' + HAK, false, ACILIS_BEKLEME);
-      setTimeout(function () {
-        perdeyiAc();
-        var acilisSuresi = (uzunluk() * S.gecmis.length - 1) * ACILIS_GECIKME + KART_SURE;
-        setTimeout(istatistikGoster, acilisSuresi + 500);
-      }, ACILIS_BEKLEME);
-    } else {
-      uyar('Kelime: ' + S.gizli);
-      setTimeout(istatistikGoster, rozetSuresi() + 900);
-    }
+    /* Kazanilsa da kaybedilse de ayni akis: dogru cevap duyurulur ve ayni anda
+     * butun tahminlerdeki harfler gercek renklerine doner. Iki saniye sonra
+     * istatistik penceresi acilir. */
+    uyar(kazandi ? 'Doğru! ' + S.gizli + ' · ' + S.gecmis.length + '/' + HAK
+                 : 'Kelime: ' + S.gizli, false, OYUN_SONU_SURE);
+    perdeyiAc();
+    setTimeout(istatistikGoster, OYUN_SONU_SURE);
   }
 
   /* Oyun kazanılınca bütün tahminlerdeki harflerin gerçek rengini açar. */
@@ -271,6 +261,7 @@
   function ciz() {
     var n = uzunluk(), tahta = $('#tahta');
     tahta.innerHTML = '';
+    tahta.classList.toggle('oyun-bitti', !!S.bitti);
     var kesinYok = motor.kesinYokHarfler(S.gecmis);
     var cevrilecek = [];
 
@@ -291,7 +282,7 @@
       var sifirla = document.createElement('button');
       sifirla.type = 'button';
       sifirla.className = 'satir-sifirla';
-      if (gonderildi) {
+      if (gonderildi && !S.bitti) {
         sifirla.textContent = '↺';
         sifirla.title = 'Bu satırın notlarını sıfırla';
         sifirla.dataset.r = r;
@@ -375,15 +366,19 @@
      * transition yok, oraya yazılan transition-delay hiçbir işe yaramaz. */
     if (cevrilecek.length) {
       var gecikme = aciklaAnim ? ACILIS_GECIKME : KART_GECIKME;
-      requestAnimationFrame(function () {
-        requestAnimationFrame(function () {
-          cevrilecek.forEach(function (o) {
-            var ic = o.el.firstElementChild;
-            if (ic) { ic.style.transitionDelay = (o.sira * gecikme) + 'ms'; }
-            o.el.classList.add('cevrik');
-          });
+      var basla = function () {
+        cevrilecek.forEach(function (o) {
+          if (o.el.classList.contains('cevrik')) { return; }
+          var ic = o.el.firstElementChild;
+          if (ic) { ic.style.transitionDelay = (o.sira * gecikme) + 'ms'; }
+          o.el.classList.add('cevrik');
         });
-      });
+      };
+      /* Iki kare beklemek gecisin duzgun baslamasini saglar. Sekme arka planda
+       * ise requestAnimationFrame hic calismaz; o durumda kartlar donmemis
+       * kalmasin diye zamanlayici yedegi var (islev tekrar cagrilabilir). */
+      requestAnimationFrame(function () { requestAnimationFrame(basla); });
+      setTimeout(basla, 80);
     }
     cevrilecekSatir = -1;
     aciklaAnim = false;
@@ -535,6 +530,7 @@
   }
 
   function tahtaTikla(e) {
+    if (S.bitti) { return; }   /* oyun bitince not almanin anlami kalmiyor */
     var sifirlaBtn = e.target.closest('.satir-sifirla');
     if (sifirlaBtn && !sifirlaBtn.disabled) { return satirSifirla(Number(sifirlaBtn.dataset.r)); }
     notTikla(e);
@@ -680,12 +676,30 @@
    * Gunlukte tek bir bulmaca var (bugun), o yuzden tarih gezinmesi yalnizca arsivde. */
   var ZORLUK_ISARET = { standart: 'S', ileri: 'İ' };
 
+  /* 2026-08-31 -> 31-08-2026 */
+  function tarihYaz(t) {
+    var p = String(t).split('-');
+    return p.length === 3 ? p[2] + '-' + p[1] + '-' + p[0] : t;
+  }
+
+  /* Istatistik penceresi kapatildiktan sonra dogru cevap burada durur. */
+  var cevabiGoster = false;
+
   function modYaz() {
     var arsiv = S.mod === 'arsiv';
     $('#tarih-nav').hidden = !arsiv;
     $('#sonraki').disabled = S.tarih >= dun();
-    $('#mod-etiket').textContent = arsiv ? 'Arşiv · ' + S.tarih
-      : (S.mod === 'serbest' ? 'Serbest Mod' : 'Günlük');
+
+    var etiket = $('#mod-etiket'), kutu = $('#kontroller');
+    var bitti = S.bitti && cevabiGoster;
+    kutu.classList.toggle('cevap-modu', bitti);
+    if (bitti) {
+      etiket.innerHTML = 'Cevap: <b>' + S.gizli + '</b>';
+    } else {
+      var mod = arsiv ? 'Arşiv · ' + tarihYaz(S.tarih)
+              : (S.mod === 'serbest' ? 'Serbest Mod' : 'Günlük');
+      etiket.textContent = mod + ' · ' + ZORLUKLAR[S.zorluk].ad;
+    }
 
     /* Zorluk dugmesi kapaliyken seviyenin rengini ve harfini tasir. */
     var zd = $('#zorluk-dugme');
@@ -825,7 +839,10 @@
       if (e.key === 'Escape') { menuKapat(); }
     });
 
-    $('#ist-pencere').addEventListener('close', function () { clearInterval(sayimZaman); });
+    $('#ist-pencere').addEventListener('close', function () {
+      clearInterval(sayimZaman);
+      if (S.bitti) { cevabiGoster = true; modYaz(); }
+    });
     Array.prototype.forEach.call(document.querySelectorAll('.kapat'), function (b) {
       b.addEventListener('click', function () { b.closest('dialog').close(); });
     });

@@ -161,6 +161,10 @@ header {
 @media (hover: hover) { .simge:hover { border-color: var(--vurgu); } }
 
 .kontroller { display: flex; gap: 6px; align-items: center; margin-top: 8px; }
+/* Istatistik penceresi kapatilinca dogru cevap burada ortada durur. */
+.kontroller.cevap-modu { justify-content: center; }
+.kontroller.cevap-modu .mod-etiket { flex: 0 0 auto; text-align: center; font-size: 15px; }
+.kontroller.cevap-modu .mod-etiket b { color: var(--yesil); letter-spacing: .5px; }
 
 .sekmeler {
   display: flex; gap: 3px; padding: 3px;
@@ -200,7 +204,11 @@ select, input[type="date"] {
    tahta + klavye dikeyde de sigsin. */
 #tahta {
   display: grid; gap: var(--bosluk); justify-content: center;
-  --kutu: clamp(28px, min(calc((100cqw - 8 * var(--bosluk) - 5px) / 7.4), 5.6vh), 52px);
+  /* Reklam alani icin tahta %20 kucultuldu (--olcek). Genislik hesabi ayni
+     kaliyor, yalnizca sonuc olcekleniyor - satir hala tasmiyor. */
+  --olcek: 0.8;
+  --kutu: calc(clamp(28px, min(calc((100cqw - 8 * var(--bosluk) - 5px) / 7.4), 5.6vh), 52px)
+               * var(--olcek));
 }
 
 .satir { display: flex; gap: var(--bosluk); align-items: center; }
@@ -234,6 +242,9 @@ select, input[type="date"] {
 .kutu.atla { color: var(--soluk); }
 .kutu.imlec { border-color: var(--vurgu); }
 .satir.gonderildi .kutu { cursor: pointer; }
+/* Oyun bitince not almak anlamsiz: imlec ve sifirlama dugmesi pasif. */
+#tahta.oyun-bitti .kutu { cursor: default; }
+#tahta.oyun-bitti .satir-sifirla { visibility: hidden; }
 .kutu.not-yesil   { background: var(--yesil);   border-color: var(--yesil);   color: #fff; }
 .kutu.not-sari    { background: var(--sari);    border-color: var(--sari);    color: #17181c; }
 .kutu.not-kirmizi { background: var(--kirmizi); border-color: var(--kirmizi); color: #fff; }
@@ -329,18 +340,17 @@ select, input[type="date"] {
 }
 
 /* --- klavye --- */
-#klavye { display: grid; gap: var(--bosluk); margin: 10px 0 14px; }
+#klavye { display: grid; gap: calc(var(--bosluk) * 0.8); margin: 10px 0 14px; }
 
-/* Tahtanin otomatik alt/ust kenar boslugu artan dikey alani ikiye esit boler:
-   basliktan tahtaya olan bosluk ile tahtadan klavyeye olan bosluk esitlenir,
-   klavye de alta oturur. */
-body:not(.giris) #tahta { margin-block: auto; }
-body:not(.giris) #klavye { margin-top: 0; }
+/* Tahta ve klavye yukariya hizalanir; kucultmeden artan alan altta toplanir
+   (reklam yerlesimi icin). */
+body:not(.giris) #tahta { margin-block: 0; }
+body:not(.giris) #klavye { margin-top: 12px; }
 .klavye-satir { display: flex; gap: 4px; justify-content: center; }
 
 .tus {
   flex: 1 1 0; min-width: 0;
-  height: clamp(34px, 5.4vh, 48px);
+  height: calc(clamp(34px, 5.4vh, 48px) * 0.8);   /* yalnizca dikeyde kucultuldu */
   border: 1px solid transparent;
   border-radius: 6px;
   background: var(--tus-bg);
@@ -474,11 +484,16 @@ body:not(.giris) .logo {
   font-size: 13px; font-weight: 600; color: var(--soluk);
 }
 
+/* Arsiv tarih secici dikeyde %20 kucuk: mobilde ust kisim cok sikisiktı.
+   Yazi boyu kucultulmuyor - iOS 16px altindaki alanlara dokununca sayfayi
+   kendiliginden yakinlastiriyor. */
 .tarih-nav {
   width: 100%; max-width: 480px;
-  padding-inline: 14px; margin-top: 8px;
+  padding-inline: 14px; margin-top: 6px;
   display: flex; gap: 6px; align-items: center; justify-content: center;
 }
+.tarih-nav .simge { width: 27px; height: 27px; font-size: 14px; }
+.tarih-nav input[type="date"] { padding-block: 2px; }
 .tarih-nav[hidden] { display: none; }
 .tarih-nav input[type="date"] { flex: 0 1 190px; text-align: center; }
 .simge[disabled] { opacity: .35; cursor: not-allowed; }
