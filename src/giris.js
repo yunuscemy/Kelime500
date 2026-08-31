@@ -106,12 +106,26 @@
     }).join('');
   }
 
+  /* Oyunun yayina alindigi gun - src/app.js icindeki YAYIN ile ayni olmali.
+   * Arsiv bundan oncesine gidemez. */
+  var YAYIN = '2026-08-31';
+
   /* Zorluk artik yalnizca oyun icinde secilir; giris sayfasi kayitli
    * tercihi okuyup baglantilara ekler. */
   function baglantilariKur(zorluk) {
     $('#baglanti-gunluk').href  = 'oyna.html?mod=gunluk&zorluk=' + zorluk;
     $('#baglanti-serbest').href = 'oyna.html?mod=serbest&zorluk=' + zorluk;
-    $('#baglanti-arsiv').href   = 'oyna.html?mod=arsiv&zorluk=' + zorluk + '&tarih=' + dun();
+    /* Yayin gununde henuz arsivlenecek gun yok: kart pasif gosterilir. */
+    var arsiv = $('#baglanti-arsiv');
+    if (dun() >= YAYIN) {
+      arsiv.href = 'oyna.html?mod=arsiv&zorluk=' + zorluk + '&tarih=' + dun();
+      arsiv.removeAttribute('aria-disabled');
+      arsiv.textContent = 'Arşive git →';
+    } else {
+      arsiv.removeAttribute('href');
+      arsiv.setAttribute('aria-disabled', 'true');
+      arsiv.textContent = 'Yarından itibaren';
+    }
   }
 
   /* Gece yarisina kalan sure: gunluk kelime o an yenilenir.

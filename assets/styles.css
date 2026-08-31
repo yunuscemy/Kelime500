@@ -560,6 +560,8 @@ body.giris main { max-width: 576px; }
 }
 @media (hover: hover) { .kart-dugme:hover { filter: brightness(1.08); } }
 .kart-dugme.yesil { background: var(--yesil); color: #fff; }
+/* Henuz oynanabilir gun yokken arsiv karti pasif gorunur. */
+.kart-dugme[aria-disabled="true"] { background: var(--gri); cursor: default; pointer-events: none; }
 .kart-dugme.sari  { background: var(--sari); color: #17181c; }   /* oyun ici sari */
 
 .durum-satiri { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 14px; }

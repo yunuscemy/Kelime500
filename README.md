@@ -27,6 +27,9 @@ Derleme adımı yok, bağımlılık yok. `index.html` (giriş sayfası) tarayıc
   karılır ve günler bu sabit sırada ilerler. Çakışma olduğunda sıradaki
   kelimeye atlanmaz (atlamak diziyi kaydırıp ikinci kuralı bozuyordu); aynı
   döngü içinde iki günün kelimesi takas edilir.
+- **Yayın tarihi**: `src/app.js` ve `src/giris.js` içindeki `YAYIN` sabiti oyunun
+  yayına alındığı günü tutar. Arşiv bu tarihten öncesine gidemez — ikisi de
+  aynı değeri taşımalı.
 - **Arşiv**: kaçırılan günler oynanabilir; `‹ ›` düğmeleri ve tarih seçiciyle günler
   arasında gezinilir. Arşiv **yalnızca düne kadar** gider — bugünün kelimesi Günlük'e
   aittir, arşivden oraya dönülmez. Günlükte tek bir bulmaca olduğu için orada tarih

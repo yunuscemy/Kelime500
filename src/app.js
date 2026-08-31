@@ -79,7 +79,23 @@
   function dun() { return gunEkle(bugun(), -1); }
 
   /* Arsivde en ileri gidilebilecek gun dundur; bugune donus yok. */
+  /* Oyunun yayina alindigi gun. Arsiv bundan oncesine gidemez - yoksa hic
+   * yayimlanmamis gunler oynanabiliyordu (1990, hatta 1000 yili gibi).
+   * Yayin tarihi degisirse burasi guncellenir. */
+  var YAYIN = '2026-08-31';
+
   function enGecTarih(mod) { return mod === 'arsiv' ? dun() : bugun(); }
+  function enErkenTarih(mod) { return mod === 'arsiv' ? YAYIN : bugun(); }
+
+  /* Arsivde oynanabilir gun var mi? Yayin gununde henuz yok. */
+  function arsivVarMi() { return dun() >= YAYIN; }
+
+  function tarihSinirla(tarih, mod) {
+    var enGec = enGecTarih(mod), enErken = enErkenTarih(mod);
+    if (tarih > enGec) { return enGec; }
+    if (tarih < enErken) { return enErken; }
+    return tarih;
+  }
 
   /* ---------- oyun kurulumu ---------- */
 
@@ -697,7 +713,7 @@
 
   function tarihGit(gun) {
     var hedef = gunEkle(S.tarih, gun);
-    if (hedef > enGecTarih(S.mod)) { return; }
+    if (hedef > enGecTarih(S.mod) || hedef < enErkenTarih(S.mod)) { return; }
     $('#tarih').value = hedef;
     yaz('kelime500.tarih', hedef);
     yeniOyun(S.mod, S.zorluk, hedef);
@@ -721,7 +737,8 @@
   function modYaz() {
     var arsiv = S.mod === 'arsiv';
     $('#tarih-nav').hidden = !arsiv;
-    $('#sonraki').disabled = S.tarih >= dun();
+    $('#sonraki').disabled = S.tarih >= enGecTarih(S.mod);
+    $('#onceki').disabled = S.tarih <= enErkenTarih(S.mod);
 
     var etiket = $('#mod-etiket'), kutu = $('#kontroller');
     var bitti = S.bitti && cevabiGoster;
@@ -802,10 +819,12 @@
 
     var tarih = p.tarih && /^\d{4}-\d{2}-\d{2}$/.test(p.tarih) ? p.tarih : enGecTarih(mod);
     if (mod === 'gunluk') { tarih = bugun(); }          // gunlukte tek bulmaca var
-    if (tarih > enGecTarih(mod)) { tarih = enGecTarih(mod); }
+    if (mod === 'arsiv' && !arsivVarMi()) { mod = 'gunluk'; tarih = bugun(); }
+    tarih = tarihSinirla(tarih, mod);
 
     var tarihGirdi = $('#tarih');
     tarihGirdi.max = enGecTarih(mod);                    // arsivde bugune donulemez
+    tarihGirdi.min = enErkenTarih(mod);                  // yayin tarihinden oncesi yok
     tarihGirdi.value = tarih;
     yaz('kelime500.zorluk', zorluk);
 
@@ -815,8 +834,8 @@
     $('#tahta').addEventListener('click', tahtaTikla);
 
     tarihGirdi.addEventListener('change', function () {
-      var enGec = enGecTarih(S.mod);
-      if (!this.value || this.value > enGec) { this.value = enGec; }
+      if (!this.value) { this.value = enGecTarih(S.mod); }
+      this.value = tarihSinirla(this.value, S.mod);
       yaz('kelime500.tarih', this.value);
       yeniOyun(S.mod, S.zorluk, this.value);
     });
