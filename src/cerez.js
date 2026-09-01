@@ -58,7 +58,7 @@
     b.setAttribute('aria-label', 'Çerez bildirimi');
     b.innerHTML =
       '<p>Bu sitede reklam gösterebilmek için çerez kullanılıyor. Oyun ilerlemen ' +
-      'yalnızca cihazında saklanır. <a href="gizlilik.html">Ayrıntılar</a></p>' +
+      'yalnızca cihazında saklanır. <a href="gizlilik">Ayrıntılar</a></p>' +
       '<div class="cerez-dugmeler">' +
       '  <button type="button" class="tus" data-karar="ret">Reddet</button>' +
       '  <button type="button" class="tus vurgulu" data-karar="kabul">Kabul et</button>' +

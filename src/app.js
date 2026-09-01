@@ -792,7 +792,7 @@
   /* Mod degistirme adres uzerinden yapilir: acilis kodu zaten tarih/zorluk
    * dogrulamasini orada yapiyor, ayni mantigi ikinci kez yazmaya gerek yok. */
   function modaGit(mod) {
-    location.href = 'oyna.html?mod=' + mod + '&zorluk=' + S.zorluk;
+    location.href = 'oyna?mod=' + mod + '&zorluk=' + S.zorluk;
   }
 
   function adresOku() {

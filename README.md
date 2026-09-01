@@ -11,6 +11,13 @@ mantığı.)
 
 Derleme adımı yok, bağımlılık yok. `index.html` (giriş sayfası) tarayıcıda açılır:
 
+    python3 tools/sunucu.py
+
+Bu betik Cloudflare Pages'in davranışını taklit eder: sayfalar uzantısız
+adreste sunulur (`/oyna`), `.html` adresleri oraya yönlendirilir. Sitedeki
+bağlantılar da uzantısız olduğu için düz bir dosya sunucusuyla test etmek
+yanıltıcı olur. Tek tek dosya açmak isterseniz:
+
     open index.html
 
 İstersen basit bir sunucuyla da servis edilir: `python3 -m http.server`.

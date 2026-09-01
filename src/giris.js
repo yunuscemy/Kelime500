@@ -113,12 +113,12 @@
   /* Zorluk artik yalnizca oyun icinde secilir; giris sayfasi kayitli
    * tercihi okuyup baglantilara ekler. */
   function baglantilariKur(zorluk) {
-    $('#baglanti-gunluk').href  = 'oyna.html?mod=gunluk&zorluk=' + zorluk;
-    $('#baglanti-serbest').href = 'oyna.html?mod=serbest&zorluk=' + zorluk;
+    $('#baglanti-gunluk').href  = 'oyna?mod=gunluk&zorluk=' + zorluk;
+    $('#baglanti-serbest').href = 'oyna?mod=serbest&zorluk=' + zorluk;
     /* Yayin gununde henuz arsivlenecek gun yok: kart pasif gosterilir. */
     var arsiv = $('#baglanti-arsiv');
     if (dun() >= YAYIN) {
-      arsiv.href = 'oyna.html?mod=arsiv&zorluk=' + zorluk + '&tarih=' + dun();
+      arsiv.href = 'oyna?mod=arsiv&zorluk=' + zorluk + '&tarih=' + dun();
       arsiv.removeAttribute('aria-disabled');
       arsiv.textContent = 'Arşive git →';
     } else {
