@@ -662,8 +662,11 @@ body.giris main { max-width: 576px; }
 @media (min-width: 760px) {
   .reklam-icerik { display: none; }
   .reklam-alt { display: grid; }
-  /* Sabit kusagin arkasinda icerik kalmasin: sayfanin sonuna bant kadar yer. */
-  body { padding-bottom: var(--reklam-alt-boy); }
+  /* Sabit kusagin arkasinda icerik kalmasin: sayfanin sonuna bant kadar yer.
+     body.giris de yaziliyor - yoksa giris sayfasindaki "padding-bottom: 8px"
+     kurali ozgullugu yuksek oldugu icin bunu eziyor ve sayac/alt baglantilar
+     kusagin altinda kalip erisilemez oluyordu. */
+  body, body.giris { padding-bottom: calc(var(--reklam-alt-boy) + 12px); }
 }
 /* Yan bantlar ancak icerik + 2x300 + bosluk sigdiginda acilir. */
 @media (min-width: 1200px) {
@@ -721,3 +724,27 @@ body.giris main { max-width: 576px; }
   text-align: center; font-size: 12px;
 }
 .alt-baglanti a { color: var(--soluk); }
+
+
+/* ==========================================================================
+   REKLAMLAR HENUZ YAYINDA DEGIL
+
+   >>> AdSense onaylanip kodlar yerlestirilince BU BLOGUN TAMAMINI SIL. <<<
+
+   Yuvalar HTML'de duruyor ve olculeri yukarida tanimli; blok silinince
+   yerlerine otururlar, baska hicbir sey degistirmek gerekmez.
+
+   Neden gizliyoruz: reklam gelmeden yuvalari acik birakmak iki turlu de
+   kotu duruyordu. Kesikli cerceve site yarim kalmis gibi gosteriyor; yeri
+   ayirip icini bos birakmak ise masaustunde iki yanda 300x600'luk, altta
+   100px'lik bos alan birakip yerlesimi bozuk gosteriyor. Yer ayirmanin tek
+   faydasi reklam yuklenirken sayfanin kaymamasi - reklam yokken faydasi yok.
+   ========================================================================== */
+.reklam { display: none !important; }
+
+@media (min-width: 760px) {
+  /* Sabit kusak olmadigi icin sayfa sonundaki bosluk da geri aliniyor. */
+  body { padding-bottom: 0; }
+  body.giris { padding-bottom: 8px; }
+  #cerez-bildirimi { bottom: 14px; }
+}

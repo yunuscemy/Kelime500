@@ -78,8 +78,11 @@ Derleme adımı yok, bağımlılık yok. `index.html` (giriş sayfası) tarayıc
 | `gizlilik.html` | Gizlilik ve çerez politikası (yayın öncesi doldurulacak yerler var) |
 | `src/cerez.js` | Çerez bildirimi ve reklam yükleme kapısı |
 | `ads.txt` | AdSense onayından sonra yayıncı kimliğiyle doldurulur |
+
 | `tools/` | Sözlüğü indiren ve kelime listesini çıkaran betikler |
 | `src/app.js` | Arayüz, girdi, kayıt, istatistik |
+
+Reklam yuvaları HTML'de hazır ama **`assets/styles.css` sonundaki "REKLAMLAR HENÜZ YAYINDA DEĞİL" bloğu** onları gizliyor. Reklamlar yerleştirilince o blok silinir; ölçüler zaten tanımlı olduğu için yuvalar kendiliğinden yerine oturur.
 
 İki ayrı liste var, çünkü ikisinin işi farklı:
 
