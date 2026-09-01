@@ -46,9 +46,16 @@
    ".acilir button { display: flex }") eziliyor ve oge gizlenmiyordu. */
 [hidden] { display: none !important; }
 
+/* Asagi cekip yenileme (pull-to-refresh) kapali. Ic gerekce: oyun oynarken
+   parmagi asagi kaydirmak kazara sayfayi yeniliyordu ve bu hareket sirasinda
+   tarayici butun goruntu alanini asagi surukledigi icin sabit reklam kusagi
+   da ekrandan tasip kayboluyordu. Normal kaydirma etkilenmiyor. */
+html { overscroll-behavior-y: contain; }
+
 body {
   margin: 0;
   min-height: 100dvh;
+  overscroll-behavior-y: contain;
   background: var(--bg);
   color: var(--metin);
   font: 16px/1.4 "Inter", "Segoe UI", system-ui, -apple-system, sans-serif;
