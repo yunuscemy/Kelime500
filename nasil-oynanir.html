@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="tr" data-tema="koyu">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Nasıl oynanır? — Kelime500</title>
+<meta name="description" content="Kelime500 nasıl oynanır? Gizli Türkçe kelimeyi 8 tahminde bul. Yeşil, sarı ve kırmızı sayıların anlamı, not alma, seviyeler ve günlük kelime kuralları.">
+<link rel="canonical" href="https://kelime500.com/nasil-oynanir.html">
+<link rel="icon" href="assets/favicon.svg?v=27" type="image/svg+xml">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png?v=27">
+<meta name="theme-color" content="#0f1115">
+<!-- Sosyal paylasim -->
+<meta property="og:url" content="https://kelime500.com/nasil-oynanir.html">
+<meta property="og:type" content="article">
+<meta property="og:site_name" content="Kelime500">
+<meta property="og:title" content="Kelime500 nasıl oynanır?">
+<meta property="og:description" content="Gizli Türkçe kelimeyi 8 tahminde bul. Yeşil, sarı ve kırmızı sayıların anlamı, not alma ve seviyeler.">
+<meta property="og:image" content="https://kelime500.com/assets/paylasim.png?v=27">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:locale" content="tr_TR">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Kelime500 nasıl oynanır?">
+<meta name="twitter:description" content="Gizli Türkçe kelimeyi 8 tahminde bul. Yeşil, sarı ve kırmızı sayıların anlamı, not alma ve seviyeler.">
+<meta name="twitter:image" content="https://kelime500.com/assets/paylasim.png?v=27">
+<script>
+(function () {
+  var t = null;
+  try { t = JSON.parse(localStorage.getItem('kelime500.tema')); } catch (e) { /* yoksay */ }
+  if (t !== 'acik' && t !== 'koyu') {
+    t = window.matchMedia && matchMedia('(prefers-color-scheme: light)').matches ? 'acik' : 'koyu';
+  }
+  document.documentElement.dataset.tema = t;
+}());
+</script>
+<link rel="stylesheet" href="assets/styles.css?v=27">
+</head>
+<body class="giris">
+
+<header>
+  <div class="marka-kart">
+    <a class="logo" href="index.html" aria-label="Kelime500 ana sayfa">
+      <span class="logo-kelime" aria-hidden="true"><b>K</b><b>E</b><b>L</b><b>İ</b><b>M</b><b>E</b></span>
+      <span class="logo-sayi" aria-hidden="true"><b>5</b><b>0</b><b>0</b></span>
+    </a>
+  </div>
+</header>
+
+<main class="giris-icerik">
+  <section class="kart yazi">
+    <h1>KELİME500 nasıl oynanır?</h1>
+
+    <!-- KURALLAR BASLANGIC
+         Bu bolum kuralların TEK KAYNAGIDIR. Oyun icindeki pencere (src/yardim.js)
+         buradan uretilir: metni degistirdikten sonra
+             python3 tools/yardim-uret.py
+         calistir, yoksa iki yerde farkli metin kalir. -->
+    <div id="kurallar">
+      <p>Gizli Türkçe kelimeyi <b>8 veya daha az</b> sayıda tahminde bulmaya çalışıyorsun.
+         Her tahminden sonra tahmin kelimesinin yanında 3 farklı sayı göreceksin:</p>
+      <div class="ornek"><span class="rozet duz yer">3</span>
+        <p>tane harf gizli kelimede <b>var ve yerleri doğru</b>.</p></div>
+      <div class="ornek"><span class="rozet duz harf">2</span>
+        <p>tane harf gizli kelimede <b>var ama yerleri doğru değil</b>.</p></div>
+      <div class="ornek"><span class="rozet duz yok">0</span>
+        <p>tane harf gizli kelimede <b>yok</b>.</p></div>
+      <p>Yeşil, sarı ve kırmızı kutucuklardaki rakamların toplamı, her zaman kelime
+         uzunluğu olan <b>5</b>’e eşit olacak. Tahmin sonuçlarının <b>hangi</b> harfler
+         için olduğunu söylemiyoruz, asıl iş bunu bulmak! Örneğin yukarıdaki sayılar
+         gizli kelime <b>KALEM</b> iken <b>KELAM</b> tahmininin sonucu; K, L ve M yeşil,
+         A ve E’nin yerleri farklı.</p>
+      <ul>
+        <li>Tahmin ettiğin kelimelerin içindeki harflere <b>tıklayarak</b>, harflere ait
+            tahminleri not alabilirsin. Harflerin renkleri üzerlerine tıkladıkça sırasıyla
+            değişir: kırmızı → sarı → yeşil → boş. Bu sayede tahminlerin için farklı
+            senaryolar deneyebilirsin. Bir tahmininin içindeki harflerin hiçbiri gizli
+            kelimede yoksa, o harfler otomatik olarak tüm tahminlerde kırmızıya boyanır ve
+            bu değiştirilemez — çünkü bu artık bir tahmin değil, kesin bilgidir.</li>
+        <li>Eğer bir satırdaki tahminlerini sıfırlamak istersen, satırın solundaki
+            <b>↺</b> tuşuna basabilirsin.</li>
+        <li>Daha önceki tahminlerinde kullandığın harfler <b>gri</b> görünür ki onları daha
+            önce denediğini anlamak daha kolay olsun.</li>
+        <li>Yeni bir tahminde bulunurken, <b>Boşluk</b> tuşunu bilmediğin harfin yerine
+            <b>·</b> koymak için kullanabilirsin. Böylece taslak oluşturabilirsin.</li>
+        <li><b>◫</b> bütün notlarını temizler.</li>
+        <li>Sözlükte olmayan bir kelime yazdığında tüm harfler <b>kırmızı ve üstü çizili</b>
+            olarak görünür.</li>
+        <li><b>Günlük kelime</b> her seviye için günde bir yeni kelime bulundurur ve tüm
+            oyuncular için aynıdır. Kaçırdığın günler <b>Arşiv</b>’de durur.</li>
+        <li><b>Standart</b> ve <b>İleri</b> olmak üzere 2 farklı seviye var. Standart’ta
+            gizli kelime içinde aynı harf iki kez geçmez ve tahmin ederken aynı harfi iki
+            kez bulunduran kelimeleri kullanamazsın. İleri için herhangi bir kural yok.</li>
+      </ul>
+    </div>
+    <!-- KURALLAR BITIS -->
+
+    <a class="kart-dugme yesil" href="index.html">← Oynamaya başla</a>
+  </section>
+</main>
+
+<p class="alt-baglanti">
+  <a href="index.html">Ana sayfa</a> ·
+  <a href="gizlilik.html">Gizlilik ve çerez politikası</a>
+</p>
+
+<script src="src/cerez.js?v=27"></script>
+</body>
+</html>

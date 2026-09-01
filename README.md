@@ -74,6 +74,7 @@ Derleme adımı yok, bağımlılık yok. `index.html` (giriş sayfası) tarayıc
 | `src/words.js` | Cevap havuzu; yüklemede büyütülür, uzunluğu tutmayan elenir |
 | `src/sozluk.js` | Tahmin olarak kabul edilen geniş sözlük (üretilmiş dosya) |
 | `kelime-listesi.md` | Cevap havuzunun tamamı (üretilmiş dosya) |
+| `nasil-oynanir.html` | Kural metninin **tek kaynağı**; `src/yardim.js` bundan üretilir |
 | `gizlilik.html` | Gizlilik ve çerez politikası (yayın öncesi doldurulacak yerler var) |
 | `src/cerez.js` | Çerez bildirimi ve reklam yükleme kapısı |
 | `ads.txt` | AdSense onayından sonra yayıncı kimliğiyle doldurulur |
@@ -92,6 +93,10 @@ Cevap havuzunun tamamı [kelime-listesi.md](kelime-listesi.md) dosyasında liste
 Havuza kelime eklemek için `src/words.js` düzenlenir; yanlış uzunlukta veya alfabe dışı
 harf içeren kelimeler yüklemede sessizce elenir. Ardından `python3 tools/liste-cikar.py`
 çalıştırılır. Sözlüğü yenilemek için `python3 tools/sozluk-indir.py`.
+
+Kural metni değiştirilecekse `nasil-oynanir.html` içindeki `#kurallar` bölümü
+düzenlenir, ardından `python3 tools/yardim-uret.py` çalıştırılır — oyun içindeki
+"Nasıl oynanır" penceresi bu betikle üretilir, elle düzenlenmez.
 
 Sözlüğün birincil kaynağı **TDK Güncel Türkçe Sözlük'ün madde başlığı listesidir**
 (`eski.sozluk.gov.tr/autocomplete.json`, 99.227 madde). Üstüne TDK maddelerinden
