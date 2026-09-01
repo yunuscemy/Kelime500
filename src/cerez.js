@@ -70,7 +70,23 @@
     document.body.appendChild(b);
   }
 
+  /* --- yan reklam bantlarinin dikey hizasi ---
+   * Bantlar sayfadaki ilk icerik blokunun ust hizasina oturur: giris
+   * sayfasinda "Nasıl oynanır" karti, oyun sayfasinda mod etiketi satiri.
+   * Sabit bir piksel degeri yazmiyoruz - baslik yuksekligi tasarimla
+   * degisiyor, olculerek bulunuyor. */
+  function yanBantlariHizala() {
+    var capa = document.getElementById('nasil-kart') ||
+               document.getElementById('kontroller');
+    if (!capa) { return; }
+    var ust = Math.round(capa.getBoundingClientRect().top + window.pageYOffset);
+    document.documentElement.style.setProperty('--reklam-ust', ust + 'px');
+  }
+
   function baslat() {
+    yanBantlariHizala();
+    window.addEventListener('resize', yanBantlariHizala);
+
     var secim = oku();
     if (secim === 'kabul' || secim === 'ret') {
       reklamlariYukle(secim === 'kabul');

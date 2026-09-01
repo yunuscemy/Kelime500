@@ -12,6 +12,7 @@
   --gri: #4a5160;
   --yuvarlak: 9px;
   --gecis: 120ms ease;
+  --reklam-alt-boy: 100px;   /* sabit alt reklam kusagi (728x90 + bosluk) */
   --tema-sure: 320ms;    /* acik<->koyu gecis suresi - src/*.js TEMA_SURE ile ayni */
   --kart-sure: 460ms;   /* kart cevirme suresi - src/app.js KART_SURE ile ayni */
 
@@ -565,7 +566,7 @@ body.giris main { max-width: 576px; }
 .kart-dugme.yesil { background: var(--yesil); color: #fff; }
 /* Henuz oynanabilir gun yokken arsiv karti pasif gorunur. */
 .kart-dugme[aria-disabled="true"] { background: var(--gri); cursor: default; pointer-events: none; }
-.kart-dugme.sari  { background: var(--sari); color: #17181c; }   /* oyun ici sari */
+.kart-dugme.sari  { background: var(--sari); color: #fff; }      /* oyun ici sari */
 
 .durum-satiri { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 14px; }
 .durum-etiket {
@@ -620,19 +621,32 @@ body.giris main { max-width: 576px; }
    basarken kazayla tiklanmasin (kaza tiklamalari gecersiz trafik sayilir). */
 #reklam-oyun { margin-top: 40px; margin-bottom: 14px; }
 
-/* --- masaustu yan bantlar: 300x600 --- */
+/* --- masaustu yan bantlar: 300x600 ---
+   Ust hizasi --reklam-ust ile veriliyor (src/cerez.js olcuyor): ilk icerik
+   blokunun ustuyle ayni cizgide dururlar. Ortalanmis olsalardi buyuk
+   ekranlarda icerikten kopuk gorunuyorlardi.
+   Yukseklik esnek: ekrana sigmazsa 600'un altina iner, tasmaz. */
 .reklam-yan {
-  position: fixed; top: 50%; transform: translateY(-50%);
-  width: 300px; height: 600px;
+  position: fixed;
+  top: var(--reklam-ust, 95px);
+  width: 300px;
+  height: min(600px, calc(100dvh - var(--reklam-ust, 95px) - var(--reklam-alt-boy) - 24px));
   z-index: 5;
 }
 .reklam-yan.sol { left: 24px; }
 .reklam-yan.sag { right: 24px; }
 
-/* --- masaustu alt bant: 728x90 --- */
+/* --- masaustu alt bant: ekranin altina sabit kusak ---
+   Sayfayi kaydirmadan gorunur olsun diye sabit; icerik altindan akar.
+   Yukseklik 728x90 reklam olcusunden geliyor (90 + ust/alt bosluk). */
 .reklam-alt {
-  width: 728px; height: 90px;
-  margin: 18px auto 24px;
+  position: fixed; left: 0; right: 0; bottom: 0;
+  width: auto; height: var(--reklam-alt-boy);
+  margin: 0;
+  background: var(--bg);
+  border: 0; border-top: 1px solid var(--cizgi);
+  border-radius: 0;
+  z-index: 30;
 }
 
 /* --- istatistik penceresi ici: 320x100 --- */
@@ -648,13 +662,15 @@ body.giris main { max-width: 576px; }
 @media (min-width: 760px) {
   .reklam-icerik { display: none; }
   .reklam-alt { display: grid; }
+  /* Sabit kusagin arkasinda icerik kalmasin: sayfanin sonuna bant kadar yer. */
+  body { padding-bottom: var(--reklam-alt-boy); }
 }
 /* Yan bantlar ancak icerik + 2x300 + bosluk sigdiginda acilir. */
 @media (min-width: 1200px) {
   .reklam-yan { display: grid; }
 }
-/* Kisa ekranda 600px'lik bant tasar. */
-@media (max-height: 680px) {
+/* Cok kisa ekranda yan bantlara anlamli yer kalmiyor. */
+@media (max-height: 560px) {
   .reklam-yan { display: none; }
 }
 
@@ -662,6 +678,7 @@ body.giris main { max-width: 576px; }
 /* --- cerez bildirimi --- */
 #cerez-bildirimi {
   position: fixed; left: 50%; bottom: 14px; transform: translateX(-50%);
+  /* Masaustunde sabit reklam kusaginin ustunde durur, uzerini kapatmaz. */
   z-index: 40;
   width: calc(100% - 28px); max-width: 560px;
   display: flex; flex-wrap: wrap; align-items: center; gap: 12px;
@@ -678,13 +695,21 @@ body.giris main { max-width: 576px; }
   border-radius: var(--yuvarlak); font-size: 13.5px;
 }
 .cerez-dugmeler .tus.vurgulu { background: var(--yesil); color: #fff; }
+/* Masaustunde sabit reklam kusaginin ustunde durur, uzerini kapatmaz.
+   Bu kural bildirimin temel kuralindan SONRA gelmeli - ayni ozgullukte
+   oldugu icin sirasi belirleyici. */
+@media (min-width: 760px) {
+  #cerez-bildirimi { bottom: calc(var(--reklam-alt-boy) + 14px); }
+}
 
 /* --- gizlilik sayfasi --- */
 .kart.yazi h1 { margin: 0 0 4px; font-size: 24px; letter-spacing: -0.3px; }
 .kart.yazi h2 { margin: 22px 0 6px; font-size: 16px; }
 .kart.yazi p, .kart.yazi li { font-size: 14px; color: var(--soluk); line-height: 1.6; }
 .kart.yazi b { color: var(--metin); }
-.kart.yazi a { color: var(--vurgu); }
+/* Metin icindeki baglantilar vurgu renginde; dugmeler haric - yoksa
+   .kart-dugme'nin beyaz yazisini eziyordu (ozgullugu daha yuksek). */
+.kart.yazi a:not(.kart-dugme) { color: var(--vurgu); }
 .kart.yazi ul { padding-left: 18px; margin: 6px 0; }
 .kart.yazi code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 13px; }
 .kart.yazi .guncelleme { font-size: 12.5px; margin: 0 0 4px; }

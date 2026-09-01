@@ -59,11 +59,14 @@ KALIP = '''/* "Nasil oynanir" penceresi.
     return pencere;
   }
 
-  /* Giris sayfasinda pencerenin ust kenari "Nasıl oynanır" kartinin ust
-   * kenariyla hizalanir. Asagida yeterli yer kalmiyorsa (dar/kisa ekran)
-   * varsayilan ortalanmis konum korunur. */
+  /* Pencerenin ust kenari, sayfadaki ilk icerik blokunun ust kenariyla
+   * hizalanir: giris sayfasinda "Nasıl oynanır" karti, oyun sayfasinda
+   * mod etiketi satiri - ikisi de logonun hemen altindaki ilk oge.
+   * Asagida yeterli yer kalmiyorsa (dar/kisa ekran) varsayilan ortalanmis
+   * konum korunur, yoksa pencere ekrandan tasardi. */
   function hizala(p) {
-    var kart = document.getElementById('nasil-kart');
+    var kart = document.getElementById('nasil-kart') ||
+               document.getElementById('kontroller');
     p.style.marginTop = '';
     p.style.maxHeight = '';
     if (!kart) { return; }
