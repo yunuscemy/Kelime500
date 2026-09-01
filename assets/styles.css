@@ -12,7 +12,8 @@
   --gri: #4a5160;
   --yuvarlak: 9px;
   --gecis: 120ms ease;
-  --reklam-alt-boy: 100px;   /* sabit alt reklam kusagi (728x90 + bosluk) */
+  /* Sabit alt reklam kusagi. Mobilde 320x50, masaustunde 728x90 olcusune gore. */
+  --reklam-alt-boy: 60px;
   --tema-sure: 320ms;    /* acik<->koyu gecis suresi - src/*.js TEMA_SURE ile ayni */
   --kart-sure: 460ms;   /* kart cevirme suresi - src/app.js KART_SURE ile ayni */
 
@@ -219,7 +220,10 @@ select, input[type="date"] {
   /* Reklam alani icin tahta %20 kucultuldu (--olcek). Genislik hesabi ayni
      kaliyor, yalnizca sonuc olcekleniyor - satir hala tasmiyor. */
   --olcek: 0.8;
-  --kutu: calc(clamp(28px, min(calc((100cqw - 8 * var(--bosluk) - 5px) / 7.4), 5.6vh), 52px)
+  /* Dikey pay hesaplanirken sabit reklam kusagi dusuluyor: yoksa kisa
+     ekranlarda tahta kusagin altina tasiyordu. */
+  --kutu: calc(clamp(28px, min(calc((100cqw - 8 * var(--bosluk) - 5px) / 7.4),
+                              calc((100dvh - var(--reklam-alt-boy)) * 0.056)), 52px)
                * var(--olcek));
 }
 
@@ -613,13 +617,8 @@ body.giris main { max-width: 576px; }
 .reklam:not(:empty)::after { content: none; }   /* reklam gelince etiket kalkar */
 
 /* --- icerik ici yuva (mobil): 320x100 --- */
-.reklam-icerik {
-  width: 100%; max-width: 336px; height: 100px;
-  margin-inline: auto;
-}
-/* Oyun sayfasinda klavyeyle arasinda 40px dokunulamaz bosluk: gonder tusuna
-   basarken kazayla tiklanmasin (kaza tiklamalari gecersiz trafik sayilir). */
-#reklam-oyun { margin-top: 40px; margin-bottom: 14px; }
+/* Giris sayfasindaki yuva kartlarla ayni izgarada, ayni genislikte. */
+.reklam-icerik { width: 100%; height: 100px; }
 
 /* --- masaustu yan bantlar: 300x600 ---
    Ust hizasi --reklam-ust ile veriliyor (src/cerez.js olcuyor): ilk icerik
@@ -659,7 +658,13 @@ body.giris main { max-width: 576px; }
    Mobilde yalnizca icerik ici yuva, masaustunde bant + yan bantlar. */
 .reklam-yan, .reklam-alt { display: none; }
 
+/* Oyun sayfasinda kusak her ekran boyutunda duruyor: icerik zaten ekrana
+   sigiyor, kusak sabit oldugu icin kaydirilsa bile kaybolmuyor. */
+body:not(.giris) .reklam-alt { display: grid; }
+body:not(.giris) { padding-bottom: var(--reklam-alt-boy); }
+
 @media (min-width: 760px) {
+  :root { --reklam-alt-boy: 100px; }   /* masaustunde 728x90 sigacak */
   .reklam-icerik { display: none; }
   .reklam-alt { display: grid; }
   /* Sabit kusagin arkasinda icerik kalmasin: sayfanin sonuna bant kadar yer.
