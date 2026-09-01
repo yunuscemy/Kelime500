@@ -31,9 +31,11 @@ Derleme adımı yok, bağımlılık yok. `index.html` (giriş sayfası) tarayıc
   yayına alındığı günü tutar. Arşiv bu tarihten öncesine gidemez — ikisi de
   aynı değeri taşımalı.
 - **Arşiv**: kaçırılan günler oynanabilir; `‹ ›` düğmeleri ve tarih seçiciyle günler
-  arasında gezinilir. Arşiv **yalnızca düne kadar** gider — bugünün kelimesi Günlük'e
-  aittir, arşivden oraya dönülmez. Günlükte tek bir bulmaca olduğu için orada tarih
-  gezinmesi hiç görünmez.
+  arasında gezinilir. Arşiv **yayın tarihinden düne kadar** olan günleri kapsar:
+  alt sınır `YAYIN` sabiti, üst sınır dündür — bugünün kelimesi Günlük'e aittir,
+  arşivden oraya dönülmez. Günlükte tek bir bulmaca olduğu için orada tarih
+  gezinmesi hiç görünmez. Yayın gününde arşivlenecek gün olmadığından giriş
+  sayfasındaki arşiv kartı pasif görünür.
   Arşivde oynanan gün, o günün günlük bulmacasının aynısıdır: kelime de kayıtlı
   ilerleme de ortaktır, ama istatistikleri günlük serisini bozmasın diye ayrı tutulur.
 - **Serbest**: sınırsız rastgele kelime, istatistikleri günlükten ayrı tutulur.

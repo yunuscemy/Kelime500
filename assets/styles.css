@@ -46,10 +46,13 @@
    ".acilir button { display: flex }") eziliyor ve oge gizlenmiyordu. */
 [hidden] { display: none !important; }
 
-/* Asagi cekip yenileme (pull-to-refresh) kapali. Ic gerekce: oyun oynarken
-   parmagi asagi kaydirmak kazara sayfayi yeniliyordu ve bu hareket sirasinda
-   tarayici butun goruntu alanini asagi surukledigi icin sabit reklam kusagi
-   da ekrandan tasip kayboluyordu. Normal kaydirma etkilenmiyor. */
+/* Asagi cekip yenileme (pull-to-refresh) kapali: oyun oynarken parmagi asagi
+   kaydirmak kazara sayfayi yenileyebiliyor.
+   NOT: iOS Safari'de denendi, orada yenileme hareketi yine de calisiyor ve
+   bu sirada tarayici butun goruntu alanini surukledigi icin sabit reklam
+   kusagi gecici olarak ekrandan tasiyor. Kullanici bunu sorun gormedi,
+   ustune gidilmedi. Kural yine de duruyor - Chrome/Android gibi tarayicilarda
+   kazara yenilemeyi engelliyor ve normal kaydirmayi etkilemiyor. */
 html { overscroll-behavior-y: contain; }
 
 body {
@@ -745,6 +748,8 @@ body:not(.giris) { padding-bottom: var(--reklam-alt-boy); }
 
    Yerlesimi kontrol etmek icin adrese ?reklam=1 eklenir - yuvalar yalnizca
    o sekmede gorunur, ziyaretciler etkilenmez. Kapatmak icin ?reklam=0.
+   Bu blok silinince o anahtar da islevsiz kalir; HTML sayfalarindaki
+   <head> icinde duran "reklam onizlemesi" betigi de o zaman kaldirilmali.
 
    Yuvalar HTML'de duruyor ve olculeri yukarida tanimli; blok silinince
    yerlerine otururlar, baska hicbir sey degistirmek gerekmez.
