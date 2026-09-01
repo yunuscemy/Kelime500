@@ -82,6 +82,8 @@ Derleme adımı yok, bağımlılık yok. `index.html` (giriş sayfası) tarayıc
 | `tools/` | Sözlüğü indiren ve kelime listesini çıkaran betikler |
 | `src/app.js` | Arayüz, girdi, kayıt, istatistik |
 
+Reklam yerleşimini kontrol etmek için adrese `?reklam=1` eklenir (kapatmak için `?reklam=0`); yuvalar yalnızca o sekmede görünür, ziyaretçiler etkilenmez.
+
 Reklam yuvaları HTML'de hazır ama **`assets/styles.css` sonundaki "REKLAMLAR HENÜZ YAYINDA DEĞİL" bloğu** onları gizliyor. Reklamlar yerleştirilince o blok silinir; ölçüler zaten tanımlı olduğu için yuvalar kendiliğinden yerine oturur.
 
 İki ayrı liste var, çünkü ikisinin işi farklı:

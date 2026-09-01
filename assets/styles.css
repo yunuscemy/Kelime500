@@ -731,6 +731,9 @@ body.giris main { max-width: 576px; }
 
    >>> AdSense onaylanip kodlar yerlestirilince BU BLOGUN TAMAMINI SIL. <<<
 
+   Yerlesimi kontrol etmek icin adrese ?reklam=1 eklenir - yuvalar yalnizca
+   o sekmede gorunur, ziyaretciler etkilenmez. Kapatmak icin ?reklam=0.
+
    Yuvalar HTML'de duruyor ve olculeri yukarida tanimli; blok silinince
    yerlerine otururlar, baska hicbir sey degistirmek gerekmez.
 
@@ -740,11 +743,11 @@ body.giris main { max-width: 576px; }
    100px'lik bos alan birakip yerlesimi bozuk gosteriyor. Yer ayirmanin tek
    faydasi reklam yuklenirken sayfanin kaymamasi - reklam yokken faydasi yok.
    ========================================================================== */
-.reklam { display: none !important; }
+:root:not([data-reklam]) .reklam { display: none !important; }
 
 @media (min-width: 760px) {
   /* Sabit kusak olmadigi icin sayfa sonundaki bosluk da geri aliniyor. */
-  body { padding-bottom: 0; }
-  body.giris { padding-bottom: 8px; }
-  #cerez-bildirimi { bottom: 14px; }
+  :root:not([data-reklam]) body { padding-bottom: 0; }
+  :root:not([data-reklam]) body.giris { padding-bottom: 8px; }
+  :root:not([data-reklam]) #cerez-bildirimi { bottom: 14px; }
 }
