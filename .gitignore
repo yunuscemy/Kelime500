@@ -1,0 +1,10 @@
+# TDK sozluk onbellegi: tools/sozluk-indir.py tarafindan uretilir, 2.4 MB.
+# Depoda tutulmaz; sozluk yenilenecekse betik yeniden indirir.
+tools/.tdk-onbellek.json
+
+# Python gecici dosyalari (tools/ betikleri calistirilinca olusur)
+__pycache__/
+*.pyc
+
+# macOS
+.DS_Store
