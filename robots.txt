@@ -1,4 +1,7 @@
 User-agent: *
 Allow: /
 
+# Ic kontrol sayfasi - arama sonuclarinda cikmasin.
+Disallow: /test/
+
 Sitemap: https://kelime500.com/sitemap.xml

@@ -1,0 +1,221 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Kelime500 — Bütünlük Kontrolü</title>
+
+<!--
+  NE ISE YARAR
+  Gunluk kelime hicbir yerde saklanmaz; tarihten hesaplanir. Hesap, kelime
+  havuzunun ICERIGINE ve SIRASINA bagli. Listeye tek kelime eklemek ya da
+  listeyi yeniden siralamak, GECMIS GUNLER DAHIL butun kelimeleri degistirir.
+  Bu sayfa boyle bir kaymayi aninda gosterir.
+
+  NE ZAMAN CALISTIRILIR
+  Her push oncesi - ozellikle src/words.js, src/sozluk.js veya src/engine.js
+  dosyalarina dokunulduysa.
+
+  KIRMIZI GORURSEN
+  Degisikligi geri al. "Sadece bir kelime ekledim" masum degildir: 500 -> 501
+  havuz boyunu degistirir, karilma bastan olusur, arsivdeki cevaplar kayar.
+  Listeyi buyutmek gerekiyorsa once tasarim konusulmali (mevcut dongu
+  dondurulup yeni kelimeler ayri bir tura eklenmeli).
+
+  Kelimeler burada acik metin olarak TUTULMAZ - sayfa siteyle birlikte
+  yayinlandigi icin referanslar ozet (hash) halinde saklanir.
+-->
+
+<style>
+  :root { color-scheme: dark; }
+  body { margin: 0; padding: 24px; background: #0f1115; color: #e8eaf0;
+         font: 14px/1.55 "Inter", system-ui, -apple-system, sans-serif; }
+  .kutu { max-width: 760px; margin: 0 auto; }
+  h1 { font-size: 20px; margin: 0 0 4px; }
+  .alt { color: #9aa3b2; margin: 0 0 20px; }
+  #ozet { padding: 14px 16px; border-radius: 10px; font-weight: 700;
+          margin-bottom: 18px; font-size: 15px; }
+  .iyi { background: #16321f; color: #6ee7a0; border: 1px solid #2f6b45; }
+  .kotu { background: #3a1a1f; color: #ff9aa6; border: 1px solid #7a2b36; }
+  h2 { font-size: 13px; text-transform: uppercase; letter-spacing: .08em;
+       color: #9aa3b2; margin: 22px 0 8px; font-weight: 700; }
+  table { width: 100%; border-collapse: collapse; }
+  td { padding: 7px 8px; border-bottom: 1px solid #1e2229; vertical-align: top; }
+  td.d { width: 26px; text-align: center; font-weight: 700; }
+  .g { color: #4ade80; } .k { color: #f87171; }
+  td.n { color: #9aa3b2; font-family: ui-monospace, Menlo, monospace;
+         font-size: 12px; text-align: right; white-space: nowrap; }
+  .not { margin-top: 24px; padding: 14px 16px; background: #151922;
+         border-radius: 10px; color: #9aa3b2; font-size: 13px; }
+  .not b { color: #e8eaf0; }
+  code { font-family: ui-monospace, Menlo, monospace; font-size: 12px; }
+</style>
+
+<div class="kutu">
+  <h1>Kelime500 — Bütünlük Kontrolü</h1>
+  <p class="alt">Günlük kelime düzeninin bozulup bozulmadığını denetler. Her push öncesi çalıştır.</p>
+  <div id="ozet">çalışıyor…</div>
+  <div id="sonuc"></div>
+  <div class="not">
+    <b>Kırmızı görürsen ne yapmalı:</b> son değişikliği geri al.
+    Kelime listesine dokunmak — tek kelime eklemek, silmek, hatta sırayı
+    değiştirmek — geçmiş günler dahil bütün cevapları kaydırır.
+    Listeyi büyütmek gerekiyorsa önce tasarım konuşulmalı.
+  </div>
+</div>
+
+<script src="../src/turkish.js"></script>
+<script src="../src/engine.js"></script>
+<script src="../src/sozluk.js"></script>
+<script src="../src/words.js"></script>
+
+<script>
+(function () {
+  'use strict';
+
+  /* Beklenen degerler. Bunlar 2026-09-04'te calisan surumden alindi ve
+   * BILEREK degistirilmedikce sabit kalmali. */
+  var BEKLENEN = {
+    cozum_n: 500,      cozum_imza: 'dbc9f839',
+    gecerli_n: 5748,   gecerli_imza: 'a204d80c',
+    standart_n: 288,
+    /* tarih: "standartOzeti:ileriOzeti" - sinir gunleri ve dongu baslari */
+    gunler: {
+      '2026-01-01': '8b2d8461:9e356c93',
+      '2026-01-02': '8b50f300:d971bfe9',
+      '2026-08-31': 'ae8f027a:ce0bfb4a',
+      '2026-09-04': '10b0cc69:0f85d2db',
+      '2026-09-05': '8228fe7e:5c2115af',
+      '2026-10-15': '1f5178fc:0046f4d0',
+      '2026-10-16': '8b2d8461:06af9458',
+      '2026-10-17': '8b50f300:8fc53367',
+      '2027-05-15': '8fc53367:a1d98418',
+      '2027-05-16': '02c5d34a:9e356c93',
+      '2027-05-17': '48deaa04:d971bfe9',
+      '2027-07-30': '1f5178fc:78dba653',
+      '2027-07-31': '8b2d8461:066431ec',
+      '2028-09-26': '5ca503f6:a1d98418',
+      '2030-02-09': '1f696684:9e356c93'
+    }
+  };
+
+  var UZUNLUK = 5;
+  var motor = window.KB.motor;
+
+  /* engine.js icindeki tohum() ile ayni; kelimeleri acik yazmamak icin. */
+  function ozet(metin) {
+    var h = 2166136261, i;
+    for (i = 0; i < metin.length; i++) {
+      h ^= metin.charCodeAt(i);
+      h = Math.imul(h, 16777619);
+    }
+    h ^= h >>> 16; h = Math.imul(h, 2246822507); h ^= h >>> 13;
+    return (h >>> 0).toString(16).slice(-8).padStart(8, '0');
+  }
+
+  var sozluk = window.KB.kelimeler.al(UZUNLUK);
+  var standartHavuz = sozluk.cozum.filter(motor.tekrarsiz);
+  var havuzlar = { standart: standartHavuz, ileri: sozluk.cozum.slice() };
+  var gun = function (t, z) { return motor.gunlukKelime(havuzlar, t, z); };
+
+  var satirlar = [], hata = 0;
+
+  function kontrol(baslik, gecti, ayrinti) {
+    if (!gecti) { hata++; }
+    satirlar.push({ baslik: baslik, gecti: gecti, ayrinti: ayrinti || '' });
+  }
+
+  /* ---------- 1. Kelime listeleri ---------- */
+  satirlar.push({ bolum: true, metin: 'Kelime listeleri' });
+
+  kontrol('Cevap havuzu kelime sayısı', sozluk.cozum.length === BEKLENEN.cozum_n,
+          sozluk.cozum.length + ' / ' + BEKLENEN.cozum_n);
+  kontrol('Cevap havuzu imzası (içerik + sıra)',
+          ozet(sozluk.cozum.join('|')) === BEKLENEN.cozum_imza,
+          ozet(sozluk.cozum.join('|')));
+  kontrol('Tahmin sözlüğü kelime sayısı', sozluk.gecerli.length === BEKLENEN.gecerli_n,
+          sozluk.gecerli.length + ' / ' + BEKLENEN.gecerli_n);
+  kontrol('Tahmin sözlüğü imzası', ozet(sozluk.gecerli.join('|')) === BEKLENEN.gecerli_imza,
+          ozet(sozluk.gecerli.join('|')));
+  kontrol('Standart havuzu (harf tekrarı olmayanlar)',
+          standartHavuz.length === BEKLENEN.standart_n,
+          standartHavuz.length + ' / ' + BEKLENEN.standart_n);
+
+  /* ---------- 2. Referans günler ---------- */
+  satirlar.push({ bolum: true, metin: 'Referans günler' });
+
+  var kayan = [];
+  Object.keys(BEKLENEN.gunler).sort().forEach(function (t) {
+    var s = gun(t, 'standart'), i = gun(t, 'ileri');
+    var simdi = (s ? ozet(s) : '-') + ':' + (i ? ozet(i) : '-');
+    if (simdi !== BEKLENEN.gunler[t]) { kayan.push(t); }
+  });
+  kontrol(Object.keys(BEKLENEN.gunler).length + ' referans günün kelimesi değişmemiş',
+          kayan.length === 0,
+          kayan.length ? 'kayan: ' + kayan.join(', ') : 'tamamı aynı');
+
+  /* ---------- 3. Kurallar ---------- */
+  satirlar.push({ bolum: true, metin: 'Oyun kuralları' });
+
+  var bozuk = standartHavuz.filter(function (k) { return !motor.tekrarsiz(k); });
+  kontrol('Standart havuzunda harf tekrarı yok', bozuk.length === 0,
+          bozuk.length + ' bozuk');
+
+  var tarihten = function (g) {
+    return new Date(Date.UTC(2026, 0, 1) + g * 86400000).toISOString().slice(0, 10);
+  };
+
+  var cakisma = 0, n = 2000, t;
+  for (var g1 = 0; g1 < n; g1++) {
+    t = tarihten(g1);
+    if (gun(t, 'standart') === gun(t, 'ileri')) { cakisma++; }
+  }
+  kontrol(n + ' gün boyunca Standart ve İleri farklı kelime veriyor',
+          cakisma === 0, cakisma + ' çakışma');
+
+  function dongudeTekrar(zorluk, uzunluk) {
+    var gorulen = {}, tekrar = 0, i, k;
+    for (i = 0; i < uzunluk; i++) {
+      k = gun(tarihten(i), zorluk);
+      if (gorulen[k]) { tekrar++; }
+      gorulen[k] = true;
+    }
+    return { tekrar: tekrar, farkli: Object.keys(gorulen).length };
+  }
+
+  var d1 = dongudeTekrar('standart', standartHavuz.length);
+  kontrol('Standart: ' + standartHavuz.length + ' günde havuzun tamamı bir kez çıkıyor',
+          d1.tekrar === 0 && d1.farkli === standartHavuz.length,
+          d1.farkli + ' farklı, ' + d1.tekrar + ' tekrar');
+
+  var d2 = dongudeTekrar('ileri', sozluk.cozum.length);
+  kontrol('İleri: ' + sozluk.cozum.length + ' günde havuzun tamamı bir kez çıkıyor',
+          d2.tekrar === 0 && d2.farkli === sozluk.cozum.length,
+          d2.farkli + ' farklı, ' + d2.tekrar + ' tekrar');
+
+  var disarida = 0;
+  for (var g2 = 0; g2 < 600; g2++) {
+    t = tarihten(g2);
+    ['standart', 'ileri'].forEach(function (z) {
+      var k = gun(t, z);
+      if (!k || k.length !== UZUNLUK || sozluk.cozum.indexOf(k) === -1) { disarida++; }
+    });
+  }
+  kontrol('Seçilen her kelime 5 harfli ve cevap havuzunda', disarida === 0,
+          disarida + ' aykırı');
+
+  /* ---------- çıktı ---------- */
+  var html = '<table>';
+  satirlar.forEach(function (s) {
+    if (s.bolum) { html += '<tr><td colspan="3"><h2>' + s.metin + '</h2></td></tr>'; return; }
+    html += '<tr><td class="d ' + (s.gecti ? 'g' : 'k') + '">' + (s.gecti ? '✓' : '✕') +
+            '</td><td>' + s.baslik + '</td><td class="n">' + s.ayrinti + '</td></tr>';
+  });
+  document.getElementById('sonuc').innerHTML = html + '</table>';
+
+  var ozetKutu = document.getElementById('ozet');
+  var toplam = satirlar.filter(function (s) { return !s.bolum; }).length;
+  ozetKutu.className = hata ? 'kotu' : 'iyi';
+  ozetKutu.textContent = hata
+    ? '✕ ' + hata + ' kontrol BAŞARISIZ — değişikliği gönderme, aşağıya bak.'
+    : '✓ ' + toplam + ' kontrolün hepsi geçti — güvenle gönderebilirsin.';
+}());
+</script>
