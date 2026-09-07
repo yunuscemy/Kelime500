@@ -556,22 +556,46 @@
 
   /* ---------- paylaşım ---------- */
 
+  var ADRES = 'kelime500.com';
+
+  /* Paylasilan metin. Gunluk oyunda tarih yazilmaz - mesaji alan kisi zaten
+   * bugune dair oldugunu anlar. Serbest modda ise gun kavrami yok, o yuzden
+   * ayrica belirtilir; yoksa karsi taraf gunluk kelime sanir.
+   * Adres son satirda: mesaji alan kisinin nereye gidecegini bilmesi
+   * paylasimin butun amaci. */
   function paylasMetni() {
-    var satirlar = ['Kelime500 · ' + ZORLUKLAR[S.zorluk].ad +
-                    (S.mod === 'gunluk' ? ' · ' + S.tarih : ' · serbest'),
-                    (S.kazandi ? S.gecmis.length : 'X') + '/' + HAK];
-    S.gecmis.forEach(function (g) {
-      satirlar.push('🟩' + g.yer + ' 🟨' + g.harf + ' 🟥' + g.yok);
+    var basi = 'Kelime500 · ' + (S.mod === 'serbest' ? 'Serbest Mod · ' : '') +
+               'Seviye: ' + ZORLUKLAR[S.zorluk].ad;
+    var sonuc = S.kazandi ? S.gecmis.length + '. tahminde bildim!'
+                          : S.gecmis.length + ' tahminde bulamadım 😔';
+    var satirlar = [basi, sonuc, ''];
+    S.gecmis.forEach(function (g, i) {
+      satirlar.push((i + 1) + ': 🟩' + g.yer + ' 🟨' + g.harf + ' 🟥' + g.yok);
     });
+    satirlar.push('', ADRES);
     return satirlar.join('\n');
   }
 
-  function paylas() {
-    var metin = paylasMetni();
+  function panoyaKopyala(metin) {
     if (navigator.clipboard && navigator.clipboard.writeText) {
       navigator.clipboard.writeText(metin).then(function () { uyar('Sonuç kopyalandı'); },
                                                 function () { uyar(metin); });
     } else { uyar(metin); }
+  }
+
+  /* Telefonlarda isletim sisteminin kendi paylasim menusu acilir; WhatsApp
+   * tek dokunusla cikar, kullanici oyundan hic cikmaz. Masaustu tarayicilarin
+   * cogu navigator.share desteklemiyor - orada eski davranis surer. */
+  function paylas() {
+    var metin = paylasMetni();
+    if (navigator.share) {
+      navigator.share({ text: metin }).catch(function (e) {
+        /* Kullanici menuyu kapattiysa sessiz kal; gercek hatada kopyalamaya dus. */
+        if (!e || e.name !== 'AbortError') { panoyaKopyala(metin); }
+      });
+      return;
+    }
+    panoyaKopyala(metin);
   }
 
   /* ---------- istatistik penceresi ---------- */
