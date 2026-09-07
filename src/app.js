@@ -867,7 +867,12 @@
     $('#onceki').addEventListener('click', function () { tarihGit(-1); });
     $('#sonraki').addEventListener('click', function () { tarihGit(1); });
 
-    $('#ist-paylas').addEventListener('click', paylas);
+    /* Dugme yaptigi isi soylesin: telefonda isletim sisteminin paylasim
+     * menusu aciliyor, desteklemeyen masaustu tarayicilarda panoya kopyaliyor.
+     * HTML'deki varsayilan "Sonucu kopyala" - yedek davranisin karsiligi. */
+    var paylasDugme = $('#ist-paylas');
+    if (navigator.share) { paylasDugme.textContent = 'Sonucu paylaş'; }
+    paylasDugme.addEventListener('click', paylas);
 
     /* --- baslik menuleri --- */
     var menuDugme = $('#menu-dugme');
