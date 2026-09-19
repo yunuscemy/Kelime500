@@ -58,7 +58,7 @@
   /* Secim onaylaninca satir once bu kadar eski haliyle durur (saniye); sonra
    * parlaklik ayni surede sifirdan tama cikar (CSS: --joker-gel, ayni deger). */
   var JOKER_BEKLE = 0.75;
-  var JOKER_SONUC_SURE = 5200;   // ms: joker cevabinin ekranda kalma suresi
+  var JOKER_SONUC_SURE = 3000;   // ms: joker cevabinin ekranda kalma suresi
 
   /* Tahtadaki notlarin klavyedeki yansimasi (NOT_SINIF ile ayni sira). */
   var TAHTA_TUS_SINIF = ['', 'tahta-kirmizi', 'tahta-sari', 'tahta-yesil'];
@@ -399,7 +399,9 @@
               var not = notDegeri(r, c, ko);
               if (not) { kutu.classList.add(NOT_SINIF[not]); }
               if (ko[r + ':' + c]) {
-                kutu.classList.add('joker-iz');
+                /* Cerceve sadece harf jokerinin sordugu satirda; diger
+                 * satirlarda kural (kirmizi yok) gecerli ama isaret yok. */
+                if (r === jokerHarfSatiri()) { kutu.classList.add('joker-iz'); }
                 kutu.title = 'Kesin: harf kelimede var · sarı ya da yeşil';
               } else {
                 kutu.title = 'Not almak için tıkla';
@@ -565,6 +567,13 @@
       }
     });
     return sonuc;
+  }
+
+  /* Harf jokerinin kullanildigi satir, yoksa -1. */
+  function jokerHarfSatiri() {
+    var j = S.joker || {};
+    if (!j.harf) { return -1; }
+    return j.harf.r != null ? j.harf.r : j.tur - 1;
   }
 
   /* Kullanicinin notu; kirmizi olamayan kutuda eski kirmizi not yok sayilir. */
