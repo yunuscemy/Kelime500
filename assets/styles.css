@@ -319,10 +319,11 @@ select, input[type="date"] {
      Genis ekranda sinir devreye girmez. */
   --aralik: calc(var(--bosluk) * var(--tahta-aralik));
   --rozet-oran: calc(0.66 * var(--rozet-en-carpan) / var(--kutu-en-carpan));
-  /* Satir notlarini temizleme dugmesi: alani harf kutusunun yarisi, en/boy
-     3'e 4 (0.6124 x 0.8165 = 0.5). */
-  --sifirla-en-oran: 0.6124;
-  --sifirla-boy-oran: 0.8165;
+  /* Satir notlarini temizleme dugmesi: kare, alani harf kutusunun yarisi.
+     Kenari kutunun 1/kok(2) kati (0.7071^2 = 0.5). Kenari yarisi olsaydi
+     alan dortte bir olurdu. */
+  --sifirla-en-oran: 0.7071;
+  --sifirla-boy-oran: 0.7071;
   --kare: min(calc(min(var(--kutu-en) * var(--kutu-en-carpan),
                        var(--kutu) * var(--kutu-boy-carpan)) * var(--kare-olcek)),
               calc((100cqw + 2 * 8px - 15 * var(--aralik) - 5px)
