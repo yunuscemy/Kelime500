@@ -1136,17 +1136,18 @@ body:not(.giris) { padding-bottom: var(--reklam-alt-boy); }
   flex: 1 1 auto; min-height: 0; overflow-y: auto;
   display: flex; flex-direction: column; padding-top: 8px;
 }
-.rehber-karsilama {
-  margin: 0 0 14px !important; padding: 10px 12px;
-  border-radius: var(--yuvarlak); background: var(--bg);
-  color: var(--metin) !important; font-weight: 600;
-}
+.rehber-govde .rehber-karsilama { margin: 0 0 10px; }
 #rehber-pencere h2 { font-size: 20px; line-height: 1.25; margin: 0; }
-/* Icerik basligin altindaki bosluga dikey ortalanir. */
-.rehber-icerik { flex: 1 1 auto; display: flex; flex-direction: column; justify-content: center; padding: 8px 0; }
+/* Icerik bloklari basligin altindaki bosluga esit araliklarla dagilir:
+   baslik-blok, blok-blok ve blok-alt kenar araliklari ayni. */
+.rehber-icerik { flex: 1 1 auto; display: flex; flex-direction: column; justify-content: space-evenly; }
+#rehber-pencere .rehber-icerik > * { margin-top: 0; margin-bottom: 0; }
+.rehber-icerik > div > p:first-child { margin-top: 0; }
+.rehber-icerik > div > p:last-child { margin-bottom: 0; }
 .rehber-govde p { margin: 7px 0; font-size: 15px; line-height: 1.5; }
 
-.rehber-satir { display: flex; gap: 5px; align-items: center; justify-content: center; margin: 8px 0 14px; }
+.rehber-satir { display: flex; gap: 5px; align-items: center; justify-content: center; }
+.rehber-canli { --kart-sure: 613ms; }   /* oyundakinin %75 hizi */
 .rehber-kutu {
   width: 46px; height: 46px; display: grid; place-items: center;
   border: 2px solid var(--cizgi); border-radius: var(--yuvarlak);
@@ -1164,7 +1165,7 @@ body:not(.giris) { padding-bottom: var(--reklam-alt-boy); }
 .rehber-rozetler .rozet { display: block; width: 26px; height: 46px; }
 .rehber-rozetler .rozet-ic { display: block; }
 .rehber-rozetler .rozet-yuz { font-size: 17px; }
-.rehber-sonuc { min-height: 4.5em; text-align: center; }
+.rehber-sonuc { min-height: 4.5em; text-align: center; display: flex; align-items: center; justify-content: center; }
 
 .rehber-govde .ornek { align-items: center; gap: 10px; margin: 6px 0; }
 .rehber-govde .ornek .rozet { flex: 0 0 auto; }
@@ -1179,6 +1180,7 @@ body:not(.giris) { padding-bottom: var(--reklam-alt-boy); }
 .rehber-alt { flex: 0 0 auto; display: flex; align-items: center; gap: 10px; padding-top: 12px; }
 .rehber-alt .tus { flex: 0 0 auto; height: 42px; padding: 0 18px; font-size: 14.5px; }
 .rehber-alt .tus:focus-visible { outline: none; }
+.rehber-alt .tus.rehber-geri { min-width: 92px; }
 .rehber-alt .tus.rehber-ileri { margin-left: auto; min-width: 92px; background: var(--yesil); color: #fff; border-color: var(--yesil); }
 .rehber-noktalar { flex: 1 1 auto; display: flex; gap: 6px; justify-content: center; }
 .rehber-nokta { width: 7px; height: 7px; border-radius: 50%; background: var(--cizgi); }

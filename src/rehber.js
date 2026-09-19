@@ -13,10 +13,12 @@
 
   var ANAHTAR = 'kelime500.rehber';
   var ACILIS_BEKLE = 500;    // ms, oyun sayfası göründükten sonra
-  var YAZ_BEKLE = 500;       // ms, 2. adımda yazmaya başlamadan önce
-  var HARF_ARA = 170;        // ms, harfler arası
-  var GONDER_BEKLE = 350;    // ms, son harften "Enter"a
-  var KART_GECIKME = 140;    // ms, rozetler arası (app.js ile aynı)
+  /* 2. adımın canlı örneği oyundakinden yavaş (%75 hız): izleyen rahat görsün.
+   * Rozetin dönüş süresi CSS'te .rehber-canli --kart-sure. */
+  var YAZ_BEKLE = 1500;      // ms, 2. adımda yazmaya başlamadan önce
+  var HARF_ARA = 227;        // ms, harfler arası
+  var GONDER_BEKLE = 467;    // ms, son harften "Enter"a
+  var KART_GECIKME = 187;    // ms, rozetler arası
 
   /* Örnek: gizli kelime KALEM, tahmin SELAM. L ve M doğru yerde; E ve A var
    * ama yerleri yanlış; S kelimede yok. */
@@ -55,19 +57,20 @@
             '<span class="rehber-kutu">?</span><span class="rehber-kutu">?</span>' +
             '<span class="rehber-kutu">?</span><span class="rehber-kutu">?</span>' +
             '<span class="rehber-kutu">?</span></div>' +
-          '<p>Her gün <b>5 harfli</b> yeni bir Türkçe kelime var; herkes için aynı.</p>' +
-          '<p>Bulmak için <b>8 tahmin</b> hakkın var.</p>' +
+          '<div><p>Her gün <b>5 harfli</b> yeni bir Türkçe kelimeyi bulmaya çalışıyoruz. ' +
+            'Bu kelime tüm oyuncular için aynı.</p>' +
+          '<p>Gizli kelimeyi bulmak için <b>8 tahmin</b> hakkın var.</p></div>' +
         '</div>';
     },
     function () {
       return '<h2>Renkli sayıları ipucu olarak kullan!</h2>' +
         '<div class="rehber-icerik">' +
           '<div class="rehber-canli">' + satir({ yazili: 0 }) + '</div>' +
-          '<p>Her tahminin yanında üç sayı çıkar:</p>' +
+          '<div><p>Her tahminin yanında üç sayı çıkar:</p>' +
           '<div class="ornek"><span class="rozet duz yer">2</span><p>harf <b>doğru yerde</b></p></div>' +
           '<div class="ornek"><span class="rozet duz harf">2</span><p>harf <b>var ama yeri yanlış</b></p></div>' +
           '<div class="ornek"><span class="rozet duz yok">1</span><p>harf <b>gizli kelimede yok</b></p></div>' +
-          '<p>Ama <b>hangi harfler</b> olduğunu söylemiyoruz. Asıl amaç bunu bulmak!</p>' +
+          '<p>Ama <b>hangi harfler</b> olduğunu söylemiyoruz. Asıl amaç bunu bulmak!</p></div>' +
         '</div>';
     },
     function () {
@@ -151,8 +154,8 @@
     yer.innerHTML = satir({ yazili: 5, gonderildi: true, tiklanir: true, notlar: notlar });
     var tamam = notlar.every(function (n, i) { return n === DOGRU[i]; });
     pencere.querySelector('.rehber-sonuc').innerHTML = tamam
-      ? '<b>Tam isabet!</b> L ve M doğru yerde; E ve A kelimede var ama yerleri yanlış; ' +
-        'S kelimede yok.'
+      ? '<span><b>Tam isabet!</b> L ve M doğru yerde; E ve A kelimede var ama yerleri ' +
+        'yanlış; S kelimede yok.</span>'
       : '';
   }
 
