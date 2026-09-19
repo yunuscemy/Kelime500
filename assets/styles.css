@@ -524,6 +524,23 @@ body:not(.giris) .logo {
   --logo-kutu: clamp(12px, calc((100cqw - 130px) / 10.09), 26px);
 }
 
+/* Mobilde logo ekranin tam ortasinda, dugmeler sagda kalir.
+   Logo akistan cikarilip ortalaniyor; ortada kalabilmesi icin sagdaki
+   dugme grubu kadar yeri (3 x 34px + 2 x 8px = 118px, +8px pay) SOLDA da
+   bos birakmak gerekiyor - kutu boyu bu yuzden 252px dusulerek cozuluyor.
+   Dikey hizalama: logo basligin tam yuksekligini kaplar, ustten basligin
+   kendi ic boslugunu alir; boylece dugmelerle ayni hizada ortalanir. */
+@media (max-width: 759.98px) {
+  body:not(.giris) header { position: relative; }
+  body:not(.giris) .logo {
+    position: absolute; inset-block: 0; left: 50%; transform: translateX(-50%);
+    padding-top: inherit;
+    margin-right: 0;
+    --logo-kutu: clamp(8px, calc((100cqw - 252px) / 10.09), 26px);
+  }
+  body:not(.giris) #zorluk-dugme { margin-left: auto; }
+}
+
 /* --- baslik acilir menuleri --- */
 .acilir-sarmal { position: relative; display: flex; }
 .acilir {
