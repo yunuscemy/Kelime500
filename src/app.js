@@ -322,7 +322,7 @@
     tahta.style.setProperty('--joker-gecikme',
       (JOKER_BEKLE - (jokerSecim ? (Date.now() - jokerBasladi) / 1000 : 0)) + 's');
     tahta.classList.toggle('oyun-bitti', !!S.bitti);
-    var kesinYok = kesinYok_();
+    var kesinYok = kesinYok_(), kesinRenk = kesinRenkler();
     var cevrilecek = [];
 
     /* Perde açıldıysa her tahmindeki harflerin gerçek renkleri hesaplanır. */
@@ -379,9 +379,9 @@
           } else {
             kutu.textContent = harf;
             kutu.classList.add('dolu');
-            var jk = jokerKutu(r, c);
+            var jk = jokerKutu(r, c), kr = kesinRenk[r + ':' + c];
             if (jokerSatiri) {
-              kutu.classList.add(kesinYok[harf] ? 'joker-kapali' : 'joker-secilebilir');
+              kutu.classList.add(kesinYok[harf] || kr ? 'joker-kapali' : 'joker-secilebilir');
             }
             if (jk) {
               /* Kutu jokeriyle acildi: gercek renk, degistirilemez. */
@@ -390,6 +390,10 @@
             } else if (kesinYok[harf]) {
               kutu.classList.add('not-kirmizi');
               kutu.title = 'Kesin: bu harf kelimede yok';
+            } else if (kr) {
+              /* Kutu jokerinin actigi harften cikan kesin bilgi. */
+              kutu.classList.add(NOT_SINIF[kr]);
+              kutu.title = 'Kesin: ' + RENK_ACIKLAMA[kr];
             } else {
               var not = S.notlar[r + ':' + c] || 0;
               if (not) { kutu.classList.add(NOT_SINIF[not]); }
@@ -496,6 +500,37 @@
     return k;
   }
 
+  /* Kutu jokerinin actigi harften, DIGER tahminlerdeki ayni harfin kesin
+   * rengi. Donen: { 'r:c': renk }.
+   * - Yesil (harf p konumunda): baska bir tahminde ayni harf p konumundaysa
+   *   kesin yesil. Baska konumdaysa kesin sari - yalnizca Standart'ta; gizli
+   *   kelimede harf tekrari olmadigi icin harf baska yerde olamaz. Ileri'de
+   *   harf kelimede iki kez gecebilir, orada bir sey soylenmez.
+   * - Sari (harf var ama q konumunda degil): baska bir tahminde ayni harf q
+   *   konumundaysa ve o tahminde harf bir kez geciyorsa kesin sari.
+   * Jokerin kendi satirina dokunulmaz (Ileri'de tekrar eden kopya fazlalik
+   * olarak kirmizi olabilir). */
+  function kesinRenkler() {
+    var sonuc = {}, jk = S.joker && S.joker.kutu, g0;
+    if (!jk || !(g0 = S.gecmis[jk.r]) || jk.renk === 1) { return sonuc; }
+    var x = g0.tahmin[jk.c], tekrarsiz = ZORLUKLAR[S.zorluk].tekrarsiz;
+    S.gecmis.forEach(function (g, r) {
+      if (r === jk.r) { return; }
+      var adet = 0, c;
+      for (c = 0; c < g.tahmin.length; c++) { if (g.tahmin[c] === x) { adet++; } }
+      for (c = 0; c < g.tahmin.length; c++) {
+        if (g.tahmin[c] !== x) { continue; }
+        if (jk.renk === 3) {
+          if (c === jk.c) { sonuc[r + ':' + c] = 3; }
+          else if (tekrarsiz) { sonuc[r + ':' + c] = 2; }
+        } else if (c === jk.c && adet === 1) {
+          sonuc[r + ':' + c] = 2;
+        }
+      }
+    });
+    return sonuc;
+  }
+
   /* Kutu jokeriyle acilmis kutunun rengi (1-3), yoksa 0. */
   function jokerKutu(r, c) {
     var k = S.joker && S.joker.kutu;
@@ -529,6 +564,11 @@
       var jh = S.gecmis[k.r].tahmin[k.c];
       if (!s[jh] || k.renk > s[jh]) { s[jh] = k.renk; }
     }
+    var kr = kesinRenkler();
+    Object.keys(kr).forEach(function (a) {
+      var p = a.split(':'), h = S.gecmis[Number(p[0])].tahmin[Number(p[1])];
+      if (!s[h] || kr[a] > s[h]) { s[h] = kr[a]; }
+    });
     return s;
   }
 
@@ -686,10 +726,10 @@
   /* Son tahminde jokerin secebilecegi kutu var mi: kesin kirmizi harfler
    * secilemez, zaten bilinen bir seye joker harcanmasin. */
   function jokerSecilebilirVar() {
-    var son = S.gecmis[S.gecmis.length - 1], ky = kesinYok_();
+    var r = S.gecmis.length - 1, son = S.gecmis[r], ky = kesinYok_(), kr = kesinRenkler();
     if (!son) { return false; }
     for (var c = 0; c < uzunluk(); c++) {
-      if (!ky[son.tahmin[c]]) { return true; }
+      if (!ky[son.tahmin[c]] && !kr[r + ':' + c]) { return true; }
     }
     return false;
   }
@@ -762,8 +802,6 @@
     jokerSecim = tur;
     jokerBasladi = Date.now();
     ciz();
-    uyar(tur === 'harf' ? 'Kelimede olup olmadığını öğrenmek istediğin harfe dokun'
-                        : 'Rengini öğrenmek istediğin kutuya dokun', false, 2600);
   }
 
   function jokerIptal() {
@@ -810,8 +848,11 @@
     var b = $('#joker-tus');
     if (!b) { return; }
     var hazir = ['harf', 'kutu'].some(function (t) { return jokerDurum(t) === 'hazir'; });
-    b.classList.toggle('joker-hazir', hazir);
+    b.classList.toggle('joker-hazir', hazir && !jokerSecim);
     b.classList.toggle('joker-secimde', !!jokerSecim);
+    /* Kullanilabilir joker yokken (henuz acilmadi, bu tahminde kullanildi,
+     * hepsi bitti) tus soluk. */
+    b.classList.toggle('joker-pasif', !hazir && !jokerSecim);
   }
 
   function notlariTemizle() {
@@ -836,7 +877,7 @@
     var kutu = e.target.closest('.kutu');
     if (!kutu || kutu.dataset.r === undefined) { return; }
     var r = Number(kutu.dataset.r), c = Number(kutu.dataset.c);
-    if (jokerKutu(r, c)) { return; }   // jokerle acilan renk degistirilemez
+    if (jokerKutu(r, c) || kesinRenkler()[r + ':' + c]) { return; }   // kesin renk degistirilemez
     var harf = S.gecmis[r].tahmin[c];
     if (kesinYok_()[harf]) { return; }   // kesin kırmızı değiştirilemez
     var anahtar = kutu.dataset.r + ':' + kutu.dataset.c;

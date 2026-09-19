@@ -543,16 +543,44 @@ body:not(.giris) #klavye { margin-top: 12px; }
    sarmal alir, tus onu doldurur. */
 .joker-sarmal { position: relative; display: flex; min-width: 0; }
 .joker-sarmal .tus { flex: 1 1 auto; }
-.tus.joker-tus { font-weight: 800; }
-.joker-simge { display: inline-block; width: 1.9em; height: 1.9em; vertical-align: middle; }
-/* Kullanilabilir joker varken J tusunun altin cercevesi 3 saniyede bir yanip
-   soner - oyuncunun dikkati hep orada olsun. */
-.tus.joker-tus.joker-hazir { animation: joker-yanip 3s ease-in-out infinite; }
-@keyframes joker-yanip {
-  0%, 100% { box-shadow: inset 0 0 0 2px transparent; }
-  50%      { box-shadow: inset 0 0 0 2px var(--vurgu), 0 0 10px color-mix(in srgb, var(--vurgu) 45%, transparent); }
+.tus.joker-tus {
+  font-weight: 800;
+  position: relative; overflow: hidden; isolation: isolate;
+  transition: opacity 250ms ease;
 }
-.tus.joker-tus.joker-secimde { background: var(--vurgu); color: #17181c; animation: none; }
+.joker-simge {
+  position: relative; z-index: 1;   /* altin katmanin ustunde */
+  display: inline-block; width: 1.9em; height: 1.9em; vertical-align: middle;
+}
+/* Kullanilabilir joker yokken (henuz acilmadi, bu tahminde kullanildi,
+   hepsi bitti) tus soluk. */
+.tus.joker-tus.joker-pasif { opacity: .45; }
+
+/* Kullanilabilir joker varken butun tus 3 saniyede bir parlak altinla yanip
+   soner: altin katman belirir, uzerinden bir isik gecer, soner. Altin
+   duz tek renk degil, koyu-acik-koyu gecisli (--altin). */
+.tus.joker-tus::before {
+  content: ""; position: absolute; inset: 0; z-index: 0; pointer-events: none;
+  border-radius: inherit;
+  background: var(--altin); background-size: 250% 100%;
+  opacity: 0;
+}
+:root { --altin: linear-gradient(115deg, #9a6a12 0%, #d9a52b 28%, #ffe58a 46%, #fff7cf 50%,
+                                         #ffe58a 54%, #d9a52b 72%, #9a6a12 100%); }
+.tus.joker-tus.joker-hazir { animation: joker-isik 3s ease-in-out infinite; }
+.tus.joker-tus.joker-hazir::before { animation: joker-altin 3s ease-in-out infinite; }
+@keyframes joker-altin {
+  0%   { opacity: 0; background-position: 110% 0; }
+  50%  { opacity: 1; background-position: 50% 0; }
+  100% { opacity: 0; background-position: -10% 0; }
+}
+@keyframes joker-isik {
+  0%, 100% { box-shadow: none; }
+  50%      { box-shadow: 0 0 14px 1px rgba(255, 214, 90, .55); }
+}
+/* Secim surerken tus sabit altin. */
+.tus.joker-tus.joker-secimde { animation: none; }
+.tus.joker-tus.joker-secimde::before { opacity: 1; animation: none; background-position: 50% 0; }
 
 /* Joker kutusu, seviye kutusu gibi dugmenin hemen ustunde acilir. */
 .acilir.joker-menu {
@@ -624,7 +652,8 @@ body:not(.giris) #klavye { margin-top: 12px; }
 @media (prefers-reduced-motion: reduce) {
   .satir.joker-satir .kutu.joker-secilebilir { animation: none; box-shadow: 0 0 0 2px var(--vurgu); }
   .satir.joker-satir .kutu.joker-kapali { animation: none; opacity: .4; }
-  .tus.joker-tus.joker-hazir { animation: none; box-shadow: inset 0 0 0 2px var(--vurgu); }
+  .tus.joker-tus.joker-hazir { animation: none; }
+  .tus.joker-tus.joker-hazir::before { animation: none; opacity: 1; background-position: 50% 0; }
 }
 /* Kutu jokeriyle acilmis kutu: gercek renk, icte ince beyaz halka -
    oyuncunun kendi notlarindan ayirt edilsin. */
