@@ -52,7 +52,7 @@
       return '<p class="rehber-karsilama">İlk kez mi buradasın? Öyleyse oyunun nasıl ' +
                'oynandığına beraber bakalım.</p>' +
         '<h2>Gizli kelimeyi bul</h2>' +
-        '<div class="rehber-icerik">' +
+        '<div class="rehber-icerik ilk-adim">' +
           '<div class="rehber-satir rehber-gizli">' +
             '<span class="rehber-kutu">?</span><span class="rehber-kutu">?</span>' +
             '<span class="rehber-kutu">?</span><span class="rehber-kutu">?</span>' +
@@ -88,12 +88,13 @@
       return '<h2>Takılırsan</h2>' +
         '<div class="rehber-icerik">' +
           '<div class="ornek"><span class="rehber-j">' + ((global.KB && global.KB.jokerSimge) || 'J') + '</span>' +
-            '<p>Birkaç tahminden sonra klavyedeki <b>joker</b> açılır: bir harfin kelimede ' +
+            '<p>Birkaç tahminden sonra klavyedeki <b>Joker</b> açılır: bir harfin kelimede ' +
             'olup olmadığını ya da bir kutunun gerçek rengini gösterir.</p></div>' +
+          '<div class="rehber-seviyeler"><p>Oyunda iki farklı zorluk seviyesi var:</p>' +
           '<div class="ornek"><span class="seviye-isaret standart">S</span>' +
             '<p><b>Standart</b> seviyede gizli kelimede aynı harf iki kez geçmez.</p></div>' +
           '<div class="ornek"><span class="seviye-isaret ileri">İ</span>' +
-            '<p><b>İleri</b> seviyede böyle bir kural yok, her şey serbest.</p></div>' +
+            '<p><b>İleri</b> seviyede böyle bir kural yok, her şey serbest.</p></div></div>' +
           '<p>Tüm kuralları menüdeki <b>Nasıl Oynanır</b> sayfasında bulabilirsin.</p>' +
         '</div>';
     }
@@ -229,14 +230,37 @@
       }
       if (e.key === 'ArrowLeft' && adim > 0) { e.preventDefault(); git('geri'); }
     });
+    /* Esc de aynı animasyonla kapatsın. */
+    pencere.addEventListener('cancel', function (e) { e.preventDefault(); kapat(); });
     /* Esc dahil her kapanış rehberi bitmiş sayar. */
     pencere.addEventListener('close', function () { zamanlariSil(); isaretle(); });
     global.addEventListener('resize', yerlestir);
     return pencere;
   }
 
+  /* Açılıştaki dönüşün tersiyle kapanır, sonra gerçekten kapatılır. */
+  function kapat() {
+    if (!pencere.open || pencere.classList.contains('kapaniyor')) { return; }
+    if (hareketAzalt()) { pencere.close(); return; }
+    pencere.classList.remove('donerek');
+    pencere.classList.add('kapaniyor');
+    var bitti = false;
+    function son() {
+      if (bitti) { return; }
+      bitti = true;
+      pencere.classList.remove('kapaniyor');
+      pencere.close();
+    }
+    pencere.addEventListener('animationend', function f(e) {
+      if (e.target !== pencere) { return; }
+      pencere.removeEventListener('animationend', f);
+      son();
+    });
+    setTimeout(son, 700);   // animasyon çalışmazsa (arka plan sekmesi) yedek
+  }
+
   function git(yon) {
-    if (yon === 'kapat') { pencere.close(); return; }
+    if (yon === 'kapat') { kapat(); return; }
     adim += yon === 'ileri' ? 1 : -1;
     ciz();
   }

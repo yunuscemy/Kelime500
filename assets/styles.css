@@ -1125,6 +1125,9 @@ body:not(.giris) { padding-bottom: var(--reklam-alt-boy); }
   to   { transform: perspective(900px) rotateX(0); opacity: 1; }
 }
 @keyframes rehber-karart { from { opacity: 0; } to { opacity: 1; } }
+/* Kapanis: acilisin tam tersi. */
+#rehber-pencere.kapaniyor { animation: rehber-don 460ms cubic-bezier(.45, .05, .35, 1) reverse both; }
+#rehber-pencere.kapaniyor::backdrop { animation: rehber-karart 460ms ease reverse both; }
 
 .rehber-ust { flex: 0 0 auto; display: flex; align-items: center; justify-content: space-between; height: 26px; }
 .rehber-adim { color: var(--soluk); font-size: 12px; font-weight: 600; letter-spacing: .04em; }
@@ -1136,7 +1139,10 @@ body:not(.giris) { padding-bottom: var(--reklam-alt-boy); }
   flex: 1 1 auto; min-height: 0; overflow-y: auto;
   display: flex; flex-direction: column; padding-top: 8px;
 }
-.rehber-govde .rehber-karsilama { margin: 0 0 10px; }
+.rehber-govde .rehber-karsilama { margin: 0 0 20px; }
+/* Karsilama boslugu 10px artinca alttaki metin yerinde kalsin diye: esit
+   dagilimda 3 aralik var, 5px alt dolgu alt araligi eski degerinde tutar. */
+.rehber-icerik.ilk-adim { padding-bottom: 5px; }
 #rehber-pencere h2 { font-size: 20px; line-height: 1.25; margin: 0; }
 /* Icerik bloklari basligin altindaki bosluga esit araliklarla dagilir:
    baslik-blok, blok-blok ve blok-alt kenar araliklari ayni. */
@@ -1170,6 +1176,8 @@ body:not(.giris) { padding-bottom: var(--reklam-alt-boy); }
 .rehber-govde .ornek { align-items: center; gap: 10px; margin: 6px 0; }
 .rehber-govde .ornek .rozet { flex: 0 0 auto; }
 .rehber-govde .ornek p { margin: 0; }
+.rehber-seviyeler > p { margin: 0 0 10px !important; }
+.rehber-seviyeler .ornek + .ornek { margin-top: 10px; }
 .rehber-govde .seviye-isaret { flex: 0 0 auto; width: 34px; height: 34px; font-size: 16px; }
 .rehber-j {
   flex: 0 0 auto; width: 34px; height: 34px; display: grid; place-items: center;
