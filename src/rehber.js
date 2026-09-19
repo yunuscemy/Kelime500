@@ -1,9 +1,9 @@
 /* İlk giriş rehberi: oyunu dört kısa adımda anlatır.
  *
- * Cihazda hiç oyun kaydı yoksa (yeni oyuncu) oyun sayfası açıldıktan yarım
- * saniye sonra bir kez gösterilir. Kapatılınca kelime500.rehber işaretlenir
- * ve bir daha açılmaz. Önceden oynamış biri (kelime500.oyun.* ya da
- * kelime500.ist.* kaydı olan) rehberi görmez; /oyna?rehber ile elle açılır.
+ * Her oyuncuya - rehber çıkmadan önce oynamış olanlar dahil - oyun sayfası
+ * açıldıktan yarım saniye sonra bir kez gösterilir. Kapatılınca
+ * kelime500.rehber işaretlenir ve bir daha açılmaz; /oyna?rehber ile elle
+ * açılır.
  *
  * Pencerenin boyu adımlar arasında değişmez: üst kenarı tahtanın ilk
  * satırının ortasında, alt kenarı klavyenin altında. Düğmeler hep aynı
@@ -15,7 +15,7 @@
   var ACILIS_BEKLE = 500;    // ms, oyun sayfası göründükten sonra
   /* 2. adımın canlı örneği oyundakinden yavaş (%75 hız): izleyen rahat görsün.
    * Rozetin dönüş süresi CSS'te .rehber-canli --kart-sure. */
-  var YAZ_BEKLE = 1500;      // ms, 2. adımda yazmaya başlamadan önce
+  var YAZ_BEKLE = 1000;      // ms, 2. adımda yazmaya başlamadan önce
   var HARF_ARA = 227;        // ms, harfler arası
   var GONDER_BEKLE = 467;    // ms, son harften "Enter"a
   var KART_GECIKME = 187;    // ms, rozetler arası
@@ -110,17 +110,9 @@
     try { localStorage.setItem(ANAHTAR, JSON.stringify(true)); } catch (e) { /* yoksay */ }
   }
 
-  function yeniOyuncuMu() {
-    try {
-      if (localStorage.getItem(ANAHTAR)) { return false; }
-      for (var i = 0; i < localStorage.length; i++) {
-        var k = localStorage.key(i);
-        if (k.indexOf('kelime500.oyun.') === 0 || k.indexOf('kelime500.ist.') === 0) {
-          return false;
-        }
-      }
-      return true;
-    } catch (e) { return false; }   // depolama yoksa her açılışta çıkmasın
+  function gorulmediMi() {
+    try { return !localStorage.getItem(ANAHTAR); }
+    catch (e) { return false; }   // depolama yoksa her açılışta çıkmasın
   }
 
   function zamanla(f, ms) { zamanlar.push(setTimeout(f, ms)); }
@@ -281,11 +273,12 @@
   global.KB = global.KB || {};
   global.KB.rehber = { ac: ac };
 
-  /* Kontrol app.js'ten ÖNCE yapılır (bu betik önce yükleniyor): app.js oyun
-   * kaydını açılışta yazabilir, o zaman yeni oyuncu eski sanılırdı. */
   document.addEventListener('DOMContentLoaded', function () {
-    if (yeniOyuncuMu() || /[?&]rehber\b/.test(location.search)) {
-      setTimeout(ac, ACILIS_BEKLE);
+    if (gorulmediMi() || /[?&]rehber\b/.test(location.search)) {
+      setTimeout(function () {
+        /* Başka bir pencere açıksa üstüne binmesin; bir sonraki girişte çıkar. */
+        if (!document.querySelector('dialog[open]')) { ac(); }
+      }, ACILIS_BEKLE);
     }
   });
 }(window));
