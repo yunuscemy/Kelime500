@@ -816,9 +816,10 @@
      * seviye degisince boyu oynamaz. Bir kez kurulur. */
     if (!zd.firstChild) {
       Object.keys(ZORLUKLAR).forEach(function (z) {
-        var y = document.createElement('span');
+        var y = document.createElement('span'), harf = document.createElement('b');
         y.dataset.z = z;
-        y.textContent = ZORLUK_ONEK + ZORLUK_ISARET[z];
+        harf.textContent = ZORLUK_ISARET[z];   /* "Seviye: " normal, harf kalin */
+        y.append(ZORLUK_ONEK, harf);
         zd.appendChild(y);
       });
     }

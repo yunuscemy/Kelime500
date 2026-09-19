@@ -659,6 +659,7 @@ body:not(.giris) .logo {
 /* Iki seviyenin yazisi ayni hucrede ust uste; yalnizca gecerli olan gorunur.
    Genislik uzun olana gore sabit - seviye degisince dugme oynamaz. */
 .zorluk-dugme > span { grid-area: 1 / 1; }
+.zorluk-dugme b { font-weight: 800; }   /* seviye harfi kalin, "Seviye:" normal */
 .zorluk-dugme[data-zorluk="standart"] > span:not([data-z="standart"]),
 .zorluk-dugme[data-zorluk="ileri"] > span:not([data-z="ileri"]) { visibility: hidden; }
 
