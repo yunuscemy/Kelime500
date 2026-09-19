@@ -936,6 +936,12 @@
       e.stopPropagation();
       menuAc('#zorluk-menu', zorlukDugme);
     });
+    $('#ist-dugme').addEventListener('click', function (e) {
+      e.stopPropagation();
+      menuKapat();
+      istatistikGoster();
+    });
+
     $('#zorluk-menu').addEventListener('click', function (e) {
       var b = e.target.closest('button[data-zorluk]');
       if (!b) { return; }
@@ -956,8 +962,8 @@
       if (b.id === 'menu-yeni') {
         yeniOyun('serbest', S.zorluk, S.tarih, true);
         uyar('Yeni kelime');
-      } else if (b.id === 'menu-istatistik') {
-        istatistikGoster();
+      } else if (b.id === 'menu-anasayfa') {
+        location.href = '/';
       } else if (b.id === 'menu-yardim') {
         KB.yardim.ac();
       } else if (b.id === 'menu-tema') {

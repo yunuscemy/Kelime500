@@ -6,8 +6,8 @@
 <title>Kelime500</title>
 <meta name="description" content="Gizli Türkçe kelimeyi 8 hakta bul. Her tahminde kaç harfin doğru yerde, kaç harfin yanlış yerde, kaç harfin kelimede hiç olmadığını öğrenirsin — hangileri olduğunu değil.">
 <link rel="canonical" href="https://kelime500.com/oyna">
-<link rel="icon" href="assets/favicon.svg?v=63" type="image/svg+xml">
-<link rel="apple-touch-icon" href="assets/apple-touch-icon.png?v=63">
+<link rel="icon" href="assets/favicon.svg?v=64" type="image/svg+xml">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png?v=64">
 <meta name="theme-color" content="#0f1115">
 <!-- Sosyal paylasim -->
 <meta property="og:url" content="https://kelime500.com/oyna">
@@ -15,15 +15,15 @@
 <meta property="og:site_name" content="Kelime500">
 <meta property="og:title" content="Kelime500 — Türkçe kelime bulmacası">
 <meta property="og:description" content="Gizli Türkçe kelimeyi 8 hakta bul. Her tahminde kaç harfin doğru yerde, kaç harfin yanlış yerde olduğunu öğrenirsin — hangileri olduğunu değil.">
-<meta property="og:image" content="https://kelime500.com/assets/paylasim.png?v=63">
+<meta property="og:image" content="https://kelime500.com/assets/paylasim.png?v=64">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta property="og:locale" content="tr_TR">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Kelime500 — Türkçe kelime bulmacası">
 <meta name="twitter:description" content="Gizli Türkçe kelimeyi 8 hakta bul. Her tahminde kaç harfin doğru yerde, kaç harfin yanlış yerde olduğunu öğrenirsin — hangileri olduğunu değil.">
-<meta name="twitter:image" content="https://kelime500.com/assets/paylasim.png?v=63">
-<link rel="stylesheet" href="assets/styles.css?v=63">
+<meta name="twitter:image" content="https://kelime500.com/assets/paylasim.png?v=64">
+<link rel="stylesheet" href="assets/styles.css?v=64">
 <script>
 /* Tema ilk boyamadan once uygulanir; yoksa sabit yazili koyu tema bir an
    gorunup acik temaya gecerdi. Kayitli bir secim varsa o, yoksa cihazin
@@ -87,18 +87,25 @@
       </svg>
     </button>
     <div class="acilir" id="ana-menu" hidden role="menu">
+      <button type="button" role="menuitem" id="menu-anasayfa">Ana Sayfa</button>
       <button type="button" role="menuitem" data-mod="gunluk">Günlük</button>
       <button type="button" role="menuitem" data-mod="serbest">Serbest Mod</button>
       <button type="button" role="menuitem" data-mod="arsiv">Arşiv</button>
       <hr id="menu-ayrac">
       <button type="button" role="menuitem" id="menu-yeni">Yeni kelime</button>
-      <button type="button" role="menuitem" id="menu-istatistik">İstatistik</button>
       <button type="button" role="menuitem" id="menu-yardim">Nasıl oynanır?</button>
       <button type="button" role="menuitem" id="menu-tema">Gece/Gündüz</button>
     </div>
   </div>
 
-  <a class="simge" href="/" title="Ana sayfa">←</a>
+  <!-- Ana sayfaya logo (ve menudeki "Ana Sayfa") goturur; bu yer istatistige
+       ayrildi ki oyuncu serisini ve dagilimini gorsun. -->
+  <button class="simge" id="ist-dugme" type="button" title="İstatistik" aria-label="İstatistik">
+    <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"
+         fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round">
+      <path d="M5 20v-8M12 20V5M19 20v-5"/>
+    </svg>
+  </button>
 </header>
 
 <div class="kontroller" id="kontroller">
@@ -148,12 +155,12 @@
   <div class="reklam reklam-pencere" id="reklam-istatistik" aria-hidden="true"></div>
 </dialog>
 
-<script src="src/cerez.js?v=63"></script>
-<script src="src/yardim.js?v=63"></script>
-<script src="src/turkish.js?v=63"></script>
-<script src="src/engine.js?v=63"></script>
-<script src="src/sozluk.js?v=63"></script>
-<script src="src/words.js?v=63"></script>
-<script src="src/app.js?v=63"></script>
+<script src="src/cerez.js?v=64"></script>
+<script src="src/yardim.js?v=64"></script>
+<script src="src/turkish.js?v=64"></script>
+<script src="src/engine.js?v=64"></script>
+<script src="src/sozluk.js?v=64"></script>
+<script src="src/words.js?v=64"></script>
+<script src="src/app.js?v=64"></script>
 </body>
 </html>
