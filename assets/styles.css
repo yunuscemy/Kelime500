@@ -651,7 +651,7 @@ body:not(.giris) .logo {
 @media (max-width: 389.98px) { :root { --zorluk-en: 74px; } }
 .zorluk-dugme {
   width: var(--zorluk-en); padding-inline: 0;
-  border-color: transparent; font-weight: 800; font-size: 14px; white-space: nowrap;
+  border-color: transparent; font-weight: 400; font-size: 14px; white-space: nowrap;
 }
 @media (max-width: 389.98px) { .zorluk-dugme { font-size: 13px; } }
 .zorluk-dugme[data-zorluk="standart"]  { background: var(--yesil);   color: #fff; }
