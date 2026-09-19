@@ -51,6 +51,7 @@
       '</g></g>' +
       '<path d="' + JOKER_J + '" fill="none" stroke="#17181c" stroke-width="1.3" stroke-linejoin="round"/>' +
     '</svg>';
+  global.KB.jokerSimge = JOKER_SIMGE;   // rehber de ayni simgeyi gosteriyor
 
   var jokerSecim = null;   // secim surerken 'harf' ya da 'kutu'
   var jokerOnay = null;    // kutuda "emin misin?" sorulan joker
