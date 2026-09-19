@@ -53,7 +53,7 @@
   --rozet-en-carpan: 1.8;     /* rozet genisligi (1 = ilk hali) */
   --kutu-boy-carpan: 1.287;   /* harf kutusu ve rozet yuksekligi (1 = ilk hali) */
   --tahta-aralik: 0.4375;     /* kutular arasi bosluk carpani (1 = ilk hali) */
-  --kare-olcek: 0.99;         /* kare harf kutusunun olcegi (asagiya bkz. --kare) */
+  --kare-olcek: 0.94;         /* kare harf kutusunun olcegi (asagiya bkz. --kare) */
 }
 
 /* --- OYUN OLCULERI: WEB (760px ve genis) ---
@@ -77,7 +77,7 @@
     --rozet-en-carpan: 1.8;
     --kutu-boy-carpan: 1.287;
     --tahta-aralik: 0.4375;
-    --kare-olcek: 0.99;
+    --kare-olcek: 0.94;
   }
 }
 
@@ -310,36 +310,42 @@ select, input[type="date"] {
      Satir yalnizca 5 kare + 3 rozet'ten olusur ve ortalanir; temizleme
      dugmesi satirin soluna asilir, hesaba girmez (asagida .satir-sifirla).
      Ikinci terim, ortalanmis satirin solunda dugmeye yer kalmasini garanti
-     eder: dugme (--sifirla-en + 4 aralik) baslik ve klavye kutularinin sol
-     kenarindan (sayfa kenarindan 6px) iceride kalir. Satir simetrik oldugu
-     icin ayni pay sagda da birakilir. Satir: 5 kare + 3 rozet + 7 aralik
-     + 4px (rozet grubu ayirici); kutu kenarina kadar 14 - 6 = 8px payi var.
+     eder: dugme (kare x --sifirla-en-oran + 4 aralik) baslik ve klavye
+     kutularinin sol kenarindan (sayfa kenarindan 6px) iceride kalir. Satir
+     simetrik oldugu icin ayni pay sagda da birakilir. Satir: 5 kare + 3 rozet
+     + 7 aralik + 4px (rozet grubu ayirici); kutu kenarina kadar 14 - 6 = 8px
+     payi var. Dugme genisligi kareye bagli oldugu icin denklem kareye gore
+     cozuldu: kare <= (W + 16 - 15a - 5) / (5 + 3 x rozet-oran + 2 x dugme-oran).
      Genis ekranda sinir devreye girmez. */
   --aralik: calc(var(--bosluk) * var(--tahta-aralik));
   --rozet-oran: calc(0.66 * var(--rozet-en-carpan) / var(--kutu-en-carpan));
-  --sifirla-en: calc(var(--kutu-en) * 0.63);
+  /* Satir notlarini temizleme dugmesi: alani harf kutusunun yarisi, en/boy
+     3'e 4 (0.6124 x 0.8165 = 0.5). */
+  --sifirla-en-oran: 0.6124;
+  --sifirla-boy-oran: 0.8165;
   --kare: min(calc(min(var(--kutu-en) * var(--kutu-en-carpan),
                        var(--kutu) * var(--kutu-boy-carpan)) * var(--kare-olcek)),
-              calc((100cqw + 2 * 8px - 2 * var(--sifirla-en) - 15 * var(--aralik) - 5px)
-                   / (5 + 3 * var(--rozet-oran))));
+              calc((100cqw + 2 * 8px - 15 * var(--aralik) - 5px)
+                   / (5 + 3 * var(--rozet-oran) + 2 * var(--sifirla-en-oran))));
 }
 
 .satir { display: flex; gap: calc(var(--bosluk) * var(--tahta-aralik)); align-items: center;
           position: relative; }   /* temizleme dugmesi buna gore asilir */
 
 .satir-sifirla {
-  /* Dugme fark edilmiyordu, buyutuldu (ilk halinin 1.5 kati).
+  /* Alani harf kutusunun yarisi (#tahta'da --sifirla-*-oran).
      Satirin disinda, soluna asili: satir yalnizca kutular ve rozetlerden
      olusup ortalansin, dugme gorunse de gorunmese de (.bos) kaymasin.
      Harf kutularina uzakligi 4 satir araligi; dikeyde satirin ortasinda. */
   position: absolute; right: 100%; top: 50%; transform: translateY(-50%);
-  width: var(--sifirla-en); height: calc(var(--kutu) * 0.75);
+  width: calc(var(--kare) * var(--sifirla-en-oran));
+  height: calc(var(--kare) * var(--sifirla-boy-oran));
   margin-right: calc(4 * var(--aralik));
   flex: 0 0 auto;
   display: grid; place-items: center;
   border: 1px solid var(--cizgi); border-radius: var(--yuvarlak);
   background: var(--bg-yuksek); color: var(--soluk);
-  font-size: calc(var(--kutu) * 0.42);
+  font-size: calc(var(--kare) * var(--sifirla-boy-oran) * 0.56);
   /* Dugmenin varsayilan ic boslugu ve govdeden gelen 1.4 satir yuksekligi
      ↺ simgesini kutunun ortasindan kaydiriyordu. */
   padding: 0; line-height: 1;
