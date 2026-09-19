@@ -546,15 +546,19 @@ body:not(.giris) #klavye { margin-top: 12px; }
 .tus.joker-tus {
   font-weight: 800;
   position: relative; overflow: hidden; isolation: isolate;
-  transition: opacity 250ms ease;
+  transition: background 250ms ease;
 }
 .joker-simge {
   position: relative; z-index: 1;   /* altin katmanin ustunde */
   display: inline-block; width: 1.9em; height: 1.9em; vertical-align: middle;
 }
 /* Kullanilabilir joker yokken (henuz acilmadi, bu tahminde kullanildi,
-   hepsi bitti) tus soluk. */
-.tus.joker-tus.joker-pasif { opacity: .45; }
+   hepsi bitti) tus, tahminlerde kullanilmis harfler gibi: zemini onlarin
+   koyu tonu (--tus-kullanilmis, acik temada klavyede yeniden tanimli),
+   logo da onlarin yazisi kadar soluk - renkleri biraz sonuk. */
+.tus.joker-tus.joker-pasif { background: var(--tus-kullanilmis); }
+.tus.joker-tus.joker-pasif .joker-simge { opacity: .55; filter: saturate(.65); }
+.joker-simge { transition: opacity 250ms ease, filter 250ms ease; }
 
 /* Kullanilabilir joker varken butun tus 3 saniyede bir parlak altinla yanip
    soner: altin katman belirir, uzerinden bir isik gecer, soner. Altin
