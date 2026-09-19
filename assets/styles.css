@@ -526,6 +526,19 @@ body:not(.giris) #klavye { margin-top: 12px; }
 .tus.not-belki{ background: color-mix(in srgb, var(--sari)  55%, var(--tus-bg)); }
 /* otomatik: bu harf simdiye kadar bir tahminde kullanildi */
 .tus.kullanilmis { background: var(--tus-kullanilmis); color: var(--soluk); }
+/* Acik temada klavye tuslari beyaz, altlarinda hafif golge (telefon
+   klavyesi gibi). Tus zemini (#e9edf3) klavye kutusuyla (#e4e8ee) neredeyse
+   ayniydi, tuslar kayboluyordu. Yalnizca klavyede: cerez bildirimi ve
+   istatistik penceresindeki dugmeler de .tus kullaniyor, onlar beyaz bir
+   kutunun icinde. --tus-kullanilmis :root'ta hesaplandigi icin burada
+   yeniden tanimlaniyor; tahta-* renkleri --tus-bg'yi kuralin icinde
+   kullandigi icin kendiliginden beyazla karisiyor. */
+:root[data-tema="acik"] #klavye {
+  --tus-bg: #ffffff;
+  --tus-kullanilmis: color-mix(in srgb, #ffffff 70%, var(--soluk) 30%);
+}
+:root[data-tema="acik"] #klavye .tus { box-shadow: 0 1px 1px rgba(23, 26, 33, .16); }
+
 /* Tahtadaki notlarin klavyedeki yansimasi. Tahtadakinden bir-iki ton soluk
    (renk tus zeminiyle karistirilir) ki klavye tahtadan goz alici olmasin. */
 .tus.tahta-yesil   { background: color-mix(in srgb, var(--yesil)   55%, var(--tus-bg)); }
