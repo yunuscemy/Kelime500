@@ -164,6 +164,7 @@
   global.KB.rehber = { ac: ac };
 
   document.addEventListener('DOMContentLoaded', function () {
-    if (yeniOyuncuMu()) { ac(); }
+    /* /oyna?rehber: daha önce oynamış biri de rehberi görebilsin (deneme için). */
+    if (yeniOyuncuMu() || /[?&]rehber\b/.test(location.search)) { ac(); }
   });
 }(window));
