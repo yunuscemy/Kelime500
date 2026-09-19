@@ -497,10 +497,17 @@ body:not(.giris) #klavye { margin-top: 12px; }
 .tus.genis { flex: 1.5 1 0; font-size: var(--tus-genis-yazi); }
 /* sağ tıkla / basılı tut: kendi eleme notun */
 .tus.not-yok  { opacity: .35; text-decoration: line-through; }
-.tus.not-var  { background: var(--yesil); color: #fff; }
-.tus.not-belki{ background: var(--sari); color: #17181c; }
+/* Elle verilen tus notlari da tahtadan gelenlerle ayni soluk tonda: klavyede
+   ayni anlama gelen iki farkli yesil/sari olmasin. */
+.tus.not-var  { background: color-mix(in srgb, var(--yesil) 55%, var(--tus-bg)); }
+.tus.not-belki{ background: color-mix(in srgb, var(--sari)  55%, var(--tus-bg)); }
 /* otomatik: bu harf simdiye kadar bir tahminde kullanildi */
 .tus.kullanilmis { background: var(--tus-kullanilmis); }
+/* Tahtadaki notlarin klavyedeki yansimasi. Tahtadakinden bir-iki ton soluk
+   (renk tus zeminiyle karistirilir) ki klavye tahtadan goz alici olmasin. */
+.tus.tahta-yesil   { background: color-mix(in srgb, var(--yesil)   55%, var(--tus-bg)); }
+.tus.tahta-sari    { background: color-mix(in srgb, var(--sari)    55%, var(--tus-bg)); }
+.tus.tahta-kirmizi { background: color-mix(in srgb, var(--kirmizi) 55%, var(--tus-bg)); }
 
 footer { color: var(--soluk); font-size: 11px; padding: 0 14px 18px; text-align: center; max-width: 480px; }
 
@@ -632,11 +639,29 @@ body:not(.giris) .logo {
 .nokta.standart  { background: var(--yesil); }
 .nokta.ileri     { background: var(--kirmizi); }
 
-/* Zorluk dugmesi: kapaliyken seviyenin rengini ve harfini tasir. */
-.zorluk-dugme { border-color: transparent; font-weight: 800; font-size: 15px; }
-/* Tek dokunusta seviye degistirir; acilir menusu yok. */
+/* Zorluk dugmesi: seviyenin rengini ve harfini tasir ("Mod: S").
+   Dikdortgen - yuksekligi diger dugmelerle ayni, genisligi yazisi kadar. */
+.zorluk-dugme {
+  width: auto; padding-inline: 10px;
+  border-color: transparent; font-weight: 800; font-size: 14px; white-space: nowrap;
+}
 .zorluk-dugme[data-zorluk="standart"]  { background: var(--yesil);   color: #fff; }
 .zorluk-dugme[data-zorluk="ileri"]     { background: var(--kirmizi); color: #fff; }
+
+/* Seviye secim kutusu: her satirda seviyenin isareti, adi ve aciklamasi. */
+.acilir.zorluk-menu { min-width: 250px; }
+.acilir.zorluk-menu button {
+  display: grid; grid-template-columns: auto auto 1fr; gap: 10px; align-items: center;
+}
+.seviye-isaret {
+  width: 26px; height: 26px; border-radius: 7px;
+  display: grid; place-items: center;
+  font-size: 14px; font-weight: 800; color: #fff;
+}
+.seviye-isaret.standart { background: var(--yesil); }
+.seviye-isaret.ileri    { background: var(--kirmizi); }
+.seviye-ad { font-weight: 700; }
+.seviye-aciklama { font-size: 12.5px; font-weight: 500; color: var(--soluk); text-align: right; }
 
 /* --- oyun sayfasi: mod etiketi ve tarih gezinmesi --- */
 .mod-etiket {

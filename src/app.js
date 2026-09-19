@@ -25,6 +25,8 @@
 
   var NOT_SINIF = ['', 'not-kirmizi', 'not-sari', 'not-yesil'];
   var TUS_SINIF = ['', 'not-yok', 'not-belki', 'not-var'];
+  /* Tahtadaki notlarin klavyedeki yansimasi (NOT_SINIF ile ayni sira). */
+  var TAHTA_TUS_SINIF = ['', 'tahta-kirmizi', 'tahta-sari', 'tahta-yesil'];
 
   var $ = function (s) { return document.querySelector(s); };
 
@@ -415,13 +417,39 @@
     return s;
   }
 
+  /* Tahtadaki notlarin harf bazinda ozeti: bir harfe birden fazla kutuda not
+   * verildiyse en guclusu alinir - yesil (3) > sari (2) > kirmizi (1).
+   * Harf bir yerde yesilse kelimede vardir; baska bir kutudaki kirmizi bunu
+   * degistirmez. */
+  function tahtaNotlari() {
+    var s = Object.create(null);
+    Object.keys(S.notlar).forEach(function (a) {
+      var not = S.notlar[a], p = a.split(':'), g = S.gecmis[Number(p[0])];
+      if (!not || !g) { return; }
+      var h = g.tahmin[Number(p[1])];
+      if (!s[h] || not > s[h]) { s[h] = not; }
+    });
+    return s;
+  }
+
+  /* Klavye tahtayi canli olarak yansitir. Oncelik:
+   * 1) kesin yok (tahtadaki gibi sabit kirmizi, degistirilemez)
+   * 2) tahtada harfe verilen not
+   * 3) klavyede tusa verilen kendi not (sag tik / basili tut)
+   * 4) daha once denenmis harf: soluk */
   function tuslariBoya() {
     var kullanilan = kullanilanHarfler(S.gecmis);
+    var kesinYok = motor.kesinYokHarfler(S.gecmis);
+    var tahta = tahtaNotlari();
     Array.prototype.forEach.call(document.querySelectorAll('.tus[data-harf]'), function (b) {
-      b.classList.remove('not-yok', 'not-belki', 'not-var', 'kullanilmis');
-      var d = S.tusNot[b.dataset.harf] || 0;
-      if (d) { b.classList.add(TUS_SINIF[d]); }
-      else if (kullanilan[b.dataset.harf]) { b.classList.add('kullanilmis'); }
+      var h = b.dataset.harf;
+      b.classList.remove('not-yok', 'not-belki', 'not-var', 'kullanilmis',
+                         'tahta-kirmizi', 'tahta-sari', 'tahta-yesil');
+      var d = S.tusNot[h] || 0;
+      if (kesinYok[h]) { b.classList.add('tahta-kirmizi'); }
+      else if (tahta[h]) { b.classList.add(TAHTA_TUS_SINIF[tahta[h]]); }
+      else if (d) { b.classList.add(TUS_SINIF[d]); }
+      else if (kullanilan[h]) { b.classList.add('kullanilmis'); }
     });
   }
 
@@ -479,6 +507,9 @@
   }
 
   function tusNotu(h) {
+    /* Rengi tahtadan gelen tusa elle not verilmez: kesin yok harfler
+     * tahtadaki gibi sabit, notlu harfler de tahtayi yansitir. */
+    if (motor.kesinYokHarfler(S.gecmis)[h] || tahtaNotlari()[h]) { return; }
     S.tusNot[h] = ((S.tusNot[h] || 0) + 1) % 4;   // yok · elendi · belki · var
     kaydet();
     tuslariBoya();
@@ -747,7 +778,6 @@
    * Gunlukte tek bir bulmaca var (bugun), o yuzden tarih gezinmesi yalnizca arsivde. */
   var ZORLUK_ISARET = { standart: 'S', ileri: 'İ' };
 
-  function digerZorluk() { return S.zorluk === 'standart' ? 'ileri' : 'standart'; }
 
   /* 2026-08-31 -> 31-08-2026 */
   function tarihYaz(t) {
@@ -775,13 +805,15 @@
       etiket.textContent = mod + ' · ' + ZORLUKLAR[S.zorluk].ad;
     }
 
-    /* Zorluk dugmesi kapaliyken seviyenin rengini ve harfini tasir. */
+    /* Zorluk dugmesi seviyenin rengini ve harfini tasir; basinca iki
+     * seviyeyi aciklamalariyla gosteren kutu acilir. */
     var zd = $('#zorluk-dugme');
     zd.dataset.zorluk = S.zorluk;
-    zd.textContent = ZORLUK_ISARET[S.zorluk];
-    zd.title = ZORLUKLAR[S.zorluk].ad + ' · ' + ZORLUKLAR[digerZorluk()].ad + ' seviyeye geç';
+    zd.textContent = 'Mod: ' + ZORLUK_ISARET[S.zorluk];
+    zd.title = 'Seviye: ' + ZORLUKLAR[S.zorluk].ad + ' · değiştirmek için dokun';
 
     menuIsaretle('#ana-menu', '[data-mod]', 'mod', S.mod);
+    menuIsaretle('#zorluk-menu', '[data-zorluk]', 'zorluk', S.zorluk);
 
     /* Kelime degistirme yalnizca serbest modda: gunlukte ve arsivde herkes
      * ayni kelimeyi oynadigi icin yenilemek anlamsiz. Ayrac her modda durur -
@@ -881,14 +913,21 @@
       menuAc('#ana-menu', menuDugme);
     });
 
-    /* Tek dokunusta diger seviyeye gecilir. Her seviyenin oyunu ayri
-     * anahtarda kayitli oldugu icin geri donuldugunde tahminler durur. */
-    $('#zorluk-dugme').addEventListener('click', function (e) {
+    /* Seviye dugmesi iki seviyeyi aciklamalariyla gosteren kutuyu acar;
+     * satira dokununca o seviyeye gecilir. Her seviyenin oyunu ayri anahtarda
+     * kayitli oldugu icin geri donuldugunde tahminler durur. */
+    var zorlukDugme = $('#zorluk-dugme');
+    zorlukDugme.addEventListener('click', function (e) {
       e.stopPropagation();
+      menuAc('#zorluk-menu', zorlukDugme);
+    });
+    $('#zorluk-menu').addEventListener('click', function (e) {
+      var b = e.target.closest('button[data-zorluk]');
+      if (!b) { return; }
       menuKapat();
-      var yeni = digerZorluk();
-      yaz('kelime500.zorluk', yeni);
-      yeniOyun(S.mod, yeni, S.tarih);
+      if (b.dataset.zorluk === S.zorluk) { return; }
+      yaz('kelime500.zorluk', b.dataset.zorluk);
+      yeniOyun(S.mod, b.dataset.zorluk, S.tarih);
     });
 
     $('#ana-menu').addEventListener('click', function (e) {
