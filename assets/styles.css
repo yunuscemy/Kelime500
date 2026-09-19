@@ -647,6 +647,11 @@ body:not(.giris) .logo {
 }
 .zorluk-dugme[data-zorluk="standart"]  { background: var(--yesil);   color: #fff; }
 .zorluk-dugme[data-zorluk="ileri"]     { background: var(--kirmizi); color: #fff; }
+/* Iki seviyenin yazisi ayni hucrede ust uste; yalnizca gecerli olan gorunur.
+   Genislik uzun olana gore sabit - seviye degisince dugme oynamaz. */
+.zorluk-dugme > span { grid-area: 1 / 1; }
+.zorluk-dugme[data-zorluk="standart"] > span:not([data-z="standart"]),
+.zorluk-dugme[data-zorluk="ileri"] > span:not([data-z="ileri"]) { visibility: hidden; }
 
 /* Seviye secim kutusu: her satirda seviyenin isareti, adi ve aciklamasi. */
 .acilir.zorluk-menu { min-width: 250px; }

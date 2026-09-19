@@ -777,6 +777,7 @@
   /* Baslik satiri: hangi moddayiz, hangi gunun kelimesi.
    * Gunlukte tek bir bulmaca var (bugun), o yuzden tarih gezinmesi yalnizca arsivde. */
   var ZORLUK_ISARET = { standart: 'S', ileri: 'İ' };
+  var ZORLUK_ONEK = 'Mod: ';   /* seviye dugmesindeki yazinin basi */
 
 
   /* 2026-08-31 -> 31-08-2026 */
@@ -808,8 +809,19 @@
     /* Zorluk dugmesi seviyenin rengini ve harfini tasir; basinca iki
      * seviyeyi aciklamalariyla gosteren kutu acilir. */
     var zd = $('#zorluk-dugme');
+    /* Iki seviyenin yazisi dugmede ust uste durur, yalnizca gecerli olan
+     * gorunur (CSS). Dugme boylece uzun olanin genisliginde sabit kalir;
+     * seviye degisince boyu oynamaz. Bir kez kurulur. */
+    if (!zd.firstChild) {
+      Object.keys(ZORLUKLAR).forEach(function (z) {
+        var y = document.createElement('span');
+        y.dataset.z = z;
+        y.textContent = ZORLUK_ONEK + ZORLUK_ISARET[z];
+        zd.appendChild(y);
+      });
+    }
     zd.dataset.zorluk = S.zorluk;
-    zd.textContent = 'Mod: ' + ZORLUK_ISARET[S.zorluk];
+    zd.setAttribute('aria-label', ZORLUK_ONEK + ZORLUKLAR[S.zorluk].ad);
     zd.title = 'Seviye: ' + ZORLUKLAR[S.zorluk].ad + ' · değiştirmek için dokun';
 
     menuIsaretle('#ana-menu', '[data-mod]', 'mod', S.mod);
