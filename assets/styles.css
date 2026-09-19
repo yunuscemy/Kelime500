@@ -661,7 +661,10 @@ body:not(.giris) #klavye { margin-top: 12px; }
 }
 /* Kutu jokeriyle acilmis kutu: gercek renk, icte ince beyaz halka -
    oyuncunun kendi notlarindan ayirt edilsin. */
-.kutu.joker-acik { box-shadow: inset 0 0 0 2px rgba(255, 255, 255, .6); }
+.kutu.joker-acik,
+.kutu.joker-iz { box-shadow: inset 0 0 0 2px rgba(255, 255, 255, .6); }
+/* Acik temada bos (notsuz) kutu beyaz; beyaz cerceve gorunmez. */
+:root[data-tema="acik"] .kutu.joker-iz:not(.not-sari):not(.not-yesil) { box-shadow: inset 0 0 0 2px rgba(23, 26, 33, .45); }
 
 /* Acik temada klavye tuslari beyaz, altlarinda hafif golge (telefon
    klavyesi gibi). Tus zemini (#e9edf3) klavye kutusuyla (#e4e8ee) neredeyse

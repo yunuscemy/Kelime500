@@ -58,6 +58,7 @@
   /* Secim onaylaninca satir once bu kadar eski haliyle durur (saniye); sonra
    * parlaklik ayni surede sifirdan tama cikar (CSS: --joker-gel, ayni deger). */
   var JOKER_BEKLE = 0.75;
+  var JOKER_SONUC_SURE = 5200;   // ms: joker cevabinin ekranda kalma suresi
 
   /* Tahtadaki notlarin klavyedeki yansimasi (NOT_SINIF ile ayni sira). */
   var TAHTA_TUS_SINIF = ['', 'tahta-kirmizi', 'tahta-sari', 'tahta-yesil'];
@@ -322,7 +323,7 @@
     tahta.style.setProperty('--joker-gecikme',
       (JOKER_BEKLE - (jokerSecim ? (Date.now() - jokerBasladi) / 1000 : 0)) + 's');
     tahta.classList.toggle('oyun-bitti', !!S.bitti);
-    var kesinYok = kesinYok_(), kesinRenk = kesinRenkler();
+    var kesinYok = kesinYok_(), kesinRenk = kesinRenkler(), ko = kirmiziOlamaz();
     var cevrilecek = [];
 
     /* Perde açıldıysa her tahmindeki harflerin gerçek renkleri hesaplanır. */
@@ -365,7 +366,7 @@
             /* Perde açıldı: harflerin gerçek renkleri gösteriliyor. Kart iki
              * yüzlü kurulur, ön yüzde oyuncunun son gördüğü hâli durur. */
             var gercek = gercekRenkler[r][c];
-            var onSinif = kesinYok[harf] ? 'not-kirmizi' : (NOT_SINIF[S.notlar[r + ':' + c] || 0] || '');
+            var onSinif = kesinYok[harf] ? 'not-kirmizi' : (NOT_SINIF[notDegeri(r, c, ko)] || '');
             kutu.className = 'kutu dolu cevrilir';
             kutu.innerHTML =
               '<div class="kutu-ic">' +
@@ -395,9 +396,14 @@
               kutu.classList.add(NOT_SINIF[kr]);
               kutu.title = 'Kesin: ' + RENK_ACIKLAMA[kr];
             } else {
-              var not = S.notlar[r + ':' + c] || 0;
+              var not = notDegeri(r, c, ko);
               if (not) { kutu.classList.add(NOT_SINIF[not]); }
-              kutu.title = 'Not almak için tıkla';
+              if (ko[r + ':' + c]) {
+                kutu.classList.add('joker-iz');
+                kutu.title = 'Kesin: harf kelimede var · sarı ya da yeşil';
+              } else {
+                kutu.title = 'Not almak için tıkla';
+              }
             }
             kutu.dataset.r = r; kutu.dataset.c = c;
           }
@@ -471,6 +477,16 @@
     var j = S.joker || {};
     if (j.harf && !j.harf.var) { k[j.harf.harf] = true; }
 
+    /* Kutu jokeri kirmizi acti ve harf o tahminde bir kez geciyorsa, harf
+     * kelimede hic yok (kelimede olsaydi tek kopyasi yesil ya da sari
+     * olurdu). Tekrar eden kopyanin kirmizisi (Ileri'de AA) boyle degil. */
+    var jr = j.kutu, gr;
+    if (jr && jr.renk === 1 && (gr = S.gecmis[jr.r])) {
+      var x = gr.tahmin[jr.c], adet = 0;
+      for (var i = 0; i < gr.tahmin.length; i++) { if (gr.tahmin[i] === x) { adet++; } }
+      if (adet === 1) { k[x] = true; }
+    }
+
     /* Jokerin kesinlestirdigi harf, bir satirin yesil+sari sayisini tek basina
      * karsiliyorsa (satirda yalnizca bir renkli harf var ve o bu), satirdaki
      * diger harfler kelimede yoktur. Kutu jokeri: acilan kutu yesil ve satir
@@ -531,6 +547,32 @@
     return sonuc;
   }
 
+  /* Jokerden harfin kelimede OLDUGU biliniyor ama kutunun rengi kesin
+   * degilse (sari mi yesil mi belli degil): bu kutularda kirmizi secilemez,
+   * not sadece bos -> sari -> yesil doner. Kaynaklar: kutu jokeri sari/yesil,
+   * harf jokeri "var". Harf o tahminde bir kez geciyorsa gecerli; tekrar eden
+   * kopya (Ileri'de) fazlalik olarak kirmizi olabilir. Kesin renkli kutular
+   * (kesinRenkler) ve jokerin kendi kutusu burada yer almaz. */
+  function kirmiziOlamaz() {
+    var sonuc = {}, j = S.joker || {}, harfler = {}, kr = kesinRenkler(), g0;
+    if (j.kutu && j.kutu.renk > 1 && (g0 = S.gecmis[j.kutu.r])) { harfler[g0.tahmin[j.kutu.c]] = true; }
+    if (j.harf && j.harf.var) { harfler[j.harf.harf] = true; }
+    S.gecmis.forEach(function (g, r) {
+      for (var c = 0; c < g.tahmin.length; c++) {
+        var x = g.tahmin[c], a = r + ':' + c;
+        if (!harfler[x] || kr[a] || jokerKutu(r, c)) { continue; }
+        if (g.tahmin.split(x).length === 2) { sonuc[a] = true; }
+      }
+    });
+    return sonuc;
+  }
+
+  /* Kullanicinin notu; kirmizi olamayan kutuda eski kirmizi not yok sayilir. */
+  function notDegeri(r, c, ko) {
+    var not = S.notlar[r + ':' + c] || 0;
+    return not === 1 && ko[r + ':' + c] ? 0 : not;
+  }
+
   /* Kutu jokeriyle acilmis kutunun rengi (1-3), yoksa 0. */
   function jokerKutu(r, c) {
     var k = S.joker && S.joker.kutu;
@@ -552,9 +594,10 @@
    * Harf bir yerde yesilse kelimede vardir; baska bir kutudaki kirmizi bunu
    * degistirmez. */
   function tahtaNotlari() {
-    var s = Object.create(null);
+    var s = Object.create(null), ko = kirmiziOlamaz();
     Object.keys(S.notlar).forEach(function (a) {
       var not = S.notlar[a], p = a.split(':'), g = S.gecmis[Number(p[0])];
+      if (not === 1 && ko[a]) { return; }
       if (!not || !g) { return; }
       var h = g.tahmin[Number(p[1])];
       if (!s[h] || not > s[h]) { s[h] = not; }
@@ -823,12 +866,12 @@
       var var_ = S.gizli.indexOf(harf) !== -1;
       S.joker.harf = { harf: harf, var: var_, r: r };
       S.joker.tur = S.gecmis.length;
-      uyar(harf + (var_ ? ' kelimede var' : ' kelimede yok'), false, 2600);
+      uyar(harf + (var_ ? ' kelimede var' : ' kelimede yok'), false, JOKER_SONUC_SURE);
     } else {
       var renk = motor.harfRenkleri(tahmin, S.gizli)[c];
       S.joker.kutu = { r: r, c: c, renk: renk };
       S.joker.tur = S.gecmis.length;
-      uyar((c + 1) + '. kutu ' + RENK_ACIKLAMA[renk], false, 2600);
+      uyar((c + 1) + '. kutu ' + RENK_ACIKLAMA[renk], false, JOKER_SONUC_SURE);
     }
     kaydet();
     ciz();
@@ -881,7 +924,12 @@
     var harf = S.gecmis[r].tahmin[c];
     if (kesinYok_()[harf]) { return; }   // kesin kırmızı değiştirilemez
     var anahtar = kutu.dataset.r + ':' + kutu.dataset.c;
-    S.notlar[anahtar] = ((S.notlar[anahtar] || 0) + 1) % 4;
+    if (kirmiziOlamaz()[anahtar]) {
+      /* Harf kelimede var: bos -> sari -> yesil -> bos, kirmizi atlanir. */
+      S.notlar[anahtar] = [2, 2, 3, 0][S.notlar[anahtar] || 0];
+    } else {
+      S.notlar[anahtar] = ((S.notlar[anahtar] || 0) + 1) % 4;
+    }
     kaydet();
     ciz();
   }
