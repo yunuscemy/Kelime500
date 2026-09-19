@@ -22,6 +22,32 @@ class Islem(http.server.SimpleHTTPRequestHandler):
     def do_GET(self):
         yol = self.path.split('?', 1)[0].split('#', 1)[0]
 
+        # Yalnizca bu yerel sunucuda: tarayicidaki oyun kayitlarini siler ve
+        # oyuna doner. Test ederken (ornegin telefondan) ayni gunun oyununu
+        # bastan oynayabilmek icin. Istatistik, tema ve seviye tercihi kalir.
+        # Canli sitede boyle bir adres yok - bu dosya yayinlanmiyor.
+        if yol == '/sifirla':
+            sayfa = (
+                '<!doctype html><meta charset="utf-8">'
+                '<meta name="viewport" content="width=device-width">'
+                '<title>Sıfırlandı</title>'
+                '<body style="font:16px system-ui;padding:24px;background:#0f1115;color:#e8eaf0">'
+                '<p id="d">Oyun kayıtları siliniyor…</p>'
+                '<script>'
+                'var n=0;Object.keys(localStorage).forEach(function(k){'
+                'if(k.indexOf("kelime500.oyun.")===0){localStorage.removeItem(k);n++;}});'
+                'document.getElementById("d").textContent=n+" oyun kaydı silindi, oyuna dönülüyor…";'
+                'setTimeout(function(){location.replace("/oyna?mod=gunluk");},900);'
+                '</script>'
+            ).encode('utf-8')
+            self.send_response(200)
+            self.send_header('Content-Type', 'text/html; charset=utf-8')
+            self.send_header('Cache-Control', 'no-store')
+            self.send_header('Content-Length', str(len(sayfa)))
+            self.end_headers()
+            self.wfile.write(sayfa)
+            return
+
         # .html ile gelen istek uzantisiza yonlendirilir (Cloudflare gibi)
         if yol.endswith('.html') and yol != '/index.html':
             hedef = yol[:-5]
