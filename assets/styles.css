@@ -22,8 +22,11 @@
      Tahtadaki gercek kutu boyu #tahta icinde satir genisliginden cozuluyor. */
   --kutu: clamp(30px, min(11vw, 5.6vh), 52px);
 
-  /* Daha once denenmis harf: koyu temada karartilir, acik temada grilestirilir. */
-  --tus-kullanilmis: color-mix(in srgb, var(--tus-bg) 55%, #000 45%);
+  /* Daha once denenmis harf: koyu temada karartilir, acik temada grilestirilir.
+     Koyu temada %45 karartma tusu klavye kutusunun rengine (--serit)
+     esitliyordu, tusun kenari kayboluyordu; karartma azaltildi, soluklugu
+     artik harfin rengi de tasiyor (.tus.kullanilmis). */
+  --tus-kullanilmis: color-mix(in srgb, var(--tus-bg) 72%, #000 28%);
 
   /* Oyun sayfasinda baslik ve klavyenin arkasindaki tam genislik serit.
      Dugme renginden (--bg-yuksek) bir-iki ton koyu. */
@@ -241,8 +244,9 @@ header {
 /* Istatistik penceresi kapatilinca dogru cevap burada ortada durur. */
 .kontroller.cevap-modu { justify-content: center; }
 .kontroller.cevap-modu .mod-etiket {
+  /* Yazi boyu mod/seviye yazisiyla ayni (13px): buyuk olunca satir uzuyor,
+     oyun bitince tahta asagi kayiyordu. */
   flex: 0 0 auto; text-align: center;
-  font-size: 15px;   /* govde tipografisi - ayri bir harf araligi verilmiyor */
 }
 .kontroller.cevap-modu .mod-etiket b { color: var(--yesil); }
 
@@ -470,6 +474,25 @@ select, input[type="date"] {
   75% { transform: translateX(5px); }
 }
 
+/* --- simgeler ---
+   Satir notlarini ve klavye notlarini temizleyen dugmeler ayni simgeyi
+   (supurge) kullanir; gonder tusu "enter" oku. Simgeler burada tek yerde
+   tanimli, oyun, klavye ve kurallar metni yalnizca sinifi kullanir. Maske
+   olarak cizildikleri icin rengi bulunduklari yazinin rengidir. */
+.ikon {
+  display: inline-block; width: 1.15em; height: 1.15em; vertical-align: -0.2em;
+  background-color: currentColor;
+  -webkit-mask: var(--ikon) center / contain no-repeat;
+          mask: var(--ikon) center / contain no-repeat;
+}
+.ikon-supurge {
+  --ikon: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><g transform='translate(1.5 -0.5) rotate(35 12 12)'><path d='M12 2v8'/><path d='M8 10h8l1.5 10h-11z'/><path d='M10.5 14v6M13.5 14v6'/></g></svg>");
+}
+.ikon-gonder {
+  --ikon: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'><path d='M20 5v7a3 3 0 0 1-3 3H5'/><path d='M9 11l-4 4 4 4'/></svg>");
+}
+.tus .ikon { width: 1.35em; height: 1.35em; }
+
 /* --- klavye --- */
 #klavye { display: grid; gap: calc(var(--bosluk) * 0.8 * var(--klavye-aralik)); margin: 10px 0 14px; }
 
@@ -502,7 +525,7 @@ body:not(.giris) #klavye { margin-top: 12px; }
 .tus.not-var  { background: color-mix(in srgb, var(--yesil) 55%, var(--tus-bg)); }
 .tus.not-belki{ background: color-mix(in srgb, var(--sari)  55%, var(--tus-bg)); }
 /* otomatik: bu harf simdiye kadar bir tahminde kullanildi */
-.tus.kullanilmis { background: var(--tus-kullanilmis); }
+.tus.kullanilmis { background: var(--tus-kullanilmis); color: var(--soluk); }
 /* Tahtadaki notlarin klavyedeki yansimasi. Tahtadakinden bir-iki ton soluk
    (renk tus zeminiyle karistirilir) ki klavye tahtadan goz alici olmasin. */
 .tus.tahta-yesil   { background: color-mix(in srgb, var(--yesil)   55%, var(--tus-bg)); }

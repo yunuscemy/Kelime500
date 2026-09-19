@@ -301,8 +301,9 @@
       sifirla.type = 'button';
       sifirla.className = 'satir-sifirla';
       if (gonderildi && !S.bitti) {
-        sifirla.textContent = '↺';
-        sifirla.title = 'Bu satırın notlarını sıfırla';
+        sifirla.innerHTML = '<i class="ikon ikon-supurge" aria-hidden="true"></i>';
+        sifirla.title = 'Bu satırın notlarını temizle';
+        sifirla.setAttribute('aria-label', sifirla.title);
         sifirla.dataset.r = r;
       } else {
         sifirla.className += ' bos';
@@ -527,11 +528,19 @@
       k.appendChild(d);
     });
 
+    /* Son satirdaki uc tus esit genislikte. Temizleme tusu satir notlarini
+     * temizleyen dugmeyle ayni simgeyi (supurge) kullanir. */
     var son = document.createElement('div');
     son.className = 'klavye-satir';
-    son.appendChild(tus('◫', '', notlariTemizle, 'Notları temizle'));
-    son.appendChild(tus('boşluk', 'genis', atla, 'Bilinmeyen harfi atla'));
-    son.appendChild(tus('✓', 'genis', gonder, 'Gönder'));
+    var temizle = tus('', '', notlariTemizle, 'Notları temizle');
+    temizle.innerHTML = '<i class="ikon ikon-supurge" aria-hidden="true"></i>';
+    temizle.setAttribute('aria-label', 'Notları temizle');
+    var gonderTusu = tus('', '', gonder, 'Gönder');
+    gonderTusu.innerHTML = '<i class="ikon ikon-gonder" aria-hidden="true"></i>';
+    gonderTusu.setAttribute('aria-label', 'Gönder');
+    son.appendChild(temizle);
+    son.appendChild(tus('Boşluk', '', atla, 'Bilinmeyen harfi atla'));
+    son.appendChild(gonderTusu);
     k.appendChild(son);
   }
 
