@@ -89,6 +89,7 @@ kelime500.oyun.gunluk.<zorluk>.<tarih>
 kelime500.oyun.serbest.<zorluk>
 kelime500.ist.<mod>.<zorluk>
 kelime500.tema · kelime500.zorluk · kelime500.tarih · kelime500.cerez
+kelime500.rehber   (ilk giriş rehberi görüldü)
 ```
 
 Bu adlardan birini değiştirmek **herkesin istatistiğini sessizce siler**.
@@ -134,7 +135,7 @@ sonra betiği çalıştır. İki yeri elle senkron tutmaya çalışma.
 ## 6. Sürüm damgası
 
 Tarayıcı önbelleğini kırmak için bütün varlıklar `?v=NN` ile yükleniyor
-(dört HTML dosyasında toplam 29 yerde; güncel numarayı dosyalardan oku). `assets/` veya `src/`
+(dört HTML dosyasında toplam 30 yerde; güncel numarayı dosyalardan oku). `assets/` veya `src/`
 altında bir dosya değiştiysen **hepsini birden** artır, yoksa kullanıcılar
 eski dosyayla yeni dosyayı karışık görür.
 
