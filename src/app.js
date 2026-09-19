@@ -33,6 +33,25 @@
   var JOKER_ESIK = { standart: { harf: 2, kutu: 3 }, ileri: { harf: 3, kutu: 4 } };
   var RENK_ACIKLAMA = ['', 'kırmızı · gizli kelimede yok', 'sarı · var ama yeri yanlış',
                        'yeşil · harf doğru yerde'];
+  /* J tusunun simgesi: kalin bir J, icinde capraz renkli seritler, koyu
+   * kontur. Harf klavyedeki J tusuyla karismasin diye yazi degil cizim.
+   * Seritlerin renkleri JOKER_RENKLER'de. */
+  var JOKER_RENKLER = ['#e3342f', '#f39237', '#f6d93a', '#3fa66a', '#2f5fd0', '#7a3fb0'];
+  var JOKER_J = 'M13.5 2H19.5V14.5C19.5 18.9 16.4 22 12 22C7.6 22 4.5 18.9 4.5 14.5V13H9.5V14.5' +
+                'C9.5 16.2 10.6 17.3 11.5 17.3C12.4 17.3 13.5 16.2 13.5 14.5Z';
+  var JOKER_SIMGE =
+    '<svg class="joker-simge" viewBox="0 0 24 24" aria-hidden="true">' +
+      '<defs><clipPath id="joker-j-kesit"><path d="' + JOKER_J + '"/></clipPath></defs>' +
+      '<g clip-path="url(#joker-j-kesit)"><g transform="rotate(35 12.5 12)">' +
+        JOKER_RENKLER.map(function (r, i) {
+          /* Seritler harfin capraz genisligine (donmus eksende ~6.5-21.9)
+           * yayiliyor ki altisi da harfin uzerine dussun. */
+          return '<rect x="' + (6.5 + i * 2.57).toFixed(2) + '" y="-6" width="2.65" height="36" fill="' + r + '"/>';
+        }).join('') +
+      '</g></g>' +
+      '<path d="' + JOKER_J + '" fill="none" stroke="#17181c" stroke-width="1.3" stroke-linejoin="round"/>' +
+    '</svg>';
+
   var jokerSecim = null;   // secim surerken 'harf' ya da 'kutu'
   var jokerOnay = null;    // kutuda "emin misin?" sorulan joker
   var jokerBasladi = 0;    // secimin basladigi an (parlamanin zamanlamasi icin)
@@ -628,6 +647,8 @@
       jokerTusu(jokerTus);
     }, 'Joker');
     jokerTus.id = 'joker-tus';
+    jokerTus.innerHTML = JOKER_SIMGE;
+    jokerTus.setAttribute('aria-label', 'Joker');
     jokerTus.setAttribute('aria-haspopup', 'true');
     jokerTus.setAttribute('aria-expanded', 'false');
     jokerSarmal.appendChild(jokerTus);

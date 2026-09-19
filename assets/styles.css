@@ -544,6 +544,7 @@ body:not(.giris) #klavye { margin-top: 12px; }
 .joker-sarmal { position: relative; display: flex; min-width: 0; }
 .joker-sarmal .tus { flex: 1 1 auto; }
 .tus.joker-tus { font-weight: 800; }
+.joker-simge { display: inline-block; width: 1.9em; height: 1.9em; vertical-align: middle; }
 /* Kullanilabilir joker varken J tusunun altin cercevesi 3 saniyede bir yanip
    soner - oyuncunun dikkati hep orada olsun. */
 .tus.joker-tus.joker-hazir { animation: joker-yanip 3s ease-in-out infinite; }
