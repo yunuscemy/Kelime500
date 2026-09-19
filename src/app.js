@@ -25,6 +25,16 @@
 
   var NOT_SINIF = ['', 'not-kirmizi', 'not-sari', 'not-yesil'];
   var TUS_SINIF = ['', 'not-yok', 'not-belki', 'not-var'];
+  /* Jokerler: kelime basina iki tane, ikisi de yalnizca SON tahmine uygulanir.
+   * harf: secilen harfin kelimede olup olmadigini soyler (gucsuz).
+   * kutu: secilen kutunun gercek rengini acar (guclu).
+   * Esik: jokerin acilmasi icin yapilmis olmasi gereken tahmin sayisi;
+   * Ileri'de her sey bir tur sonra. */
+  var JOKER_ESIK = { standart: { harf: 2, kutu: 3 }, ileri: { harf: 3, kutu: 4 } };
+  var RENK_ACIKLAMA = ['', 'kırmızı · gizli kelimede yok', 'sarı · var ama yeri yanlış',
+                       'yeşil · harf doğru yerde'];
+  var jokerSecim = null;   // secim surerken 'harf' ya da 'kutu'
+
   /* Tahtadaki notlarin klavyedeki yansimasi (NOT_SINIF ile ayni sira). */
   var TAHTA_TUS_SINIF = ['', 'tahta-kirmizi', 'tahta-sari', 'tahta-yesil'];
 
@@ -131,17 +141,19 @@
       S = kayitli;
       S.tusNot = S.tusNot || {};
       S.acikla = !!S.acikla;
+      S.joker = S.joker || {};   // jokerlerden once kaydedilmis oyunlarda yok
     } else {
       S = {
         gizli: mod === 'gunluk' ? gununKelimesi(sozluk.cozum, tarih, zorluk)
                                 : motor.rastgeleKelime(havuz),
         gecmis: [], notlar: {}, tusNot: {}, bitti: false, kazandi: false,
-        kayitli: false, acikla: false
+        kayitli: false, acikla: false, joker: {}
       };
     }
 
     S.mod = mod; S.zorluk = zorluk; S.tarih = tarih;
     S.girdi = []; S.imlec = 0;
+    jokerSecim = null;
     hataliSatir = false;
     cevrilecekSatir = -1;
     aciklaAnim = false;
@@ -153,7 +165,7 @@
     yaz(oyunAnahtari(S.mod, S.zorluk, S.tarih), {
       gizli: S.gizli, gecmis: S.gecmis, notlar: S.notlar, tusNot: S.tusNot,
       bitti: S.bitti, kazandi: S.kazandi, kayitli: S.kayitli,
-      acikla: S.acikla
+      acikla: S.acikla, joker: S.joker
     });
   }
 
@@ -222,10 +234,11 @@
 
     if (p.yer === n) { bitir(true); }
     else if (S.gecmis.length >= HAK) { bitir(false); }
-    else { kaydet(); ciz(); }
+    else { kaydet(); ciz(); jokerAcildiMi(); }
   }
 
   function bitir(kazandi) {
+    jokerSecim = null;
     S.bitti = true;
     S.kazandi = kazandi;
     kaydet();
@@ -280,7 +293,7 @@
     var n = uzunluk(), tahta = $('#tahta');
     tahta.innerHTML = '';
     tahta.classList.toggle('oyun-bitti', !!S.bitti);
-    var kesinYok = motor.kesinYokHarfler(S.gecmis);
+    var kesinYok = kesinYok_();
     var cevrilecek = [];
 
     /* Perde açıldıysa her tahmindeki harflerin gerçek renkleri hesaplanır. */
@@ -292,8 +305,10 @@
       var gonderildi = r < S.gecmis.length;
       var aktif = !S.bitti && r === S.gecmis.length;
 
+      var jokerSatiri = !!jokerSecim && r === S.gecmis.length - 1;
       var satir = document.createElement('div');
       satir.className = 'satir' + (gonderildi ? ' gonderildi' : '') +
+                        (jokerSatiri ? ' joker-satir' : '') +
                         (aktif && hataliSatir ? ' hatali' : '') +
                         (aktif && !hataliSatir && gecersizGirdi() ? ' gecersiz' : '');
 
@@ -335,7 +350,15 @@
           } else {
             kutu.textContent = harf;
             kutu.classList.add('dolu');
-            if (kesinYok[harf]) {
+            var jk = jokerKutu(r, c);
+            if (jokerSatiri) {
+              kutu.classList.add(kesinYok[harf] ? 'joker-kapali' : 'joker-secilebilir');
+            }
+            if (jk) {
+              /* Kutu jokeriyle acildi: gercek renk, degistirilemez. */
+              kutu.classList.add(NOT_SINIF[jk], 'joker-acik');
+              kutu.title = 'Kutu jokeri: ' + RENK_ACIKLAMA[jk];
+            } else if (kesinYok[harf]) {
               kutu.classList.add('not-kirmizi');
               kutu.title = 'Kesin: bu harf kelimede yok';
             } else {
@@ -408,6 +431,20 @@
     modYaz();
   }
 
+  /* Kesin olarak kelimede olmayan harfler: tahminlerden cikan (motor) ve
+   * harf jokerinin "yok" dedigi harf. Ikisi de tartisilmaz bilgi. */
+  function kesinYok_() {
+    var k = motor.kesinYokHarfler(S.gecmis);
+    if (S.joker && S.joker.harf && !S.joker.harf.var) { k[S.joker.harf.harf] = true; }
+    return k;
+  }
+
+  /* Kutu jokeriyle acilmis kutunun rengi (1-3), yoksa 0. */
+  function jokerKutu(r, c) {
+    var k = S.joker && S.joker.kutu;
+    return k && k.r === r && k.c === c ? k.renk : 0;
+  }
+
   /* Simdiye kadar herhangi bir tahminde kullanilmis harfler - klavyede
    * koyu gri olarak isaretlenir, kullanicinin kendi notu varsa o oncelikli. */
   function kullanilanHarfler(gecmis) {
@@ -430,6 +467,11 @@
       var h = g.tahmin[Number(p[1])];
       if (!s[h] || not > s[h]) { s[h] = not; }
     });
+    var k = S.joker && S.joker.kutu;
+    if (k && S.gecmis[k.r]) {
+      var jh = S.gecmis[k.r].tahmin[k.c];
+      if (!s[jh] || k.renk > s[jh]) { s[jh] = k.renk; }
+    }
     return s;
   }
 
@@ -439,8 +481,9 @@
    * 3) klavyede tusa verilen kendi not (sag tik / basili tut)
    * 4) daha once denenmis harf: soluk */
   function tuslariBoya() {
+    jokerTusGuncelle();
     var kullanilan = kullanilanHarfler(S.gecmis);
-    var kesinYok = motor.kesinYokHarfler(S.gecmis);
+    var kesinYok = kesinYok_();
     var tahta = tahtaNotlari();
     Array.prototype.forEach.call(document.querySelectorAll('.tus[data-harf]'), function (b) {
       var h = b.dataset.harf;
@@ -510,7 +553,7 @@
   function tusNotu(h) {
     /* Rengi tahtadan gelen tusa elle not verilmez: kesin yok harfler
      * tahtadaki gibi sabit, notlu harfler de tahtayi yansitir. */
-    if (motor.kesinYokHarfler(S.gecmis)[h] || tahtaNotlari()[h]) { return; }
+    if (kesinYok_()[h] || tahtaNotlari()[h]) { return; }
     S.tusNot[h] = ((S.tusNot[h] || 0) + 1) % 4;   // yok · elendi · belki · var
     kaydet();
     tuslariBoya();
@@ -528,20 +571,155 @@
       k.appendChild(d);
     });
 
-    /* Son satirdaki uc tus esit genislikte. Temizleme tusu satir notlarini
-     * temizleyen dugmeyle ayni simgeyi (supurge) kullanir. */
+    /* Son satir: joker, temizle, bosluk, gonder. Genislikleri ustteki satirin
+     * tuslariyla hizali (Z+C, V+B, N+M+O, C+sil) - bkz. .tus.alt-* sinifi.
+     * Temizleme tusu satir notlarini temizleyen dugmeyle ayni simgeyi
+     * (supurge) kullanir. */
     var son = document.createElement('div');
     son.className = 'klavye-satir';
-    var temizle = tus('', '', notlariTemizle, 'Notları temizle');
+    var jokerTus = tus('J', 'alt-2 joker-tus', function (e) {
+      e.stopPropagation();
+      jokerTusu(jokerTus);
+    }, 'Joker');
+    jokerTus.id = 'joker-tus';
+    jokerTus.setAttribute('aria-haspopup', 'true');
+    jokerTus.setAttribute('aria-expanded', 'false');
+    var temizle = tus('', 'alt-2', notlariTemizle, 'Notları temizle');
     temizle.innerHTML = '<i class="ikon ikon-supurge" aria-hidden="true"></i>';
     temizle.setAttribute('aria-label', 'Notları temizle');
-    var gonderTusu = tus('', '', gonder, 'Gönder');
+    var gonderTusu = tus('', 'alt-25', gonder, 'Gönder');
     gonderTusu.innerHTML = '<i class="ikon ikon-gonder" aria-hidden="true"></i>';
     gonderTusu.setAttribute('aria-label', 'Gönder');
+    son.appendChild(jokerTus);
     son.appendChild(temizle);
-    son.appendChild(tus('Boşluk', '', atla, 'Bilinmeyen harfi atla'));
+    son.appendChild(tus('Boşluk', 'alt-3', atla, 'Bilinmeyen harfi atla'));
     son.appendChild(gonderTusu);
     k.appendChild(son);
+
+    /* Joker kutusu: J tusunun ustunde acilir. */
+    var menu = document.createElement('div');
+    menu.className = 'acilir joker-menu';
+    menu.id = 'joker-menu';
+    menu.hidden = true;
+    menu.setAttribute('role', 'menu');
+    menu.addEventListener('click', function (e) {
+      var b = e.target.closest('button[data-joker]');
+      if (b && !b.disabled) { jokerBaslat(b.dataset.joker); }
+    });
+    k.appendChild(menu);
+  }
+
+  /* ---------- jokerler ---------- */
+
+  /* Son tahminde jokerin secebilecegi kutu var mi: kesin kirmizi harfler
+   * secilemez, zaten bilinen bir seye joker harcanmasin. */
+  function jokerSecilebilirVar() {
+    var son = S.gecmis[S.gecmis.length - 1], ky = kesinYok_();
+    if (!son) { return false; }
+    for (var c = 0; c < uzunluk(); c++) {
+      if (!ky[son.tahmin[c]]) { return true; }
+    }
+    return false;
+  }
+
+  /* 'hazir' | 'kilitli' (esige gelinmedi) | 'bos' (son tahminde secilecek
+   * kutu yok) | 'kullanildi' | 'bitti' */
+  function jokerDurum(tur) {
+    if (S.bitti) { return 'bitti'; }
+    if (S.joker[tur]) { return 'kullanildi'; }
+    if (S.gecmis.length < JOKER_ESIK[S.zorluk][tur]) { return 'kilitli'; }
+    return jokerSecilebilirVar() ? 'hazir' : 'bos';
+  }
+
+  function jokerDurumYazi(tur) {
+    var d = jokerDurum(tur), j = S.joker[tur];
+    if (d === 'hazir') { return 'Kullanılabilir'; }
+    if (d === 'kilitli') { return JOKER_ESIK[S.zorluk][tur] + '. tahminden sonra açılır'; }
+    if (d === 'bos') { return 'Son tahminde seçilebilecek harf yok'; }
+    if (d === 'kullanildi') {
+      return tur === 'harf' ? 'Kullanıldı · ' + j.harf + (j.var ? ' kelimede var' : ' kelimede yok')
+                            : 'Kullanıldı · ' + (j.c + 1) + '. kutu ' + RENK_ACIKLAMA[j.renk].split(' ·')[0];
+    }
+    return 'Oyun bitti';
+  }
+
+  function jokerMenuCiz() {
+    var turler = [
+      { tur: 'harf', ad: 'Harf jokeri', ne: 'Son tahmindeki bir harf kelimede var mı?' },
+      { tur: 'kutu', ad: 'Kutu jokeri', ne: 'Son tahmindeki bir kutunun gerçek rengi' }
+    ];
+    $('#joker-menu').innerHTML = turler.map(function (t) {
+      var hazir = jokerDurum(t.tur) === 'hazir';
+      return '<button type="button" role="menuitem" data-joker="' + t.tur + '"' +
+             (hazir ? '' : ' disabled') + '>' +
+               '<span class="joker-ad">' + t.ad + '</span>' +
+               '<span class="joker-ne">' + t.ne + '</span>' +
+               '<span class="joker-durum' + (hazir ? ' hazir' : '') + '">' +
+                 jokerDurumYazi(t.tur) + '</span>' +
+             '</button>';
+    }).join('');
+  }
+
+  /* J tusu: secim surerken iptal eder, yoksa joker kutusunu acar/kapatir. */
+  function jokerTusu(dugme) {
+    if (jokerSecim) { return jokerIptal(); }
+    jokerMenuCiz();
+    menuAc('#joker-menu', dugme);
+  }
+
+  function jokerBaslat(tur) {
+    menuKapat();
+    if (jokerDurum(tur) !== 'hazir') { return; }
+    jokerSecim = tur;
+    ciz();
+    uyar(tur === 'harf' ? 'Kelimede olup olmadığını öğrenmek istediğin harfe dokun'
+                        : 'Rengini öğrenmek istediğin kutuya dokun', false, 2600);
+  }
+
+  function jokerIptal() {
+    if (!jokerSecim) { return; }
+    jokerSecim = null;
+    ciz();
+    uyar('Joker iptal edildi');
+  }
+
+  /* Secim surerken tahtaya dokunuldu. Secilebilir olmayan yere dokunmak
+   * secimi bozmaz; oyuncu dogru kutuyu bulana kadar bekler. */
+  function jokerSec(e) {
+    var kutu = e.target.closest('.kutu.joker-secilebilir');
+    if (!kutu) { return; }
+    var r = Number(kutu.dataset.r), c = Number(kutu.dataset.c);
+    var tahmin = S.gecmis[r].tahmin, harf = tahmin[c], tur = jokerSecim;
+    jokerSecim = null;
+    if (tur === 'harf') {
+      var var_ = S.gizli.indexOf(harf) !== -1;
+      S.joker.harf = { harf: harf, var: var_ };
+      uyar(harf + (var_ ? ' kelimede var' : ' kelimede yok'), false, 2600);
+    } else {
+      var renk = motor.harfRenkleri(tahmin, S.gizli)[c];
+      S.joker.kutu = { r: r, c: c, renk: renk };
+      uyar((c + 1) + '. kutu ' + RENK_ACIKLAMA[renk], false, 2600);
+    }
+    kaydet();
+    ciz();
+  }
+
+  /* Bir tahminden sonra esige gelen joker varsa oyuncuya haber verilir. */
+  function jokerAcildiMi() {
+    ['harf', 'kutu'].forEach(function (tur) {
+      if (!S.joker[tur] && S.gecmis.length === JOKER_ESIK[S.zorluk][tur]) {
+        uyar((tur === 'harf' ? 'Harf' : 'Kutu') + ' jokeri açıldı! J tuşuna bas', false, 2400);
+      }
+    });
+  }
+
+  /* J tusu, kullanilabilir joker varken belirgin, yokken soluk. */
+  function jokerTusGuncelle() {
+    var b = $('#joker-tus');
+    if (!b) { return; }
+    var hazir = ['harf', 'kutu'].some(function (t) { return jokerDurum(t) === 'hazir'; });
+    b.classList.toggle('joker-hazir', hazir);
+    b.classList.toggle('joker-secimde', !!jokerSecim);
   }
 
   function notlariTemizle() {
@@ -566,8 +744,9 @@
     var kutu = e.target.closest('.kutu');
     if (!kutu || kutu.dataset.r === undefined) { return; }
     var r = Number(kutu.dataset.r), c = Number(kutu.dataset.c);
+    if (jokerKutu(r, c)) { return; }   // jokerle acilan renk degistirilemez
     var harf = S.gecmis[r].tahmin[c];
-    if (motor.kesinYokHarfler(S.gecmis)[harf]) { return; }   // kesin kırmızı değiştirilemez
+    if (kesinYok_()[harf]) { return; }   // kesin kırmızı değiştirilemez
     var anahtar = kutu.dataset.r + ':' + kutu.dataset.c;
     S.notlar[anahtar] = ((S.notlar[anahtar] || 0) + 1) % 4;
     kaydet();
@@ -578,7 +757,7 @@
    * zorla kırmızı olan hücreler bundan etkilenmez. */
   function satirSifirla(r) {
     if (!S.gecmis[r]) { return; }
-    var kesinYok = motor.kesinYokHarfler(S.gecmis);
+    var kesinYok = kesinYok_();
     for (var c = 0; c < uzunluk(); c++) {
       if (kesinYok[S.gecmis[r].tahmin[c]]) { continue; }
       delete S.notlar[r + ':' + c];
@@ -588,6 +767,7 @@
   }
 
   function tahtaTikla(e) {
+    if (jokerSecim) { return jokerSec(e); }
     if (S.bitti) { return; }   /* oyun bitince not almanin anlami kalmiyor */
     var sifirlaBtn = e.target.closest('.satir-sifirla');
     if (sifirlaBtn && !sifirlaBtn.disabled) { return satirSifirla(Number(sifirlaBtn.dataset.r)); }
@@ -983,7 +1163,7 @@
     /* Disariya tiklayinca ve Esc ile menuler kapanir. */
     document.addEventListener('click', menuKapat);
     document.addEventListener('keydown', function (e) {
-      if (e.key === 'Escape') { menuKapat(); }
+      if (e.key === 'Escape') { menuKapat(); jokerIptal(); }
     });
 
     $('#ist-pencere').addEventListener('close', function () { clearInterval(sayimZaman); });

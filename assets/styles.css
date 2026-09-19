@@ -526,6 +526,66 @@ body:not(.giris) #klavye { margin-top: 12px; }
 .tus.not-belki{ background: color-mix(in srgb, var(--sari)  55%, var(--tus-bg)); }
 /* otomatik: bu harf simdiye kadar bir tahminde kullanildi */
 .tus.kullanilmis { background: var(--tus-kullanilmis); color: var(--soluk); }
+/* Klavyenin son satiri: joker, temizle, bosluk, gonder. Genislikler ustteki
+   satirla (Z C V B N M O C sil) hizali: her tus kapladigi ust tuslarin
+   genisligi + aralarindaki bosluklar.
+   Her tusun sabit bir payi var: 1px + 1px kenarlik (ic bosluk sifir). Bir tus
+   N ust tusun yerini kapliyorsa, N-1 aralik ve N-1 kenarlik payi eksik kalir;
+   flex-basis bunlari ekler, flex-grow ust tus sayisidir (sil 1.5). Boylece
+   aralik ve kenarliklar dahil birebir ust uste oturur. */
+.klavye-satir .tus { padding-inline: 0; }
+.tus.alt-2  { flex: 2   1 calc(var(--tus-aralik) + 2px); }
+.tus.alt-3  { flex: 3   1 calc(2 * var(--tus-aralik) + 4px); }
+.tus.alt-25 { flex: 2.5 1 calc(var(--tus-aralik) + 2px); }
+
+/* --- jokerler --- */
+.tus.joker-tus { font-weight: 800; }
+/* Kullanilabilir joker varken J tusu belirgin: vurgu rengi cerceve. */
+.tus.joker-tus.joker-hazir { box-shadow: inset 0 0 0 2px var(--vurgu); color: var(--vurgu); }
+.tus.joker-tus.joker-secimde { background: var(--vurgu); color: #17181c; }
+
+/* Joker kutusu klavyenin ustunde, J tusunun hizasinda acilir. */
+.acilir.joker-menu {
+  top: auto; right: auto; bottom: calc(100% + 6px); left: 0;
+  min-width: 270px; max-width: min(340px, 100%);
+}
+.acilir.joker-menu button {
+  display: grid; grid-template-columns: 1fr; gap: 2px; font-weight: 400;
+}
+.acilir.joker-menu button:disabled { cursor: default; }
+.acilir.joker-menu button:disabled .joker-ad,
+.acilir.joker-menu button:disabled .joker-ne { opacity: .5; }
+.joker-ad { font-weight: 700; }
+.joker-ne { font-size: 12.5px; color: var(--soluk); }
+.joker-durum { font-size: 12px; color: var(--soluk); }
+.joker-durum.hazir { color: var(--vurgu); font-weight: 600; }
+/* Acik temada klavye --tus-bg'yi beyaza cekiyor; kutudaki uzerine gelme
+   rengi beyaz kalmasin. */
+@media (hover: hover) {
+  .acilir.joker-menu button:not(:disabled):hover {
+    background: color-mix(in srgb, var(--metin) 8%, transparent);
+  }
+}
+
+/* Secim surerken son tahmin satiri parlar; secilebilir kutular vurgulu,
+   kesin kirmizilar soluk. */
+.satir.joker-satir .kutu.joker-secilebilir {
+  cursor: pointer;
+  box-shadow: 0 0 0 2px var(--vurgu);
+  animation: joker-parla 1.1s ease-in-out infinite alternate;
+}
+.satir.joker-satir .kutu.joker-kapali { opacity: .4; }
+@keyframes joker-parla {
+  from { box-shadow: 0 0 0 2px var(--vurgu); }
+  to   { box-shadow: 0 0 0 2px var(--vurgu), 0 0 12px 2px color-mix(in srgb, var(--vurgu) 55%, transparent); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .satir.joker-satir .kutu.joker-secilebilir { animation: none; }
+}
+/* Kutu jokeriyle acilmis kutu: gercek renk, icte ince beyaz halka -
+   oyuncunun kendi notlarindan ayirt edilsin. */
+.kutu.joker-acik { box-shadow: inset 0 0 0 2px rgba(255, 255, 255, .6); }
+
 /* Acik temada klavye tuslari beyaz, altlarinda hafif golge (telefon
    klavyesi gibi). Tus zemini (#e9edf3) klavye kutusuyla (#e4e8ee) neredeyse
    ayniydi, tuslar kayboluyordu. Yalnizca klavyede: cerez bildirimi ve
