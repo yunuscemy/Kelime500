@@ -53,7 +53,7 @@
   --rozet-en-carpan: 1.8;     /* rozet genisligi (1 = ilk hali) */
   --kutu-boy-carpan: 1.287;   /* harf kutusu ve rozet yuksekligi (1 = ilk hali) */
   --tahta-aralik: 0.4375;     /* kutular arasi bosluk carpani (1 = ilk hali) */
-  --kare-olcek: 0.8;          /* kare harf kutusunun kucultmesi (asagiya bkz. --kare) */
+  --kare-olcek: 1;            /* kare harf kutusunun olcegi (asagiya bkz. --kare) */
 }
 
 /* --- OYUN OLCULERI: WEB (760px ve genis) ---
@@ -77,7 +77,7 @@
     --rozet-en-carpan: 1.8;
     --kutu-boy-carpan: 1.287;
     --tahta-aralik: 0.4375;
-    --kare-olcek: 0.8;
+    --kare-olcek: 1;
   }
 }
 
@@ -305,26 +305,35 @@ select, input[type="date"] {
                  calc((100cqw - 8 * var(--bosluk) * var(--tahta-aralik) - 5px)
                       / (0.42 + 5 * var(--kutu-en-carpan) + 1.98 * var(--rozet-en-carpan))));
   /* Harf kutulari kare: kenari, carpanlarla bulunan genislik ve yukseklikten
-     kucuk olani, sonra --kare-olcek ile kucultulmus hali. Rozetlerin yuksekligi
-     de bu; genislikleri harf kutusuyla ayni oranda (rozet/kutu genislik orani
-     carpanlardan gelir). Bu olculer --kutu-en'in ust siniri altinda kaldigi
-     icin satir tasmaz. */
-  --kare: calc(min(var(--kutu-en) * var(--kutu-en-carpan),
-                   var(--kutu) * var(--kutu-boy-carpan)) * var(--kare-olcek));
+     kucuk olani, --kare-olcek ile carpilmis hali. Rozetlerin yuksekligi de
+     bu; genislikleri harf kutusuyla ayni oranda (--rozet-oran).
+     Ikinci terim satirin tasmamasini garanti eder. Bir satir soldan saga:
+       temizleme dugmesi (--sifirla-en) + 4 aralik (dugme bosluklu)
+       + 5 kare + 4 aralik + 1 aralik + 4px (rozet grubu ayirici)
+       + 3 rozet + 2 aralik  ->  11 aralik, +1px yuvarlama payi.
+     Dar telefonda kare, satir icerik genisligini dolduracak kadarla sinirli
+     kalir; genis ekranda sinir devreye girmez. */
+  --aralik: calc(var(--bosluk) * var(--tahta-aralik));
+  --rozet-oran: calc(0.66 * var(--rozet-en-carpan) / var(--kutu-en-carpan));
+  --sifirla-en: calc(var(--kutu-en) * 0.63);
+  --kare: min(calc(min(var(--kutu-en) * var(--kutu-en-carpan),
+                       var(--kutu) * var(--kutu-boy-carpan)) * var(--kare-olcek)),
+              calc((100cqw - var(--sifirla-en) - 11 * var(--aralik) - 5px)
+                   / (5 + 3 * var(--rozet-oran))));
 }
 
 .satir { display: flex; gap: calc(var(--bosluk) * var(--tahta-aralik)); align-items: center; }
 
 .satir-sifirla {
-  /* Boyut ve harf kutularina uzaklik ilk halinin iki kati: dugme fark
-     edilmiyordu. Uzaklik = satir araligi + bir satir araligi daha. */
-  width: calc(var(--kutu-en) * 0.84); height: var(--kutu);
-  margin-right: calc(var(--bosluk) * var(--tahta-aralik));
+  /* Dugme fark edilmiyordu, buyutuldu (ilk halinin 1.5 kati). Harf
+     kutularina uzakligi 4 satir araligi: satirin kendi araligi + 3 aralik. */
+  width: var(--sifirla-en); height: calc(var(--kutu) * 0.75);
+  margin-right: calc(3 * var(--aralik));
   flex: 0 0 auto;
   display: grid; place-items: center;
   border: 1px solid var(--cizgi); border-radius: var(--yuvarlak);
   background: var(--bg-yuksek); color: var(--soluk);
-  font-size: calc(var(--kutu) * 0.56);
+  font-size: calc(var(--kutu) * 0.42);
   /* Dugmenin varsayilan ic boslugu ve govdeden gelen 1.4 satir yuksekligi
      ↺ simgesini kutunun ortasindan kaydiriyordu. */
   padding: 0; line-height: 1;
@@ -368,7 +377,7 @@ select, input[type="date"] {
 /* --- cevrilebilir kartlar (rozetler + perde acilisinda harfler) --- */
 /* Kart dikey ekseninin ortasindan, yukaridan asagiya donerek arka yuzunu gosterir. */
 .rozet {
-  width: calc(var(--kare) * 0.66 * var(--rozet-en-carpan) / var(--kutu-en-carpan));
+  width: calc(var(--kare) * var(--rozet-oran));
   height: var(--kare);   /* harf kutusuyla ayni yukseklik */
   perspective: 700px;
   background: none;
