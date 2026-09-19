@@ -24,6 +24,45 @@
 
   /* Daha once denenmis harf: koyu temada karartilir, acik temada grilestirilir. */
   --tus-kullanilmis: color-mix(in srgb, var(--tus-bg) 55%, #000 45%);
+
+  /* --- OYUN OLCULERI: MOBIL ---
+     Oyun sayfasindaki tahta ve klavyenin boyutlari. Buradaki degerler mobil
+     (760px'ten dar ekran) icindir; web degerleri hemen asagidaki @media
+     blogunda ayrica tanimli. Birini degistirmek digerine dokunmaz.
+     Kutu boyu ekrana gore esner: genislikten ve yukseklikten ayri ayri
+     hesaplanir, kucuk olan alinir, en-kucuk/en-buyuk arasina sikistirilir,
+     sonra olcekle carpilir. */
+  --oyun-genislik: 480px;     /* tahta + klavye alaninin en genis hali */
+  --kutu-en-kucuk: 28px;
+  --kutu-en-buyuk: 52px;
+  --kutu-dikey-pay: 0.056;    /* ekran yuksekliginin kutu basina dusen payi */
+  --tahta-olcek: 0.8;
+  --tus-en-kucuk: 34px;       /* klavye tus yuksekligi */
+  --tus-dikey-pay: 5.4vh;
+  --tus-en-buyuk: 48px;
+  --tus-olcek: 0.8;
+  --tus-yazi: 14px;
+  --tus-genis-yazi: 13px;     /* ENTER ve silme tuslari */
+  --tus-aralik: 4px;          /* ayni satirdaki tuslar arasi */
+}
+
+/* --- OYUN OLCULERI: WEB (760px ve genis) ---
+   Su an mobil ile birebir ayni; web'e ozel tasarim buradan ayarlanir. */
+@media (min-width: 760px) {
+  :root {
+    --oyun-genislik: 480px;
+    --kutu-en-kucuk: 28px;
+    --kutu-en-buyuk: 52px;
+    --kutu-dikey-pay: 0.056;
+    --tahta-olcek: 0.8;
+    --tus-en-kucuk: 34px;
+    --tus-dikey-pay: 5.4vh;
+    --tus-en-buyuk: 48px;
+    --tus-olcek: 0.8;
+    --tus-yazi: 14px;
+    --tus-genis-yazi: 13px;
+    --tus-aralik: 4px;
+  }
 }
 
 :root[data-tema="acik"] {
@@ -101,6 +140,7 @@ button {
 
 /* --- üst bar --- */
 header, .kontroller, main { width: 100%; max-width: 480px; padding-inline: 14px; }
+body:not(.giris) :is(header, .kontroller, main) { max-width: var(--oyun-genislik); }
 
 /* Oyun sayfasi: main artan dikey alani yutar. Tahta yukarida, kontrollerin
    hemen altinda kalir; klavye asagi itilir (telefonda basparmaga daha yakin).
@@ -227,14 +267,16 @@ select, input[type="date"] {
    tahta + klavye dikeyde de sigsin. */
 #tahta {
   display: grid; gap: var(--bosluk); justify-content: center;
-  /* Reklam alani icin tahta %20 kucultuldu (--olcek). Genislik hesabi ayni
-     kaliyor, yalnizca sonuc olcekleniyor - satir hala tasmiyor. */
-  --olcek: 0.8;
-  /* Dikey pay hesaplanirken sabit reklam kusagi dusuluyor: yoksa kisa
+  /* Olculer :root'taki OYUN OLCULERI degiskenlerinden gelir (mobil/web ayri).
+     --tahta-olcek: reklam alani icin tahta kucultuldu; genislik hesabi ayni
+     kaliyor, yalnizca sonuc olcekleniyor - satir hala tasmiyor.
+     Dikey pay hesaplanirken sabit reklam kusagi dusuluyor: yoksa kisa
      ekranlarda tahta kusagin altina tasiyordu. */
-  --kutu: calc(clamp(28px, min(calc((100cqw - 8 * var(--bosluk) - 5px) / 7.4),
-                              calc((100dvh - var(--reklam-alt-boy)) * 0.056)), 52px)
-               * var(--olcek));
+  --kutu: calc(clamp(var(--kutu-en-kucuk),
+                     min(calc((100cqw - 8 * var(--bosluk) - 5px) / 7.4),
+                         calc((100dvh - var(--reklam-alt-boy)) * var(--kutu-dikey-pay))),
+                     var(--kutu-en-buyuk))
+               * var(--tahta-olcek));
 }
 
 .satir { display: flex; gap: var(--bosluk); align-items: center; }
@@ -374,21 +416,22 @@ select, input[type="date"] {
    mod etiketi -> tahta araliklari esit gorunsun. */
 body:not(.giris) #tahta { margin-block: 8px 0; }
 body:not(.giris) #klavye { margin-top: 12px; }
-.klavye-satir { display: flex; gap: 4px; justify-content: center; }
+.klavye-satir { display: flex; gap: var(--tus-aralik); justify-content: center; }
 
 .tus {
   flex: 1 1 0; min-width: 0;
-  height: calc(clamp(34px, 5.4vh, 48px) * 0.8);   /* yalnizca dikeyde kucultuldu */
+  height: calc(clamp(var(--tus-en-kucuk), var(--tus-dikey-pay), var(--tus-en-buyuk))
+               * var(--tus-olcek));   /* yalnizca dikeyde kucultuldu */
   border: 1px solid transparent;
   border-radius: 6px;
   background: var(--tus-bg);
-  font-size: 14px; font-weight: 700;
+  font-size: var(--tus-yazi); font-weight: 700;
   transition: background var(--gecis), opacity var(--gecis);
 }
 /* Dokunmatikte :hover son dokunulan tusta takili kalip cerceve birakiyor,
    o yuzden yalnizca gercek fare varken uygulanir. */
 @media (hover: hover) { .tus:hover { border-color: var(--soluk); } }
-.tus.genis { flex: 1.5 1 0; font-size: 13px; }
+.tus.genis { flex: 1.5 1 0; font-size: var(--tus-genis-yazi); }
 /* sağ tıkla / basılı tut: kendi eleme notun */
 .tus.not-yok  { opacity: .35; text-decoration: line-through; }
 .tus.not-var  { background: var(--yesil); color: #fff; }
