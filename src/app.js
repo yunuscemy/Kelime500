@@ -825,7 +825,7 @@
     }
     zd.dataset.zorluk = S.zorluk;
     zd.setAttribute('aria-label', ZORLUK_ONEK + ZORLUKLAR[S.zorluk].ad);
-    zd.title = 'Seviye: ' + ZORLUKLAR[S.zorluk].ad + ' · değiştirmek için dokun';
+    zd.title = 'Seviye: ' + ZORLUKLAR[S.zorluk].ad;
 
     menuIsaretle('#ana-menu', '[data-mod]', 'mod', S.mod);
     menuIsaretle('#zorluk-menu', '[data-zorluk]', 'zorluk', S.zorluk);
