@@ -36,8 +36,9 @@
   var jokerSecim = null;   // secim surerken 'harf' ya da 'kutu'
   var jokerOnay = null;    // kutuda "emin misin?" sorulan joker
   var jokerBasladi = 0;    // secimin basladigi an (parlamanin zamanlamasi icin)
-  var JOKER_BEKLE = 1;     // saniye: secim onaylaninca satir once bu kadar eski haliyle durur
-  var JOKER_GEL = 1;       // saniye: sonra parlaklik bu surede sifirdan tama cikar
+  /* Secim onaylaninca satir once bu kadar eski haliyle durur (saniye); sonra
+   * parlaklik ayni surede sifirdan tama cikar (CSS: --joker-gel, ayni deger). */
+  var JOKER_BEKLE = 0.75;
 
   /* Tahtadaki notlarin klavyedeki yansimasi (NOT_SINIF ile ayni sira). */
   var TAHTA_TUS_SINIF = ['', 'tahta-kirmizi', 'tahta-sari', 'tahta-yesil'];
@@ -444,7 +445,35 @@
    * harf jokerinin "yok" dedigi harf. Ikisi de tartisilmaz bilgi. */
   function kesinYok_() {
     var k = motor.kesinYokHarfler(S.gecmis);
-    if (S.joker && S.joker.harf && !S.joker.harf.var) { k[S.joker.harf.harf] = true; }
+    var j = S.joker || {};
+    if (j.harf && !j.harf.var) { k[j.harf.harf] = true; }
+
+    /* Jokerin kesinlestirdigi harf, bir satirin yesil+sari sayisini tek basina
+     * karsiliyorsa (satirda yalnizca bir renkli harf var ve o bu), satirdaki
+     * diger harfler kelimede yoktur. Kutu jokeri: acilan kutu yesil ve satir
+     * 1/0/x, ya da sari ve satir 0/1/x. Harf jokeri: harf "var" ve satirin
+     * yesil+sarisi 1. Acilan harfin tekrari (Ileri'de AA gibi) fazladan kopya
+     * olarak kirmizi gorunse de kelimede var - o haric tutulur. */
+    function satiriKapat(r, bilinen) {
+      var g = S.gecmis[r];
+      for (var c = 0; c < g.tahmin.length; c++) {
+        if (g.tahmin[c] !== bilinen) { k[g.tahmin[c]] = true; }
+      }
+    }
+    var jk = j.kutu, g;
+    if (jk && (g = S.gecmis[jk.r])) {
+      if ((jk.renk === 3 && g.yer === 1 && g.harf === 0) ||
+          (jk.renk === 2 && g.yer === 0 && g.harf === 1)) {
+        satiriKapat(jk.r, g.tahmin[jk.c]);
+      }
+    }
+    if (j.harf && j.harf.var && j.tur) {
+      /* Harf jokeri, kullanildigi turdaki son tahmine (tur - 1) uygulanmisti.
+       * Iki joker de kullanildiysa j.tur sonuncuyu gosterir; harf jokerinin
+       * kendi satiri j.harf.r'de saklanir (eski kayitlarda yoksa tur - 1). */
+      var hr = j.harf.r !== undefined ? j.harf.r : j.tur - 1;
+      if ((g = S.gecmis[hr]) && g.yer + g.harf === 1) { satiriKapat(hr, j.harf.harf); }
+    }
     return k;
   }
 
@@ -541,6 +570,10 @@
     b.type = 'button';
     if (baslik) { b.title = baslik; }
     b.addEventListener('click', islev);
+    /* Ekran klavyesi odagi tutmasin: tiklanan tus odakta kalirsa, ardindan
+     * fiziksel klavyeyle yazinca tarayici onun etrafina odak cercevesi
+     * ciziyordu (J tusunun yanip sonen cercevesinin disinda sabit bir kutu). */
+    b.addEventListener('click', function () { b.blur(); });
     return b;
   }
 
@@ -676,8 +709,8 @@
                  '<span class="joker-ad">' + t.ad + '</span>' +
                  '<span class="joker-ne">Kullanmak istediğine emin misin?</span>' +
                  '<span class="joker-onay-dugmeler">' +
-                   '<button type="button" class="tus" data-onay="hayir">Vazgeç</button>' +
-                   '<button type="button" class="tus evet" data-onay="evet">Evet</button>' +
+                   '<button type="button" class="tus" data-onay="hayir">Hayır</button>' +
+                   '<button type="button" class="tus evet" data-onay="evet">Kullan</button>' +
                  '</span>' +
                '</div>';
       }
@@ -729,7 +762,7 @@
     jokerSecim = null;
     if (tur === 'harf') {
       var var_ = S.gizli.indexOf(harf) !== -1;
-      S.joker.harf = { harf: harf, var: var_ };
+      S.joker.harf = { harf: harf, var: var_, r: r };
       S.joker.tur = S.gecmis.length;
       uyar(harf + (var_ ? ' kelimede var' : ' kelimede yok'), false, 2600);
     } else {
