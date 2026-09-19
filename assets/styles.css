@@ -47,11 +47,12 @@
   --tus-olcek: 0.96;          /* 0.8'den %20 buyutuldu */
   --tus-yazi: 14px;
   --tus-genis-yazi: 13px;     /* ENTER ve silme tuslari */
-  --tus-aralik: 2px;          /* ayni satirdaki tuslar arasi (4px'ten yariya) */
-  --klavye-aralik: 0.5;       /* tus satirlari arasi bosluk carpani (1 = eski) */
-  --kutu-en-carpan: 1.2;      /* harf kutusu ve rozet genisligi (1 = eski) */
-  --kutu-boy-carpan: 1.1;     /* harf kutusu ve rozet yuksekligi (1 = eski) */
-  --tahta-aralik: 0.25;       /* kutular arasi bosluk carpani (1 = eski) */
+  --tus-aralik: 3px;          /* ayni satirdaki tuslar arasi */
+  --klavye-aralik: 0.75;      /* tus satirlari arasi bosluk carpani (1 = ilk hali) */
+  --kutu-en-carpan: 1.524;    /* harf kutusu genisligi (1 = ilk hali) */
+  --rozet-en-carpan: 1.8;     /* rozet genisligi (1 = ilk hali) */
+  --kutu-boy-carpan: 1.287;   /* harf kutusu ve rozet yuksekligi (1 = ilk hali) */
+  --tahta-aralik: 0.4375;     /* kutular arasi bosluk carpani (1 = ilk hali) */
 }
 
 /* --- OYUN OLCULERI: WEB (760px ve genis) ---
@@ -69,11 +70,12 @@
     --tus-olcek: 0.96;
     --tus-yazi: 14px;
     --tus-genis-yazi: 13px;
-    --tus-aralik: 2px;
-    --klavye-aralik: 0.5;
-    --kutu-en-carpan: 1.2;
-    --kutu-boy-carpan: 1.1;
-    --tahta-aralik: 0.25;
+    --tus-aralik: 3px;
+    --klavye-aralik: 0.75;
+    --kutu-en-carpan: 1.524;
+    --rozet-en-carpan: 1.8;
+    --kutu-boy-carpan: 1.287;
+    --tahta-aralik: 0.4375;
   }
 }
 
@@ -290,12 +292,22 @@ select, input[type="date"] {
                          calc((100dvh - var(--reklam-alt-boy)) * var(--kutu-dikey-pay))),
                      var(--kutu-en-buyuk))
                * var(--tahta-olcek));
+  /* Genislikler icin taban: --kutu ama satir tasmayacak kadarla sinirli.
+     Bir satir: sifirlama (0.42) + 5 harf kutusu + 3 rozet (0.66 x carpan),
+     aralarinda 8 bosluk, rozetlerden once 4px (+1px yuvarlama payi).
+     Genis ekranda sinir devreye girmez, carpanlar aynen uygulanir; dar
+     telefonda satir icerik genisligini doldurup orada durur.
+     Yukseklikler ve yazi boyutlari sinirsiz --kutu'yu kullanir; boylece
+     dikey buyutme telefonda da tam uygulanir. */
+  --kutu-en: min(var(--kutu),
+                 calc((100cqw - 8 * var(--bosluk) * var(--tahta-aralik) - 5px)
+                      / (0.42 + 5 * var(--kutu-en-carpan) + 1.98 * var(--rozet-en-carpan))));
 }
 
 .satir { display: flex; gap: calc(var(--bosluk) * var(--tahta-aralik)); align-items: center; }
 
 .satir-sifirla {
-  width: calc(var(--kutu) * 0.42); height: calc(var(--kutu) * 0.5);
+  width: calc(var(--kutu-en) * 0.42); height: calc(var(--kutu) * 0.5);
   flex: 0 0 auto;
   display: grid; place-items: center;
   border: 1px solid var(--cizgi); border-radius: var(--yuvarlak);
@@ -309,11 +321,9 @@ select, input[type="date"] {
 .satir-sifirla.bos { visibility: hidden; }
 
 .kutu {
-  /* Temel kutu boyu (--kutu) eskisi gibi hesaplanir; genislik ve yukseklik
-     ayri carpanlarla buyutulur. Satir yine tasmaz: kutu boyu genisligin en
-     fazla %80'ine gore cozuldugu icin (--tahta-olcek) 1.2 kat genislik,
-     daralan araliklarla birlikte bu payin icinde kaliyor. */
-  width: calc(var(--kutu) * var(--kutu-en-carpan));
+  /* Genislik ve yukseklik ayri carpanlarla buyutulur (OYUN OLCULERI).
+     Genislik --kutu-en'den gelir: satir hicbir ekranda tasmaz. */
+  width: calc(var(--kutu-en) * var(--kutu-en-carpan));
   height: calc(var(--kutu) * var(--kutu-boy-carpan));
   display: grid; place-items: center;
   border: 2px solid var(--cizgi);
@@ -348,7 +358,7 @@ select, input[type="date"] {
 /* --- cevrilebilir kartlar (rozetler + perde acilisinda harfler) --- */
 /* Kart dikey ekseninin ortasindan, yukaridan asagiya donerek arka yuzunu gosterir. */
 .rozet {
-  width: calc(var(--kutu) * 0.66 * var(--kutu-en-carpan));
+  width: calc(var(--kutu-en) * 0.66 * var(--rozet-en-carpan));
   height: calc(var(--kutu) * var(--kutu-boy-carpan));
   perspective: 700px;
   background: none;
@@ -533,42 +543,34 @@ dialog ul { padding-left: 18px; }
 }
 
 /* Oyun sayfasi basligi: solda kutucuklu logo, sagda dugmeler (geri dahil).
-   Logo kutucugu, dugmelerden artan genislikten hesaplanir - bir satirda
-   5 dugme (30px) + aralarindaki 5 bosluk (6px) = 180px yer tutar.
-   10.09 katsayisi logonun kutu boyu cinsinden genisligi:
-   KELIME 6 kutu (1.5px bindirmeli) + ara + 500'un 3 buyuk kutusu. */
+   Logonun boyu basligin genisliginden cozulur (asagida). */
 body:not(.giris) header { container-type: inline-size; }
 
-/* Baslik ve klavye, ekranin solundan sagina uzanan bir serit icinde.
-   Icerik oyun genisliginde kalir; serit arkadaki bir sozde-ogeyle cizilir.
-   (clip-path/box-shadow hilesi kullanilmadi: baslik menusu seridin disina
-   tasiyor, kirpilirdi.) Genislik 100vw oldugu icin masaustunde kaydirma
-   cubugu payi kadar yana tasabilir; govdedeki overflow-x: clip bunu keser. */
-body:not(.giris) { overflow-x: clip; }
+/* Baslik ve klavye, icerigini her yandan 8px'le saran yuvarlak koseli bir
+   kutu icinde - bir dugmenin simgesini sarmasi gibi. Kutu arkadaki bir
+   sozde-ogeyle cizilir; icerigin yerlesimi degismez. (Basliga dogrudan
+   arka plan verilmedi: baslik menusu kutunun disina tasiyor, kirpilirdi.)
+   Baslik: icerik 14px iceride, kutu 6px iceride -> 8px ic bosluk.
+   Klavye: tuslar main'in icerik alaninda, kutu 8px disari tasar.
+   Boylece iki kutunun kenarlari ust uste hizali. */
 body:not(.giris) header { position: relative; padding-block: 8px; }
 body:not(.giris) #klavye { position: relative; isolation: isolate; padding-block: 8px; }
 body:not(.giris) header::before,
 body:not(.giris) #klavye::before {
   content: ""; position: absolute; inset-block: 0; z-index: -1;
-  left: 50%; width: 100vw; margin-left: -50vw;
+  border-radius: var(--yuvarlak);
   background: var(--serit);
 }
-/* Baslikta 3 dugme (34px) + aralarindaki 3 bosluk (8px) = 126px yer tutuyor.
-   Logo kutucugu kalan genislikten cozulur; 10.09 katsayisi logonun kutu boyu
-   cinsinden genisligi (KELIME 6 kutu + ara + 500'un 3 buyuk kutusu). */
-body:not(.giris) .logo {
-  --logo-kutu: clamp(12px, calc((100cqw - 130px) / 10.09), 26px);
-}
+body:not(.giris) header::before { inset-inline: 6px; }
+body:not(.giris) #klavye::before { inset-inline: -8px; }
 
-/* Mobilde logo solda kalir ama sag ucu ekranin tam ortasina denk gelecek
-   kadar daralir. Baslik iki yandan esit bosluklu oldugu icin ekranin ortasi,
-   baslik icerik genisliginin yarisina (50cqw) karsilik gelir.
+/* Logo solda kalir, sag ucu oyun sutununun tam ortasina denk gelir (mobilde
+   bu ekranin ortasidir). Baslik iki yandan esit bosluklu oldugu icin orta
+   nokta, baslik icerik genisliginin yarisina (50cqw) karsilik gelir.
    Logonun gercek genisligi 10.09 x kutu - 7.5px: KELIME kutulari birbirine
    1.5px biner, 5 bindirme sabit 7.5px kazandirir. Kutu boyu buradan cozulur. */
-@media (max-width: 759.98px) {
-  body:not(.giris) .logo {
-    --logo-kutu: calc((50cqw + 7.5px) / 10.09);
-  }
+body:not(.giris) .logo {
+  --logo-kutu: calc((50cqw + 7.5px) / 10.09);
 }
 
 /* --- baslik acilir menuleri --- */
