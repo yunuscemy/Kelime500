@@ -608,8 +608,11 @@ body:not(.giris) #klavye::before { inset-inline: -8px; }
    nokta, baslik icerik genisliginin yarisina (50cqw) karsilik gelir.
    Logonun gercek genisligi 10.09 x kutu - 7.5px: KELIME kutulari birbirine
    1.5px biner, 5 bindirme sabit 7.5px kazandirir. Kutu boyu buradan cozulur. */
+/* Sagdaki dugmeler (34 + 8 + 34 + 8 + seviye dugmesi) ve logoyla aralarindaki
+   8px yer kaplar; bu yer ortanin sagina sigmiyorsa (yalnizca cok dar
+   telefonlarda) logo ortadan once biter. */
 body:not(.giris) .logo {
-  --logo-kutu: calc((50cqw + 7.5px) / 10.09);
+  --logo-kutu: calc((min(50cqw, 100cqw - 92px - var(--zorluk-en)) + 7.5px) / 10.09);
 }
 
 /* --- baslik acilir menuleri --- */
@@ -639,12 +642,18 @@ body:not(.giris) .logo {
 .nokta.standart  { background: var(--yesil); }
 .nokta.ileri     { background: var(--kirmizi); }
 
-/* Zorluk dugmesi: seviyenin rengini ve harfini tasir ("Mod: S").
-   Dikdortgen - yuksekligi diger dugmelerle ayni, genisligi yazisi kadar. */
+/* Zorluk dugmesi: seviyenin rengini ve harfini tasir ("Seviye: S").
+   Dikdortgen - yuksekligi diger dugmelerle ayni. Genisligi sabit bir
+   degiskende (--zorluk-en), cunku logo basliktaki yeri buna gore hesapliyor.
+   Dar telefonda (390px alti) yazi 1px kuculur, dugme daralir: logo yine
+   ekranin ortasinda bitebilsin. */
+:root { --zorluk-en: 88px; }
+@media (max-width: 389.98px) { :root { --zorluk-en: 74px; } }
 .zorluk-dugme {
-  width: auto; padding-inline: 10px;
+  width: var(--zorluk-en); padding-inline: 0;
   border-color: transparent; font-weight: 800; font-size: 14px; white-space: nowrap;
 }
+@media (max-width: 389.98px) { .zorluk-dugme { font-size: 13px; } }
 .zorluk-dugme[data-zorluk="standart"]  { background: var(--yesil);   color: #fff; }
 .zorluk-dugme[data-zorluk="ileri"]     { background: var(--kirmizi); color: #fff; }
 /* Iki seviyenin yazisi ayni hucrede ust uste; yalnizca gecerli olan gorunur.
@@ -657,6 +666,7 @@ body:not(.giris) .logo {
 .acilir.zorluk-menu { min-width: 250px; }
 .acilir.zorluk-menu button {
   display: grid; grid-template-columns: auto auto 1fr; gap: 10px; align-items: center;
+  font-weight: 400;
 }
 .seviye-isaret {
   width: 26px; height: 26px; border-radius: 7px;
@@ -665,8 +675,8 @@ body:not(.giris) .logo {
 }
 .seviye-isaret.standart { background: var(--yesil); }
 .seviye-isaret.ileri    { background: var(--kirmizi); }
-.seviye-ad { font-weight: 700; }
-.seviye-aciklama { font-size: 12.5px; font-weight: 500; color: var(--soluk); text-align: right; }
+.seviye-ad { font-weight: 400; }
+.seviye-aciklama { font-size: 12.5px; font-weight: 400; color: var(--soluk); text-align: right; }
 
 /* --- oyun sayfasi: mod etiketi ve tarih gezinmesi --- */
 .mod-etiket {

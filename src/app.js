@@ -777,7 +777,9 @@
   /* Baslik satiri: hangi moddayiz, hangi gunun kelimesi.
    * Gunlukte tek bir bulmaca var (bugun), o yuzden tarih gezinmesi yalnizca arsivde. */
   var ZORLUK_ISARET = { standart: 'S', ileri: 'İ' };
-  var ZORLUK_ONEK = 'Mod: ';   /* seviye dugmesindeki yazinin basi */
+  /* Seviye dugmesindeki yazinin basi. "Mod" degil: oyunda mod Gunluk/Serbest
+   * demek; kurallar sayfasi ve paylasim metni de "seviye" diyor. */
+  var ZORLUK_ONEK = 'Seviye: ';
 
 
   /* 2026-08-31 -> 31-08-2026 */
