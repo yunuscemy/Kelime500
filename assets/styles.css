@@ -1225,3 +1225,9 @@ body:not(.giris) { padding-bottom: var(--reklam-alt-boy); }
   transition: color var(--gecis), border-color var(--gecis);
 }
 @media (hover: hover) { .yeni-kelime:hover { color: var(--metin); border-color: var(--soluk); } }
+/* Serbest modda dogru cevap da sola dayali durur; ortalanirsa "Yeni kelime"
+   dugmesine yapisiyor. Satirin yuksekligi her modda dugme kadar: mod
+   degistirince tahta ve klavye asagi yukari oynamasin. */
+.kontroller { min-height: 26px; }
+.kontroller.cevap-modu.sag-dugme { justify-content: flex-start; }
+.kontroller.cevap-modu.sag-dugme .mod-etiket { flex: 1 1 auto; text-align: left; }

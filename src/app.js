@@ -1263,10 +1263,11 @@
     menuIsaretle('#zorluk-menu', '[data-zorluk]', 'zorluk', S.zorluk);
 
     /* Kelime degistirme yalnizca serbest modda: gunlukte ve arsivde herkes
-     * ayni kelimeyi oynadigi icin yenilemek anlamsiz. Ayrac her modda durur -
-     * mod secimi ile islemleri ayirir, yalnizca "Yeni kelime"ye ait degil. */
-    $('#menu-yeni').hidden = S.mod !== 'serbest';
-    $('#yeni-kelime').hidden = S.mod !== 'serbest';
+     * ayni kelimeyi oynadigi icin yenilemek anlamsiz. Dugme dururken satir
+     * sola dayali kalir - dogru cevap yazisi dugmeye yapismasin. */
+    var serbest = S.mod === 'serbest';
+    $('#yeni-kelime').hidden = !serbest;
+    kutu.classList.toggle('sag-dugme', serbest);
   }
 
   function menuIsaretle(menu, secici, alan, deger) {
@@ -1397,10 +1398,7 @@
         if (b.dataset.mod !== S.mod) { modaGit(b.dataset.mod); }
         return;
       }
-      if (b.id === 'menu-yeni') {
-        yeniOyun('serbest', S.zorluk, S.tarih, true);
-        uyar('Yeni kelime');
-      } else if (b.id === 'menu-anasayfa') {
+      if (b.id === 'menu-anasayfa') {
         location.href = '/';
       } else if (b.id === 'menu-tema') {
         tema(document.documentElement.dataset.tema === 'acik' ? 'koyu' : 'acik', true, true);
