@@ -529,23 +529,63 @@
    *   konumundaysa ve o tahminde harf bir kez geciyorsa kesin sari.
    * Jokerin kendi satirina dokunulmaz (Ileri'de tekrar eden kopya fazlalik
    * olarak kirmizi olabilir). */
-  function kesinRenkler() {
-    var sonuc = {}, jk = S.joker && S.joker.kutu, g0;
-    if (!jk || !(g0 = S.gecmis[jk.r]) || jk.renk === 1) { return sonuc; }
-    var x = g0.tahmin[jk.c], tekrarsiz = ZORLUKLAR[S.zorluk].tekrarsiz;
-    S.gecmis.forEach(function (g, r) {
-      if (r === jk.r) { return; }
-      var adet = 0, c;
-      for (c = 0; c < g.tahmin.length; c++) { if (g.tahmin[c] === x) { adet++; } }
-      for (c = 0; c < g.tahmin.length; c++) {
-        if (g.tahmin[c] !== x) { continue; }
-        if (jk.renk === 3) {
-          if (c === jk.c) { sonuc[r + ':' + c] = 3; }
-          else if (tekrarsiz) { sonuc[r + ':' + c] = 2; }
-        } else if (c === jk.c && adet === 1) {
-          sonuc[r + ':' + c] = 2;
+  /* Rengi kesin bilinen kutular: { r, c, renk, harf }.
+   * 1) Kutu jokerinin actigi kutu - rengi dogrudan gosterildi.
+   * 2) Harf jokeri "var" dediyse, o satirin sayilari rengi tek basina
+   *    belirleyebilir: satirda hic sari yoksa harf yesildir, hic yesil
+   *    yoksa saridir. (Ornek: 2 yesil + 3 kirmizi olan satirda kelimede
+   *    oldugu bilinen harf yesillerden biri olmak zorunda.) Harf satirda
+   *    birden fazla geciyorsa hangi kopya oldugu belli olmaz, atlanir. */
+  function kesinKutular() {
+    var liste = [], j = S.joker || {}, g;
+    if (j.kutu && (g = S.gecmis[j.kutu.r])) {
+      liste.push({ r: j.kutu.r, c: j.kutu.c, renk: j.kutu.renk, harf: g.tahmin[j.kutu.c],
+                   joker: true });
+    }
+    if (j.harf && j.harf.var && j.tur) {
+      var hr = j.harf.r !== undefined ? j.harf.r : j.tur - 1;
+      if ((g = S.gecmis[hr])) {
+        var x = j.harf.harf, yer = -1, adet = 0, i;
+        for (i = 0; i < g.tahmin.length; i++) {
+          if (g.tahmin[i] === x) { adet++; yer = i; }
         }
+        var renk = g.harf === 0 ? 3 : (g.yer === 0 ? 2 : 0);
+        if (adet === 1 && renk) { liste.push({ r: hr, c: yer, renk: renk, harf: x }); }
       }
+    }
+    return liste;
+  }
+
+  /* Kesin kutulardan cikan, DIGER tahminlerdeki ayni harfin kesin rengi.
+   * Donen: { 'r:c': renk }.
+   * - Yesil (harf p konumunda): baska bir tahminde ayni harf p konumundaysa
+   *   kesin yesil. Baska konumdaysa kesin sari - yalnizca Standart'ta; gizli
+   *   kelimede harf tekrari olmadigi icin harf baska yerde olamaz. Ileri'de
+   *   harf kelimede iki kez gecebilir, orada bir sey soylenmez.
+   * - Sari (harf var ama q konumunda degil): baska bir tahminde ayni harf q
+   *   konumundaysa ve o tahminde harf bir kez geciyorsa kesin sari.
+   * Kutu jokerinin kendi kutusu listeye girmez (zaten joker rengiyle cizilir);
+   * satirdan cikarilan kutu ise kesin renkle boyanir. */
+  function kesinRenkler() {
+    var sonuc = {}, tekrarsiz = ZORLUKLAR[S.zorluk].tekrarsiz;
+    function koy(a, renk) { if (!sonuc[a] || renk > sonuc[a]) { sonuc[a] = renk; } }
+    kesinKutular().forEach(function (kb) {
+      if (kb.renk === 1) { return; }
+      if (!kb.joker) { koy(kb.r + ':' + kb.c, kb.renk); }
+      S.gecmis.forEach(function (g, r) {
+        if (r === kb.r) { return; }
+        var adet = 0, c;
+        for (c = 0; c < g.tahmin.length; c++) { if (g.tahmin[c] === kb.harf) { adet++; } }
+        for (c = 0; c < g.tahmin.length; c++) {
+          if (g.tahmin[c] !== kb.harf) { continue; }
+          if (kb.renk === 3) {
+            if (c === kb.c) { koy(r + ':' + c, 3); }
+            else if (tekrarsiz) { koy(r + ':' + c, 2); }
+          } else if (c === kb.c && adet === 1) {
+            koy(r + ':' + c, 2);
+          }
+        }
+      });
     });
     return sonuc;
   }
@@ -934,12 +974,24 @@
     var harf = S.gecmis[r].tahmin[c];
     if (kesinYok_()[harf]) { return; }   // kesin kırmızı değiştirilemez
     var anahtar = kutu.dataset.r + ':' + kutu.dataset.c;
-    if (kirmiziOlamaz()[anahtar]) {
-      /* Harf kelimede var: bos -> sari -> yesil -> bos, kirmizi atlanir. */
-      S.notlar[anahtar] = [2, 2, 3, 0][S.notlar[anahtar] || 0];
-    } else {
-      S.notlar[anahtar] = ((S.notlar[anahtar] || 0) + 1) % 4;
-    }
+    var ko = kirmiziOlamaz(), kr = kesinRenkler(), ky = kesinYok_();
+    var simdiki = S.notlar[anahtar] || 0;
+    if (simdiki === 1 && ko[anahtar]) { simdiki = 0; }
+    /* Harf kelimede var: bos -> sari -> yesil -> bos, kirmizi atlanir. */
+    var yeni = ko[anahtar] ? [2, 2, 3, 0][simdiki] : (simdiki + 1) % 4;
+
+    /* Ayni harfin tahtadaki butun kutulari birlikte degisir: oyuncu bir
+     * senaryoyu denerken ayni harfi tek tek boyamak zorunda kalmasin.
+     * Kesin bilgiyle kilitli kutulara dokunulmaz. */
+    S.gecmis.forEach(function (g, r) {
+      for (var c = 0; c < g.tahmin.length; c++) {
+        if (g.tahmin[c] !== harf) { continue; }
+        var a = r + ':' + c;
+        if (jokerKutu(r, c) || kr[a] || ky[harf]) { continue; }
+        var deger = yeni === 1 && ko[a] ? 0 : yeni;   // o kutuda kirmizi olamaz
+        if (deger) { S.notlar[a] = deger; } else { delete S.notlar[a]; }
+      }
+    });
     kaydet();
     ciz();
   }
@@ -1344,8 +1396,6 @@
         uyar('Yeni kelime');
       } else if (b.id === 'menu-anasayfa') {
         location.href = '/';
-      } else if (b.id === 'menu-yardim') {
-        KB.yardim.ac();
       } else if (b.id === 'menu-tema') {
         tema(document.documentElement.dataset.tema === 'acik' ? 'koyu' : 'acik', true, true);
       }

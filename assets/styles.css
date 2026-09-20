@@ -1208,3 +1208,7 @@ body:not(.giris) { padding-bottom: var(--reklam-alt-boy); }
 @media (prefers-reduced-motion: reduce) {
   #rehber-pencere.donerek, #rehber-pencere.donerek::backdrop { animation: none; }
 }
+
+/* Nasil oynanir sayfasi: sag ustteki kapatma carpisi baslikla cakismasin. */
+.kart.yazi { position: relative; }
+.kart.yazi > h1 { padding-right: 40px; }
