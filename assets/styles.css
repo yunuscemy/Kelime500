@@ -1212,3 +1212,16 @@ body:not(.giris) { padding-bottom: var(--reklam-alt-boy); }
 /* Nasil oynanir sayfasi: sag ustteki kapatma carpisi baslikla cakismasin. */
 .kart.yazi { position: relative; }
 .kart.yazi > h1 { padding-right: 40px; }
+
+/* Serbest Mod: "Yeni kelime" mod etiketinin sagina hizali. Menude iki tik
+   uzaktaydi; serbest modun tek anlami arka arkaya oynamak. */
+.yeni-kelime {
+  flex: 0 0 auto;
+  display: inline-flex; align-items: center; gap: 5px;
+  height: 26px; padding: 0 9px;
+  border: 1px solid var(--cizgi); border-radius: var(--yuvarlak);
+  background: var(--bg-yuksek); color: var(--soluk);
+  font-size: 12.5px; font-weight: 600; cursor: pointer;
+  transition: color var(--gecis), border-color var(--gecis);
+}
+@media (hover: hover) { .yeni-kelime:hover { color: var(--metin); border-color: var(--soluk); } }

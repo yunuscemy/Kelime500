@@ -1266,6 +1266,7 @@
      * ayni kelimeyi oynadigi icin yenilemek anlamsiz. Ayrac her modda durur -
      * mod secimi ile islemleri ayirir, yalnizca "Yeni kelime"ye ait degil. */
     $('#menu-yeni').hidden = S.mod !== 'serbest';
+    $('#yeni-kelime').hidden = S.mod !== 'serbest';
   }
 
   function menuIsaretle(menu, secici, alan, deger) {
@@ -1368,6 +1369,11 @@
       e.stopPropagation();
       menuAc('#zorluk-menu', zorlukDugme);
     });
+    $('#yeni-kelime').addEventListener('click', function () {
+      yeniOyun('serbest', S.zorluk, S.tarih, true);
+      uyar('Yeni kelime');
+    });
+
     $('#ist-dugme').addEventListener('click', function (e) {
       e.stopPropagation();
       menuKapat();
