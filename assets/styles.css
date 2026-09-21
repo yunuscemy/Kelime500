@@ -575,8 +575,14 @@ body:not(.giris) #klavye { margin-top: 12px; }
    ilk acilista (iki kez) ve bir dakikadir tahmin yapilmadiginda (bir kez) -
    surekli yanip sonmesi oyuncunun dikkatini dagitiyordu. */
 .tus.joker-tus.joker-hazir::before { opacity: 1; background-position: 50% 0; }
+/* Altin katman yarim tur fazla doner (2 -> 2.5) ve "forwards" ile donusun
+   en parlak aninda durur: bu an sabit gorunumun ta kendisi, boylece
+   yanip sonmeden sabit hale gecis fark edilmez. Isiltinin kendisi tam
+   turda biter, sonrasinda golge kalmaz. */
 .tus.joker-tus.joker-yanip { animation: joker-isik 3s ease-in-out var(--yanip, 2); }
-.tus.joker-tus.joker-yanip::before { animation: joker-altin 3s ease-in-out var(--yanip, 2); }
+.tus.joker-tus.joker-yanip::before {
+  animation: joker-altin 3s ease-in-out var(--yanip-altin, 2.5) forwards;
+}
 @keyframes joker-altin {
   0%   { opacity: 0; background-position: 110% 0; }
   50%  { opacity: 1; background-position: 50% 0; }
@@ -697,8 +703,8 @@ footer { color: var(--soluk); font-size: 11px; padding: 0 14px 18px; text-align:
   position: fixed; top: 60px; left: 50%; transform: translateX(-50%);
   max-width: min(320px, calc(100vw - 28px));
   background: var(--metin); color: var(--bg);
-  padding: 9px 15px; border-radius: var(--yuvarlak);
-  font-size: 14px; font-weight: 600; text-align: center;
+  padding: 5px 12px; border-radius: var(--yuvarlak);
+  font-size: 13px; font-weight: 600; text-align: center;
   opacity: 0; pointer-events: none;
   transition: opacity 150ms ease; z-index: 20;
 }

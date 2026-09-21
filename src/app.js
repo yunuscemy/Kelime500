@@ -969,11 +969,12 @@
     b.classList.remove('joker-yanip');
     void b.offsetWidth;                       // animasyon bastan baslasin
     b.style.setProperty('--yanip', kere);
+    b.style.setProperty('--yanip-altin', kere + 0.5);   // en parlak anda dursun
     b.classList.add('joker-yanip');
     clearTimeout(jokerYanipZaman);
     jokerYanipZaman = setTimeout(function () {
       b.classList.remove('joker-yanip');
-    }, kere * JOKER_YANIP_SURE + 60);
+    }, (kere + 0.5) * JOKER_YANIP_SURE + 60);
   }
 
   /* Oyuncu bir dakikadır yeni tahmin yapmadiysa joker bir kez hatirlatilir.
