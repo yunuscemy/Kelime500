@@ -53,6 +53,11 @@
     '</svg>';
   global.KB.jokerSimge = JOKER_SIMGE;   // rehber de ayni simgeyi gosteriyor
 
+  var JOKER_YANIP_SURE = 3000;      // ms, bir yanip sonme dongusu (CSS ile ayni)
+  var JOKER_HATIRLATMA = 60000;     // ms, tahminsiz gecen sure sonunda hatirlatma
+  var jokerYanipZaman = null, jokerHatirlatma = null;
+  var jokerYanipGosterildi = false; // ilk acilistaki iki yanip sonme yapildi mi
+
   var jokerSecim = null;   // secim surerken 'harf' ya da 'kutu'
   var jokerOnay = null;    // kutuda "emin misin?" sorulan joker
   var jokerBasladi = 0;    // secimin basladigi an (parlamanin zamanlamasi icin)
@@ -260,7 +265,7 @@
 
     if (p.yer === n) { bitir(true); }
     else if (S.gecmis.length >= HAK) { bitir(false); }
-    else { kaydet(); ciz(); jokerAcildiMi(); }
+    else { kaydet(); ciz(); jokerAcildiMi(); jokerHatirlatmaKur(); }
   }
 
   function bitir(kazandi) {
@@ -691,9 +696,25 @@
   /* satirBoya: satiri gecici kirmizi yapar. salla: satiri sallar.
    * Bilgi amacli mesajlarda (not temizleme, yeni kelime, sonuc kopyalandi)
    * sallama olmaz - yalnizca gercek hatalarda. */
+  /* Bildirim kutusu, baslik kutusu ile tahtanin arasindaki bosluga oturur:
+   * tek satirlik kutu bu bosluga dikey ortalanir, iki satirlik kutu ayni ust
+   * noktadan asagi dogru uzar. Yer olculerek verilir - ekran boyuna, mod
+   * satirinin icerigine ve arsivdeki tarih satirina gore degisiyor. */
+  function bildirimYerlestir(b) {
+    var basvuru = document.querySelector('header'), tahta = $('#tahta');
+    if (!basvuru || !tahta) { return; }
+    var ust = basvuru.getBoundingClientRect().bottom;
+    var alt = tahta.getBoundingClientRect().top;
+    var c = getComputedStyle(b);
+    var tekSatir = parseFloat(c.paddingTop) + parseFloat(c.paddingBottom) +
+                   parseFloat(c.fontSize) * 1.25;
+    b.style.top = Math.round((ust + alt) / 2 - tekSatir / 2) + 'px';
+  }
+
   function uyar(metin, satirBoya, sure, salla) {
     var b = $('#bildirim');
     b.textContent = metin;
+    bildirimYerlestir(b);
     b.classList.add('gorunur');
     clearTimeout(bildirimZaman);
     bildirimZaman = setTimeout(function () { b.classList.remove('gorunur'); }, sure || 1600);
@@ -925,15 +946,45 @@
     }
     kaydet();
     ciz();
+    jokerHatirlatmaKur();
   }
 
-  /* Bir tahminden sonra esige gelen joker varsa oyuncuya haber verilir. */
+  /* Bir tahminden sonra esige gelen joker varsa oyuncuya haber verilir.
+   * Ilk joker acildiginda tus iki kez yanip soner, sonra sabit parlak kalir -
+   * surekli yanip sonmesi dikkat dagitiyordu. Ikinci joker acilinca tekrar
+   * yanmaz, tus zaten parlak. */
   function jokerAcildiMi() {
     ['harf', 'kutu'].forEach(function (tur) {
       if (!S.joker[tur] && S.gecmis.length === JOKER_ESIK[S.zorluk][tur]) {
         uyar((tur === 'harf' ? 'Harf' : 'Kutu') + ' jokeri açıldı!', false, 2400);
+        if (!jokerYanipGosterildi) { jokerYanipGosterildi = true; jokerYanip(2); }
       }
     });
+  }
+
+  /* Tusu n kez yakip sondurur, sonra sabit parlak birakir. */
+  function jokerYanip(kere) {
+    var b = $('#joker-tus');
+    if (!b || !b.classList.contains('joker-hazir')) { return; }
+    b.classList.remove('joker-yanip');
+    void b.offsetWidth;                       // animasyon bastan baslasin
+    b.style.setProperty('--yanip', kere);
+    b.classList.add('joker-yanip');
+    clearTimeout(jokerYanipZaman);
+    jokerYanipZaman = setTimeout(function () {
+      b.classList.remove('joker-yanip');
+    }, kere * JOKER_YANIP_SURE + 60);
+  }
+
+  /* Oyuncu bir dakikadır yeni tahmin yapmadiysa joker bir kez hatirlatilir.
+   * Her tahminden ve joker kullanimindan sonra bastan kurulur. */
+  function jokerHatirlatmaKur() {
+    clearTimeout(jokerHatirlatma);
+    if (S.bitti) { return; }
+    jokerHatirlatma = setTimeout(function () {
+      jokerYanip(1);
+      jokerHatirlatmaKur();
+    }, JOKER_HATIRLATMA);
   }
 
   /* J tusu, kullanilabilir joker varken belirgin, yokken soluk. */
@@ -974,24 +1025,15 @@
     var harf = S.gecmis[r].tahmin[c];
     if (kesinYok_()[harf]) { return; }   // kesin kırmızı değiştirilemez
     var anahtar = kutu.dataset.r + ':' + kutu.dataset.c;
-    var ko = kirmiziOlamaz(), kr = kesinRenkler(), ky = kesinYok_();
+    /* Not yalnizca tiklanan kutuya islenir. Ayni harf bir tahminde sari,
+     * baska bir tahminde (farkli konumda) yesil olabilir; hepsini birlikte
+     * boyamak oyuncunun senaryo denemesini engelliyordu. Jokerden gelen
+     * kesin renkler bunun disinda, onlar butun tahminlere isleniyor. */
+    var ko = kirmiziOlamaz();
     var simdiki = S.notlar[anahtar] || 0;
     if (simdiki === 1 && ko[anahtar]) { simdiki = 0; }
     /* Harf kelimede var: bos -> sari -> yesil -> bos, kirmizi atlanir. */
-    var yeni = ko[anahtar] ? [2, 2, 3, 0][simdiki] : (simdiki + 1) % 4;
-
-    /* Ayni harfin tahtadaki butun kutulari birlikte degisir: oyuncu bir
-     * senaryoyu denerken ayni harfi tek tek boyamak zorunda kalmasin.
-     * Kesin bilgiyle kilitli kutulara dokunulmaz. */
-    S.gecmis.forEach(function (g, r) {
-      for (var c = 0; c < g.tahmin.length; c++) {
-        if (g.tahmin[c] !== harf) { continue; }
-        var a = r + ':' + c;
-        if (jokerKutu(r, c) || kr[a] || ky[harf]) { continue; }
-        var deger = yeni === 1 && ko[a] ? 0 : yeni;   // o kutuda kirmizi olamaz
-        if (deger) { S.notlar[a] = deger; } else { delete S.notlar[a]; }
-      }
-    });
+    S.notlar[anahtar] = ko[anahtar] ? [2, 2, 3, 0][simdiki] : (simdiki + 1) % 4;
     kaydet();
     ciz();
   }

@@ -571,8 +571,12 @@ body:not(.giris) #klavye { margin-top: 12px; }
 }
 :root { --altin: linear-gradient(115deg, #9a6a12 0%, #d9a52b 28%, #ffe58a 46%, #fff7cf 50%,
                                          #ffe58a 54%, #d9a52b 72%, #9a6a12 100%); }
-.tus.joker-tus.joker-hazir { animation: joker-isik 3s ease-in-out infinite; }
-.tus.joker-tus.joker-hazir::before { animation: joker-altin 3s ease-in-out infinite; }
+/* Kullanilabilir joker varken tus sabit altin durur. Yanip sonme yalnizca
+   ilk acilista (iki kez) ve bir dakikadir tahmin yapilmadiginda (bir kez) -
+   surekli yanip sonmesi oyuncunun dikkatini dagitiyordu. */
+.tus.joker-tus.joker-hazir::before { opacity: 1; background-position: 50% 0; }
+.tus.joker-tus.joker-yanip { animation: joker-isik 3s ease-in-out var(--yanip, 2); }
+.tus.joker-tus.joker-yanip::before { animation: joker-altin 3s ease-in-out var(--yanip, 2); }
 @keyframes joker-altin {
   0%   { opacity: 0; background-position: 110% 0; }
   50%  { opacity: 1; background-position: 50% 0; }
@@ -656,8 +660,7 @@ body:not(.giris) #klavye { margin-top: 12px; }
 @media (prefers-reduced-motion: reduce) {
   .satir.joker-satir .kutu.joker-secilebilir { animation: none; box-shadow: 0 0 0 2px var(--vurgu); }
   .satir.joker-satir .kutu.joker-kapali { animation: none; opacity: .4; }
-  .tus.joker-tus.joker-hazir { animation: none; }
-  .tus.joker-tus.joker-hazir::before { animation: none; opacity: 1; background-position: 50% 0; }
+    .tus.joker-tus.joker-yanip, .tus.joker-tus.joker-yanip::before { animation: none; }
 }
 /* Kutu jokeriyle acilmis kutu: gercek renk, icte ince beyaz halka -
    oyuncunun kendi notlarindan ayirt edilsin. */
@@ -689,7 +692,10 @@ footer { color: var(--soluk); font-size: 11px; padding: 0 14px 18px; text-align:
 
 /* --- bildirim + pencereler --- */
 #bildirim {
-  position: fixed; top: 14px; left: 50%; transform: translateX(-50%);
+  /* top olculerek verilir (app.js bildirimYerlestir): baslik kutusu ile
+     tahta arasindaki bosluk. Asagida yalnizca yedek deger var. */
+  position: fixed; top: 60px; left: 50%; transform: translateX(-50%);
+  max-width: min(320px, calc(100vw - 28px));
   background: var(--metin); color: var(--bg);
   padding: 9px 15px; border-radius: var(--yuvarlak);
   font-size: 14px; font-weight: 600; text-align: center;
