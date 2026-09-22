@@ -1094,11 +1094,33 @@
     return satirlar.join('\n');
   }
 
+  /* Eski yontem: gizli bir alana yazip kopyalatmak. navigator.clipboard
+   * yalnizca HTTPS'te calisiyor; yerel agda (http://192.168...) ve eski
+   * tarayicilarda tek secenek bu. */
+  function eskiUsulKopyala(metin) {
+    var alan = document.createElement('textarea');
+    alan.value = metin;
+    alan.setAttribute('readonly', '');
+    alan.style.cssText = 'position:fixed;top:0;left:-9999px;opacity:0';
+    document.body.appendChild(alan);
+    alan.select();
+    alan.setSelectionRange(0, metin.length);
+    var oldu = false;
+    try { oldu = document.execCommand('copy'); } catch (e) { oldu = false; }
+    document.body.removeChild(alan);
+    return oldu;
+  }
+
   function panoyaKopyala(metin) {
+    function yedek() {
+      /* Hicbiri olmuyorsa kisa bir uyari: metnin tamamini bildirime basmak
+       * (eski davranis) okunmaz bir kutu cikariyordu. */
+      uyar(eskiUsulKopyala(metin) ? 'Sonuç kopyalandı' : 'Kopyalanamadı');
+    }
     if (navigator.clipboard && navigator.clipboard.writeText) {
       navigator.clipboard.writeText(metin).then(function () { uyar('Sonuç kopyalandı'); },
-                                                function () { uyar(metin); });
-    } else { uyar(metin); }
+                                                yedek);
+    } else { yedek(); }
   }
 
   /* Telefonlarda isletim sisteminin kendi paylasim menusu acilir; WhatsApp
