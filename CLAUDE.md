@@ -135,7 +135,8 @@ sonra betiği çalıştır. İki yeri elle senkron tutmaya çalışma.
 ## 6. Sürüm damgası
 
 Tarayıcı önbelleğini kırmak için bütün varlıklar `?v=NN` ile yükleniyor
-(dört HTML dosyasında toplam 30 yerde; güncel numarayı dosyalardan oku). `assets/` veya `src/`
+(yedi HTML dosyasında; güncel numarayı ve yerleri dosyalardan oku:
+`grep -c '?v=' *.html`). `assets/` veya `src/`
 altında bir dosya değiştiysen **hepsini birden** artır, yoksa kullanıcılar
 eski dosyayla yeni dosyayı karışık görür.
 

@@ -1097,6 +1097,10 @@ body:not(.giris) { padding-bottom: var(--reklam-alt-boy); }
 /* --- gizlilik sayfasi --- */
 .kart.yazi h1 { margin: 0 0 4px; font-size: 24px; letter-spacing: -0.3px; }
 .kart.yazi h2 { margin: 22px 0 6px; font-size: 16px; }
+/* Kurallar metnindeki ara basliklar: sayfada ve oyun ici pencerede ayni. */
+.kart.yazi h3, .pencere-govde h3 { margin: 20px 0 6px; font-size: 15px; }
+.pencere-govde h3 { color: var(--metin); }
+.pencere-govde h3:first-child { margin-top: 0; }
 .kart.yazi p, .kart.yazi li { font-size: 14px; color: var(--soluk); line-height: 1.6; }
 .kart.yazi b { color: var(--metin); }
 /* Metin icindeki baglantilar vurgu renginde; dugmeler haric - yoksa

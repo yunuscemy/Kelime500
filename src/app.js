@@ -1083,7 +1083,7 @@
    * ayrica belirtilir; yoksa karsi taraf gunluk kelime sanir.
    * Adres son satirda: mesaji alan kisinin nereye gidecegini bilmesi
    * paylasimin butun amaci. */
-  function paylasMetni() {
+  function paylasMetni(adresli) {
     var basi = 'Kelime500 · ' + (S.mod === 'serbest' ? 'Serbest Mod · ' : '') +
                'Seviye: ' + ZORLUKLAR[S.zorluk].ad;
     /* Joker kullanildiysa hem sonuc satirinda toplam sayisi, hem de hangi
@@ -1097,7 +1097,10 @@
       satirlar.push((i + 1) + ': 🟩' + g.yer + ' 🟨' + g.harf + ' 🟥' + g.yok +
                     (jokerSatir[i] ? ' (Joker)' : ''));
     });
-    satirlar.push('', ADRES);
+    /* Adres yalnizca panoya kopyalarken metne girer. Isletim sisteminin
+     * paylasim menusune adres AYRI alanda veriliyor; boylece WhatsApp gibi
+     * uygulamalar baglantiyi tanir ve onizleme gorselini gosterir. */
+    if (adresli) { satirlar.push('', ADRES); }
     return satirlar.join('\n');
   }
 
@@ -1134,15 +1137,15 @@
    * tek dokunusla cikar, kullanici oyundan hic cikmaz. Masaustu tarayicilarin
    * cogu navigator.share desteklemiyor - orada eski davranis surer. */
   function paylas() {
-    var metin = paylasMetni();
     if (navigator.share) {
-      navigator.share({ text: metin }).catch(function (e) {
-        /* Kullanici menuyu kapattiysa sessiz kal; gercek hatada kopyalamaya dus. */
-        if (!e || e.name !== 'AbortError') { panoyaKopyala(metin); }
-      });
+      navigator.share({ text: paylasMetni(false), url: 'https://' + ADRES })
+        .catch(function (e) {
+          /* Kullanici menuyu kapattiysa sessiz kal; gercek hatada kopyalamaya dus. */
+          if (!e || e.name !== 'AbortError') { panoyaKopyala(paylasMetni(true)); }
+        });
       return;
     }
-    panoyaKopyala(metin);
+    panoyaKopyala(paylasMetni(true));
   }
 
   /* ---------- istatistik penceresi ---------- */
@@ -1609,7 +1612,9 @@
         if (b.dataset.mod !== S.mod) { modaGit(b.dataset.mod); }
         return;
       }
-      if (b.id === 'menu-anasayfa') {
+      if (b.id === 'menu-rehber') {
+        if (KB.rehber) { KB.rehber.ac(); }
+      } else if (b.id === 'menu-anasayfa') {
         location.href = '/';
       } else if (b.id === 'menu-tema') {
         tema(document.documentElement.dataset.tema === 'acik' ? 'koyu' : 'acik', true, true);
