@@ -274,7 +274,10 @@
   global.KB.rehber = { ac: ac };
 
   document.addEventListener('DOMContentLoaded', function () {
-    if (gorulmediMi() || /[?&]rehber\b/.test(location.search)) {
+    /* Kendiliginden yalnizca oyun sayfasinda acilir; giris sayfasinda
+     * altttaki "Rehber" baglantisiyla elle acilir. */
+    var oyunSayfasi = !!document.getElementById('tahta');
+    if (oyunSayfasi && (gorulmediMi() || /[?&]rehber\b/.test(location.search))) {
       setTimeout(function () {
         /* Başka bir pencere açıksa üstüne binmesin; bir sonraki girişte çıkar. */
         if (!document.querySelector('dialog[open]')) { ac(); }
