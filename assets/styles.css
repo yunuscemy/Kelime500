@@ -1323,6 +1323,10 @@ body:not(.giris) { padding-bottom: var(--reklam-alt-boy); }
 }
 .ist-seri-eniyi b { font-size: 16px; color: var(--metin); }
 .ist-alt-baslik { margin: 9px 0 4px; font-size: 13px; font-weight: 700; }
+.ist-joker-ozet {
+  margin: 8px 0 0; font-size: 12px; color: var(--soluk); text-align: center;
+}
+.ist-joker-ozet:empty { display: none; }
 #ist-pencere .istatistikler { margin: 8px 0 0; }
 #ist-pencere .ist b { font-size: 19px; }
 

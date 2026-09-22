@@ -109,7 +109,8 @@
   function istAnahtari(mod, zorluk) { return 'kelime500.ist.' + mod + '.' + zorluk; }
 
   function bosIstatistik() {
-    return { oynanan: 0, kazanilan: 0, seri: 0, enIyiSeri: 0, dagilim: {} };
+    /* jokerli: jokerle kazanilan oyun sayisi. Eski kayitlarda yok, 0 sayilir. */
+    return { oynanan: 0, kazanilan: 0, seri: 0, enIyiSeri: 0, jokerli: 0, dagilim: {} };
   }
 
   function bugun() {
@@ -309,6 +310,7 @@
     ist.oynanan++;
     if (kazandi) {
       ist.kazanilan++;
+      if (jokerSayisi(S)) { ist.jokerli = (ist.jokerli || 0) + 1; }
       ist.seri++;
       ist.enIyiSeri = Math.max(ist.enIyiSeri, ist.seri);
       ist.dagilim[denemeSayisi] = (ist.dagilim[denemeSayisi] || 0) + 1;
@@ -1084,11 +1086,16 @@
   function paylasMetni() {
     var basi = 'Kelime500 · ' + (S.mod === 'serbest' ? 'Serbest Mod · ' : '') +
                'Seviye: ' + ZORLUKLAR[S.zorluk].ad;
-    var sonuc = S.kazandi ? S.gecmis.length + '. tahminde bildim!'
-                          : S.gecmis.length + ' tahminde bulamadım 😔';
+    /* Joker kullanildiysa hem sonuc satirinda toplam sayisi, hem de hangi
+     * tahminde kullanildigi yaziliyor - paylasim dürüst kalsin. */
+    var joker = jokerSayisi(S), jokerSatir = jokerSatirlari(S);
+    var sonuc = (S.kazandi ? S.gecmis.length + '. tahminde bildim!'
+                           : S.gecmis.length + ' tahminde bulamadım 😔') +
+                (joker ? ' (' + joker + ' joker)' : '');
     var satirlar = [basi, sonuc, ''];
     S.gecmis.forEach(function (g, i) {
-      satirlar.push((i + 1) + ': 🟩' + g.yer + ' 🟨' + g.harf + ' 🟥' + g.yok);
+      satirlar.push((i + 1) + ': 🟩' + g.yer + ' 🟨' + g.harf + ' 🟥' + g.yok +
+                    (jokerSatir[i] ? ' (Joker)' : ''));
     });
     satirlar.push('', ADRES);
     return satirlar.join('\n');
@@ -1157,6 +1164,20 @@
    * oynamasin diye. Gosterilen seviyenin O GUNKU oyununu anlatir: bitmisse
    * sonucu ve gizli kelimeyi, bitmemisse oynamaya cagirir. Bitmemis oyunun
    * kelimesi elbette yazilmaz. */
+  /* Oyunda kac joker kullanildi (0-2). */
+  function jokerSayisi(oyun) {
+    var j = (oyun || {}).joker || {};
+    return (j.harf ? 1 : 0) + (j.kutu ? 1 : 0);
+  }
+
+  /* Jokerin kullanildigi tahmin satirlari: { satirNo: true }. */
+  function jokerSatirlari(oyun) {
+    var j = (oyun || {}).joker || {}, s = {};
+    if (j.harf) { s[j.harf.r !== undefined ? j.harf.r : j.tur - 1] = true; }
+    if (j.kutu) { s[j.kutu.r] = true; }
+    return s;
+  }
+
   /* Gosterilen seviyenin o gunku oyunu: kendi seviyesiyse ekrandaki oyun,
    * degilse kayittan okunur. */
   function istGunOyunu(zorluk) {
@@ -1247,6 +1268,14 @@
               '</div>';
     }
     $('#ist-dagilim').innerHTML = html;
+
+    /* Joker ozeti dagilimin altinda tek satir; sayi kartlari ucluyken
+     * dorduncu kart sikisik duruyordu. */
+    var jokerli = ist.jokerli || 0;
+    $('#ist-joker-ozet').textContent = !ist.kazanilan ? ''
+      : (jokerli ? ist.kazanilan + ' galibiyetin ' + jokerli + ' tanesinde joker kullandın'
+                 : ist.kazanilan + ' galibiyetin hiçbirinde joker kullanmadın');
+
     $('#ist-paylas').disabled = !S.bitti || !kendi;
   }
 
