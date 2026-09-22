@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="tr" data-tema="koyu">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Strateji — Kelime500</title>
+<meta name="description" content="Kelime500'de daha az tahminde bilmek için: açılış kelimesi seçimi, sesli harfler, not alma, jokerleri doğru anda kullanma.">
+<link rel="canonical" href="https://kelime500.com/strateji">
+<link rel="icon" href="assets/favicon.svg?v=116" type="image/svg+xml">
+<meta name="theme-color" content="#0f1115">
+<script>
+(function () {
+  var t = null;
+  try { t = JSON.parse(localStorage.getItem('kelime500.tema')); } catch (e) { /* yoksay */ }
+  if (t !== 'acik' && t !== 'koyu') {
+    t = window.matchMedia && matchMedia('(prefers-color-scheme: light)').matches ? 'acik' : 'koyu';
+  }
+  document.documentElement.dataset.tema = t;
+
+  /* Reklam yuvasi onizlemesi: ?reklam=1 ile acilir, ?reklam=0 ile kapanir.
+     Sekme oturumu boyunca hatirlanir, boylece sayfalar arasi gezinirken
+     kaybolmaz. Ziyaretciler normal adreste bos yuvalari gormez. */
+  try {
+    if (/[?&]reklam=1/.test(location.search)) {
+      sessionStorage.setItem('kelime500.reklamOnizleme', '1');
+    } else if (/[?&]reklam=0/.test(location.search)) {
+      sessionStorage.removeItem('kelime500.reklamOnizleme');
+    }
+    if (sessionStorage.getItem('kelime500.reklamOnizleme')) {
+      document.documentElement.dataset.reklam = 'onizleme';
+    }
+  } catch (e) { /* yoksay */ }
+}());
+</script>
+<link rel="stylesheet" href="assets/styles.css?v=116">
+</head>
+<body class="giris">
+
+<header>
+  <div class="marka-kart">
+    <a class="logo" href="/" aria-label="Kelime500 ana sayfa">
+      <span class="logo-kelime" aria-hidden="true"><b>K</b><b>E</b><b>L</b><b>İ</b><b>M</b><b>E</b></span>
+      <span class="logo-sayi" aria-hidden="true"><b>5</b><b>0</b><b>0</b></span>
+    </a>
+  </div>
+</header>
+
+<main class="giris-icerik">
+  <section class="kart yazi">
+    <button class="simge kapat geri-don" type="button" title="Kapat" aria-label="Kapat">✕</button>
+    <h1>Kelime500 stratejisi</h1>
+    <p>Kelime500'de şans payı düşüktür: iyi oynamak, elindeki sayılardan doğru
+       sonucu çıkarmakla ilgilidir. Aşağıdakiler oyunun kendi kelime havuzu
+       üzerinden çıkarılmış, işe yarayan alışkanlıklar.</p>
+
+    <h2>1. İlk tahminde bilmeye çalışma, harf topla</h2>
+    <p>İlk tahminin amacı kelimeyi bulmak değil, <b>eleme yapmak</b>. Bu yüzden
+       ilk kelimeyi seçerken sık kullanılan harfleri bir araya getir. 500 kelimelik
+       cevap havuzunda en sık geçen harfler sırasıyla şunlar:</p>
+    <p><b>A · K · E · R · İ · N · L · M · T · S</b></p>
+    <p>Örneğin <b>KALEM</b> ile başlarsan, havuzdaki kelimelerin <b>%94'ünde</b> en
+       az bir harfi tutturursun. İkinci tahminde ilk tahminle hiç ortak harfi
+       olmayan bir kelime seçersen — mesela <b>RUTİN</b> — iki tahmin sonunda
+       havuzun <b>tamamında</b> en az bir harf yakalamış olursun; ortalama üç harf
+       hakkında bilgi sahibi olursun. Aynı işi <b>KENAR</b> + <b>MOBİL</b> ikilisi
+       de görür.</p>
+
+    <h2>2. Sesli harfleri erken bul</h2>
+    <p>Cevap havuzundaki kelimelerde <b>ortalama iki sesli harf</b> var. Sesliler
+       kelimenin iskeletini kurar: A ve E'nin yerini bilmek, geri kalan üç sessizi
+       tahmin etmeyi çok kolaylaştırır. İlk iki tahminini seçerken A, E, İ, I, O, U
+       harflerini dağıtmaya çalış.</p>
+
+    <h2>3. Notları kullan, aklında tutma</h2>
+    <p>Tahmin ettiğin kelimelerin harflerine <b>dokunarak</b> renk verebilirsin:
+       kırmızı → sarı → yeşil → boş. Bu renkler senin notların, oyun sana doğruyu
+       söylemez. Ama notlar klavyeye de yansır, böylece bir harfi elediğinde
+       klavyede de görürsün.</p>
+    <p>Bir tahminin bütün harfleri kelimede yoksa (kırmızı sayı 5 ise) oyun o
+       harfleri bütün tahminlerde otomatik olarak kırmızıya boyar ve kilitler —
+       çünkü bu artık bir tahmin değil, <b>kesin bilgidir</b>.</p>
+
+    <h2>4. Sayıların toplamı her zaman 5</h2>
+    <p>Yeşil + sarı + kırmızı her tahminde beştir. Bu basit görünür ama işin
+       anahtarıdır: iki tahmin arasındaki farkı karşılaştırarak hangi harfin
+       hangi gruba girdiğini daraltabilirsin. Bir tahminde tek harfi değiştirip
+       yeniden denemek, o harf hakkında doğrudan bilgi verir.</p>
+    <p>Örnek: <b>KALEM</b> tahmininde 1 sarı aldın. Sonra <b>KALES</b> yazdın ve yine
+       1 sarı aldın. O zaman M ile S'nin ikisi de kelimede yok; sarı olan harf ilk
+       dört harften biri.</p>
+
+    <h2>5. Standart mı, İleri mi</h2>
+    <p><b>Standart</b> seviyede gizli kelimede <b>aynı harf iki kez geçmez</b>. Bu
+       kural senin lehine çalışır: bir harfi bulduğunda onun ikinci bir kopyasını
+       aramana gerek kalmaz. Aynı kural tahminlerini de bağlar, yani aynı harfi iki
+       kez içeren kelimeleri tahmin olarak kullanamazsın.</p>
+    <p><b>İleri</b> seviyede böyle bir kural yok. Orada "AA", "EE" gibi tekrarlar
+       mümkün olduğu için sayıları okurken dikkatli olmak gerekir: bir harfin iki
+       kopyasından biri yeşil, diğeri kırmızı görünebilir.</p>
+
+    <h2>6. Jokerleri doğru anda kullan</h2>
+    <p>Klavyenin sol altındaki <b>J</b> tuşu birkaç tahminden sonra açılır. İki
+       joker var ve her ikisi de <b>son tahminin</b> üzerinde çalışır:</p>
+    <ul>
+      <li><b>Harf jokeri:</b> seçtiğin harfin kelimede olup olmadığını söyler.</li>
+      <li><b>Kutu jokeri:</b> seçtiğin kutunun gerçek rengini gösterir.</li>
+    </ul>
+    <p>Joker sana sadece o kutuyu ya da harfi açmaz; oyun bu bilgiden çıkarabildiği
+       her şeyi bütün tahminlere işler. Örneğin kutu jokeri bir harfi yeşil
+       gösterdiyse, aynı harf başka tahminlerde aynı yerdeyse orada da yeşil olur.
+       Bu yüzden jokeri <b>en çok bilgi verecek</b> kutuda kullanmak önemli: elinde
+       çok sayıda sarı varken en belirsiz kutuyu seç, zaten elediğin harfi açma.</p>
+
+    <h2>7. Sıkıştığında kelimeyi değil, deseni düşün</h2>
+    <p>Türkçede bazı kalıplar çok sık: kelimelerin sonunda <b>K, N, R, M</b>
+       harfleri, başında ise <b>K, D, S, B, T</b> sık görülür. Elinde iki yeşil
+       varsa, kalan boşlukları "hangi harf gelirse Türkçe bir kelime olur"
+       sorusuyla doldurmayı dene. Çoğu zaman aday sayısı bir anda ikiye üçe
+       düşer.</p>
+
+    <h2>8. Serbest Mod'da çalış</h2>
+    <p>Günlük kelimede tek hakkın var, ama <b>Serbest Mod</b>'da istediğin kadar
+       oynayabilirsin. Yeni bir açılış kelimesi denemek, sayıları okumaya alışmak
+       ve jokerleri tanımak için en iyi yer orası. Serbest Mod'daki oyunlar günlük
+       serini etkilemez.</p>
+
+    <button class="kart-dugme yesil geri-don" type="button">← Oynamaya başla</button>
+  </section>
+</main>
+
+<p class="alt-baglanti">
+  <a href="/">Ana Sayfa</a> ·
+  <a href="nasil-oynanir">Nasıl Oynanır</a> ·
+  <a href="sss">SSS</a> ·
+  <a href="hakkinda">Hakkında</a> ·
+  <a href="gizlilik">Gizlilik</a>
+</p>
+
+<script>
+/* Kapatma ve "Oynamaya basla": ziyaretci nereden geldiyse oraya doner.
+   Site disindan ya da dogrudan gelindiyse ana sayfaya gider. */
+(function () {
+  function don() {
+    var r = document.referrer;
+    if (r && r.indexOf(location.origin) === 0 && history.length > 1) { history.back(); }
+    else { location.href = '/'; }
+  }
+  Array.prototype.forEach.call(document.querySelectorAll('.geri-don'), function (d) {
+    d.addEventListener('click', don);
+  });
+}());
+</script>
+<script src="src/cerez.js?v=116"></script>
+</body>
+</html>

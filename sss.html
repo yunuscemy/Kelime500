@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="tr" data-tema="koyu">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sık Sorulan Sorular — Kelime500</title>
+<meta name="description" content="Kelime500 hakkında sık sorulan sorular: günlük kelime, seviyeler, jokerler, istatistikler, seriler ve arşiv.">
+<link rel="canonical" href="https://kelime500.com/sss">
+<link rel="icon" href="assets/favicon.svg?v=116" type="image/svg+xml">
+<meta name="theme-color" content="#0f1115">
+<script>
+(function () {
+  var t = null;
+  try { t = JSON.parse(localStorage.getItem('kelime500.tema')); } catch (e) { /* yoksay */ }
+  if (t !== 'acik' && t !== 'koyu') {
+    t = window.matchMedia && matchMedia('(prefers-color-scheme: light)').matches ? 'acik' : 'koyu';
+  }
+  document.documentElement.dataset.tema = t;
+
+  /* Reklam yuvasi onizlemesi: ?reklam=1 ile acilir, ?reklam=0 ile kapanir.
+     Sekme oturumu boyunca hatirlanir, boylece sayfalar arasi gezinirken
+     kaybolmaz. Ziyaretciler normal adreste bos yuvalari gormez. */
+  try {
+    if (/[?&]reklam=1/.test(location.search)) {
+      sessionStorage.setItem('kelime500.reklamOnizleme', '1');
+    } else if (/[?&]reklam=0/.test(location.search)) {
+      sessionStorage.removeItem('kelime500.reklamOnizleme');
+    }
+    if (sessionStorage.getItem('kelime500.reklamOnizleme')) {
+      document.documentElement.dataset.reklam = 'onizleme';
+    }
+  } catch (e) { /* yoksay */ }
+}());
+</script>
+<link rel="stylesheet" href="assets/styles.css?v=116">
+</head>
+<body class="giris">
+
+<header>
+  <div class="marka-kart">
+    <a class="logo" href="/" aria-label="Kelime500 ana sayfa">
+      <span class="logo-kelime" aria-hidden="true"><b>K</b><b>E</b><b>L</b><b>İ</b><b>M</b><b>E</b></span>
+      <span class="logo-sayi" aria-hidden="true"><b>5</b><b>0</b><b>0</b></span>
+    </a>
+  </div>
+</header>
+
+<main class="giris-icerik">
+  <section class="kart yazi">
+    <button class="simge kapat geri-don" type="button" title="Kapat" aria-label="Kapat">✕</button>
+    <h1>Sık sorulan sorular</h1>
+    <p>Oyuncuların en çok sorduğu şeyler burada. Aradığını bulamazsan
+       <a href="mailto:iletisim@kelime500.com">iletisim@kelime500.com</a> adresine
+       yazabilirsin; gelen sorulara göre bu sayfayı güncelliyoruz.</p>
+
+    <h2>Kelime her gün değişiyor mu? Herkes aynı kelimeyi mi oynuyor?</h2>
+    <p>Evet. Her seviye için günde bir kelime var ve o gün oynayan herkes aynı
+       kelimeyi oynuyor. Kelime hiçbir yerde saklanmıyor; her cihazda tarihten
+       hesaplanıyor. Gün, kendi saat diliminde gece yarısı değişiyor.</p>
+
+    <h2>Neden bazı kelimeleri kabul etmiyor?</h2>
+    <p>Tahminlerin oyunun sözlüğünde olmalı. Sözlükte 5.748 beş harfli Türkçe
+       kelime var ama her kelime orada değil: özel isimler, çekimli hâller ve çok
+       nadir kullanımların bir kısmı dışarıda kalıyor. Ayrıca <b>Standart</b>
+       seviyede aynı harfi iki kez içeren kelimeler tahmin olarak kabul edilmez,
+       çünkü o seviyenin kuralı gizli kelimede harf tekrarı olmamasıdır.</p>
+
+    <h2>Gizli kelime neden hiç duymadığım bir kelime değil?</h2>
+    <p>Bilerek. Cevap olabilecek kelimeler 500 kelimelik ayrı bir listede ve hepsi
+       günlük hayatta karşılaştığın kelimeler. Sözlükteki bütün kelimeler cevap
+       olabilseydi oyun çıkarımla çözülemezdi.</p>
+
+    <h2>Standart ile İleri arasındaki fark ne?</h2>
+    <p><b>Standart</b> seviyede gizli kelimede aynı harf iki kez geçmez; tahminlerin
+       de bu kurala uymak zorundadır. <b>İleri</b> seviyede böyle bir kural yoktur,
+       harf tekrarı mümkündür. İkisi ayrı kelimelerle oynanır ve istatistikleri de
+       ayrı tutulur.</p>
+
+    <h2>Joker nedir, ne zaman açılır?</h2>
+    <p>Klavyenin sol altındaki <b>J</b> tuşu jokerleri açar. İki tane var: biri
+       seçtiğin harfin kelimede olup olmadığını söyler, diğeri seçtiğin kutunun
+       gerçek rengini gösterir. İkisi de birkaç tahminden sonra açılır (İleri
+       seviyede bir tur daha geç), her turda yalnızca bir joker kullanılabilir ve
+       her ikisi de kelime başına bir kezdir. Joker kullanmak kazanmanı engellemez,
+       seriyi bozmaz; yalnızca paylaştığın sonuçta ve istatistiklerinde görünür.</p>
+
+    <h2>Tahmin hakkım neden 8?</h2>
+    <p>Çünkü oyun sana hangi harfin doğru olduğunu söylemiyor, sadece kaç tane
+       olduğunu söylüyor. Bu daha fazla deneme gerektiriyor. Sekiz hak, çıkarımı
+       yapabilen birinin rahatça bitirebileceği ama dikkatsiz oynayanın
+       zorlanacağı bir sayı.</p>
+
+    <h2>İstatistiklerim neden başka cihazda yok?</h2>
+    <p>Hesap sistemi olmadığı için bütün veriler tarayıcının yerel deposunda
+       tutuluyor. Telefonunda oynadığın oyunlar bilgisayarında görünmez. Aynı
+       sebeple tarayıcı verilerini temizlersen ya da gizli sekmede oynarsan
+       istatistikler kaybolur. Bunun karşılığında hiçbir veri bizim tarafımıza
+       gönderilmiyor.</p>
+
+    <h2>Serim nasıl bozulur?</h2>
+    <p>Seri, günlük kelimeyi üst üste kaç gün bildiğini gösterir. Bir günü
+       kaybedersen ya da hiç oynamadan gün geçerse sıfırlanır. Standart ve İleri
+       seviyelerin serileri birbirinden bağımsızdır. Serbest Mod ve Arşiv seriyi
+       etkilemez.</p>
+
+    <h2>Kaçırdığım günleri oynayabilir miyim?</h2>
+    <p>Evet, menüdeki <b>Arşiv</b>'den. Geçmiş günlerin kelimeleri de tarihten
+       hesaplandığı için herkeste aynıdır.</p>
+
+    <h2>Notlardaki renkler ne işe yarıyor?</h2>
+    <p>Tahminlerindeki harflere dokunarak renk verebilirsin: kırmızı, sarı, yeşil.
+       Bunlar senin kendi notların — oyun doğru cevabı söylemez. Notlar klavyeye
+       de yansır. Bir harfin kelimede olmadığı kesinleştiyse (bir tahminin beş
+       harfi de dışarıdaysa ya da joker öyle söylediyse) o harf kilitlenir ve
+       değiştirilemez.</p>
+
+    <h2>Oyun ücretsiz mi? Üye olmam gerekiyor mu?</h2>
+    <p>Ücretsiz ve üyelik yok. Sitede ileride reklam gösterilebilir; oyun
+       deneyimini bozmayacak yerlerde olmasına dikkat ediyoruz.</p>
+
+    <h2>Hata buldum / önerim var, nereye yazayım?</h2>
+    <p><b><a href="mailto:iletisim@kelime500.com">iletisim@kelime500.com</a></b>
+       adresine yazabilirsin. Bugüne kadar eklenen özelliklerin çoğu oyunculardan
+       gelen geri bildirimlerle şekillendi.</p>
+
+    <button class="kart-dugme yesil geri-don" type="button">← Oynamaya başla</button>
+  </section>
+</main>
+
+<p class="alt-baglanti">
+  <a href="/">Ana Sayfa</a> ·
+  <a href="nasil-oynanir">Nasıl Oynanır</a> ·
+  <a href="strateji">Strateji</a> ·
+  <a href="hakkinda">Hakkında</a> ·
+  <a href="gizlilik">Gizlilik</a>
+</p>
+
+<script>
+/* Kapatma ve "Oynamaya basla": ziyaretci nereden geldiyse oraya doner.
+   Site disindan ya da dogrudan gelindiyse ana sayfaya gider. */
+(function () {
+  function don() {
+    var r = document.referrer;
+    if (r && r.indexOf(location.origin) === 0 && history.length > 1) { history.back(); }
+    else { location.href = '/'; }
+  }
+  Array.prototype.forEach.call(document.querySelectorAll('.geri-don'), function (d) {
+    d.addEventListener('click', don);
+  });
+}());
+</script>
+<script src="src/cerez.js?v=116"></script>
+</body>
+</html>

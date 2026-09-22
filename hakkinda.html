@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="tr" data-tema="koyu">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hakkında — Kelime500</title>
+<meta name="description" content="Kelime500 nedir, neden yapıldı, kelimeler nasıl seçiliyor? Her gün yeni bir Türkçe kelimenin gizlendiği çıkarım oyunu hakkında.">
+<link rel="canonical" href="https://kelime500.com/hakkinda">
+<link rel="icon" href="assets/favicon.svg?v=116" type="image/svg+xml">
+<meta name="theme-color" content="#0f1115">
+<script>
+(function () {
+  var t = null;
+  try { t = JSON.parse(localStorage.getItem('kelime500.tema')); } catch (e) { /* yoksay */ }
+  if (t !== 'acik' && t !== 'koyu') {
+    t = window.matchMedia && matchMedia('(prefers-color-scheme: light)').matches ? 'acik' : 'koyu';
+  }
+  document.documentElement.dataset.tema = t;
+
+  /* Reklam yuvasi onizlemesi: ?reklam=1 ile acilir, ?reklam=0 ile kapanir.
+     Sekme oturumu boyunca hatirlanir, boylece sayfalar arasi gezinirken
+     kaybolmaz. Ziyaretciler normal adreste bos yuvalari gormez. */
+  try {
+    if (/[?&]reklam=1/.test(location.search)) {
+      sessionStorage.setItem('kelime500.reklamOnizleme', '1');
+    } else if (/[?&]reklam=0/.test(location.search)) {
+      sessionStorage.removeItem('kelime500.reklamOnizleme');
+    }
+    if (sessionStorage.getItem('kelime500.reklamOnizleme')) {
+      document.documentElement.dataset.reklam = 'onizleme';
+    }
+  } catch (e) { /* yoksay */ }
+}());
+</script>
+<link rel="stylesheet" href="assets/styles.css?v=116">
+</head>
+<body class="giris">
+
+<header>
+  <div class="marka-kart">
+    <a class="logo" href="/" aria-label="Kelime500 ana sayfa">
+      <span class="logo-kelime" aria-hidden="true"><b>K</b><b>E</b><b>L</b><b>İ</b><b>M</b><b>E</b></span>
+      <span class="logo-sayi" aria-hidden="true"><b>5</b><b>0</b><b>0</b></span>
+    </a>
+  </div>
+</header>
+
+<main class="giris-icerik">
+  <section class="kart yazi">
+    <button class="simge kapat geri-don" type="button" title="Kapat" aria-label="Kapat">✕</button>
+    <h1>Kelime500 hakkında</h1>
+
+    <p>Kelime500, her gün yeni bir Türkçe kelimenin gizlendiği bir <b>çıkarım
+       oyunudur</b>. Beş harfli kelimeyi sekiz tahminde bulmaya çalışırsın. Oyun
+       sana hangi harflerin doğru olduğunu söylemez; yalnızca <b>kaç tanesinin</b>
+       doğru yerde, kaç tanesinin kelimede var ama yanlış yerde, kaç tanesinin de
+       hiç bulunmadığını söyler. Hangi harfler olduğunu bulmak senin işin.</p>
+
+    <h2>Neden böyle bir oyun</h2>
+    <p>Bu oyunu <b>düşünmeyi gerektirdiği için</b> yaptık. İki üç dakikada açılıp
+       kapanan, bitince geriye hiçbir şey bırakmayan bir oyun değil; üzerine biraz
+       zaman harcamaya değen bir egzersiz olsun istedik. Elindeki sayılardan
+       senaryolar kurup, elediğin harflerle yenilerini deneyip kelimeye
+       yaklaşırsın. Günlük hayatta giderek daha az kullandığımız o kası biraz
+       çalıştırır.</p>
+    <p>Bir de şunu fark ettik: bunu <b>birlikte</b> yapmak keyifli. Aynı kelimeyi
+       aynı gün herkes oynadığı için sonuçlar paylaşılabiliyor, yarışılabiliyor,
+       "sen kaçta buldun?" diye sorulabiliyor. Oyunun herkese açık ve ücretsiz
+       olmasının sebebi bu.</p>
+
+    <h2>Adı nereden geliyor</h2>
+    <p>Bulmaya çalıştığın şey bir <b>kelime</b>. Doğru bildiğinde tahminin yanındaki
+       üç rozet <b>5–0–0</b> olur: beş harf doğru yerde, sıfır harf yanlış yerde,
+       sıfır harf dışarıda. Yani ekranda <b>KELİME 500</b> görürsen kelimeyi
+       bulmuşsun demektir. Oyunun adı da buradan geliyor.</p>
+
+    <h2>Kelimeler nasıl seçiliyor</h2>
+    <p>İki ayrı liste var. <b>Cevap listesi</b> 500 kelimeden oluşuyor ve hepsi
+       günlük hayatta duyduğun, tanıdığın kelimeler. <b>Tahmin sözlüğü</b> ise çok
+       daha geniş: 5.748 kelime. Aradaki fark bilinçli bir karar.</p>
+    <p>Sözlükteki her kelime cevap olabilseydi oyun çözülebilir olmaktan çıkardı;
+       elindeki bütün ipuçları doğru olsa bile aklına gelmeyecek bir kelimeye
+       takılırdın. Geniş tahmin listesi oyuncuyu rahatlatır — aklına gelen kelimeyi
+       deneyebilirsin. Dar cevap listesi ise oyunu adil tutar: <b>çıkarımla
+       bulunabilir</b> bir kelime arıyorsun.</p>
+    <p>Günlük kelime hiçbir sunucuda saklanmıyor; her cihazda tarihten
+       hesaplanıyor. Bu yüzden aynı gün herkes aynı kelimeyi oynuyor ve kimsenin
+       cevabı önceden görmesi mümkün değil.</p>
+
+    <h2>Hesap yok, takip yok</h2>
+    <p>Oynamak için üye olmana gerek yok. İstatistiklerin, serilerin ve yarım kalan
+       oyunların <b>yalnızca kendi tarayıcında</b> saklanıyor, bize hiç ulaşmıyor.
+       Ayrıntılar <a href="gizlilik">Gizlilik ve Çerez Politikası</a> sayfasında.</p>
+
+    <h2>Bundan sonra</h2>
+    <p>Kelime500 Ekibi olarak beyni çalıştıran egzersizler tasarlamaya devam
+       edeceğiz; benzer biçimde kurulmuş başka deneyimler de gelebilir. Oyunun
+       nereye gideceğini ise büyük ölçüde <b>oyuncular belirleyecek</b>: gelen
+       geri bildirimler bugüne kadar eklediğimiz özelliklerin çoğunu şekillendirdi.</p>
+
+    <h2>İletişim</h2>
+    <p>Öneri, hata bildirimi ve her türlü soru için:
+       <b><a href="mailto:iletisim@kelime500.com">iletisim@kelime500.com</a></b></p>
+
+    <button class="kart-dugme yesil geri-don" type="button">← Oynamaya başla</button>
+  </section>
+</main>
+
+<p class="alt-baglanti">
+  <a href="/">Ana Sayfa</a> ·
+  <a href="nasil-oynanir">Nasıl Oynanır</a> ·
+  <a href="strateji">Strateji</a> ·
+  <a href="sss">SSS</a> ·
+  <a href="gizlilik">Gizlilik</a>
+</p>
+
+<script>
+/* Kapatma ve "Oynamaya basla": ziyaretci nereden geldiyse oraya doner.
+   Site disindan ya da dogrudan gelindiyse ana sayfaya gider. */
+(function () {
+  function don() {
+    var r = document.referrer;
+    if (r && r.indexOf(location.origin) === 0 && history.length > 1) { history.back(); }
+    else { location.href = '/'; }
+  }
+  Array.prototype.forEach.call(document.querySelectorAll('.geri-don'), function (d) {
+    d.addEventListener('click', don);
+  });
+}());
+</script>
+<script src="src/cerez.js?v=116"></script>
+</body>
+</html>
