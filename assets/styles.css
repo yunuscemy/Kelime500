@@ -52,6 +52,10 @@
   --tus-genis-yazi: 13px;     /* ENTER ve silme tuslari */
   --tus-aralik: 3px;          /* ayni satirdaki tuslar arasi */
   --klavye-aralik: 0.75;      /* tus satirlari arasi bosluk carpani (1 = ilk hali) */
+  /* Tus yuksekligi: hem .tus hem de klavyenin bos haldeki yuksekligi bunu
+     kullanir (asagida #klavye min-height). */
+  --tus-boy: calc(clamp(var(--tus-en-kucuk), var(--tus-dikey-pay), var(--tus-en-buyuk))
+                  * var(--tus-olcek));
   --kutu-en-carpan: 1.524;    /* harf kutusu genisligi (1 = ilk hali) */
   --rozet-en-carpan: 1.8;     /* rozet genisligi (1 = ilk hali) */
   --kutu-boy-carpan: 1.287;   /* harf kutusu ve rozet yuksekligi (1 = ilk hali) */
@@ -502,12 +506,18 @@ select, input[type="date"] {
    mod etiketi -> tahta araliklari esit gorunsun. */
 body:not(.giris) #tahta { margin-block: 8px 0; }
 body:not(.giris) #klavye { margin-top: 12px; }
+/* Tahta ve klavye JavaScript ile olusturuluyor; olusana kadar yerleri bos
+   kalirsa sayfanin alti once yukarida duruyor, sonra asagi sicriyor (CLS).
+   Bos haldeki yukseklik dolu haliyle ayni: 8 satir tahta, 4 satir klavye. */
+body:not(.giris) #tahta  { min-height: calc(8 * var(--kare) + 7 * var(--aralik)); }
+body:not(.giris) #klavye { min-height: calc(4 * var(--tus-boy) +
+                                            3 * var(--bosluk) * 0.8 * var(--klavye-aralik) +
+                                            16px); }   /* 16px: klavyenin ic boslugu */
 .klavye-satir { display: flex; gap: var(--tus-aralik); justify-content: center; }
 
 .tus {
   flex: 1 1 0; min-width: 0;
-  height: calc(clamp(var(--tus-en-kucuk), var(--tus-dikey-pay), var(--tus-en-buyuk))
-               * var(--tus-olcek));   /* yalnizca dikeyde kucultuldu */
+  height: var(--tus-boy);   /* yalnizca dikeyde kucultuldu */
   border: 1px solid transparent;
   border-radius: 6px;
   background: var(--tus-bg);
@@ -1331,7 +1341,11 @@ body:not(.giris) { padding-bottom: var(--reklam-alt-boy); }
 #ist-pencere .ist b { font-size: 19px; }
 
 /* --- ana sayfa: gunluk kart, her seviye kendi satirinda + serisi --- */
-#bugun-durum { margin-bottom: 14px; }
+/* Icerik JavaScript ile geliyor; yeri onceden ayrilmazsa kart yuklenirken
+   buyuyor ve altindaki her sey asagi kayiyor (CLS). Iki satirin yuksekligi. */
+#bugun-durum { margin-bottom: 14px; min-height: 64px; }
+/* Gunluk kelime sayaci da sonradan yaziliyor: bir satirlik yer ayrilir. */
+#sayac { min-height: 18px; }
 .durum-satir {
   display: flex; align-items: center; justify-content: space-between;
   gap: 8px; padding: 4px 0;
@@ -1343,9 +1357,7 @@ body:not(.giris) { padding-bottom: var(--reklam-alt-boy); }
 .seri-etiket .alev { display: grid; place-items: center; color: var(--kirmizi); }
 .seri-etiket b { color: var(--metin); font-size: 14px; font-weight: 800; }
 .seri-etiket.bos { opacity: .75; }
-.seri-uyari {
-  margin: 8px 0 0; font-size: 12.5px; font-weight: 600; color: var(--sari);
-}
+.kart-ust.uyari { color: var(--sari); font-weight: 700; }
 
 /* Oyun kazanilinca seri sayisinin artisi: +1 belirir, alev yanar, sayi doner. */
 .ist-seri-sayi { position: relative; }

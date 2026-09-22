@@ -130,12 +130,14 @@
              '</div>';
     }).join('');
 
-    /* Uyari yalnizca kaybedecek serisi olana: sifir seriye "serini koru"
-     * demenin anlami yok. */
-    if (tehlikede) {
-      html += '<p class="seri-uyari">Serini korumak için bugünü oyna!</p>';
-    }
     $('#bugun-durum').innerHTML = html;
+
+    /* Uyari yalnizca kaybedecek serisi olana: sifir seriye "serini koru"
+     * demenin anlami yok. Karta satir eklemek yerine ustteki yazi
+     * degistiriliyor - kartin boyu sabit kalsin. */
+    var ust = $('#gunluk-ust');
+    ust.textContent = tehlikede ? 'Serini korumak için bugünü oyna!' : 'Günde bir kez oyna';
+    ust.classList.toggle('uyari', tehlikede);
   }
 
   /* Oyunun yayina alindigi gun - src/app.js icindeki YAYIN ile ayni olmali.
