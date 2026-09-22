@@ -1157,10 +1157,15 @@
    * oynamasin diye. Gosterilen seviyenin O GUNKU oyununu anlatir: bitmisse
    * sonucu ve gizli kelimeyi, bitmemisse oynamaya cagirir. Bitmemis oyunun
    * kelimesi elbette yazilmaz. */
+  /* Gosterilen seviyenin o gunku oyunu: kendi seviyesiyse ekrandaki oyun,
+   * degilse kayittan okunur. */
+  function istGunOyunu(zorluk) {
+    return zorluk === S.zorluk ? S : oku(oyunAnahtari(S.mod, zorluk, S.tarih), null);
+  }
+
   function istSonucYaz(zorluk) {
     var el = $('#ist-sonuc');
-    var kendi = zorluk === S.zorluk;
-    var o = kendi ? S : oku(oyunAnahtari(S.mod, zorluk, S.tarih), null);
+    var o = istGunOyunu(zorluk);
 
     if (!o || !o.bitti) {
       el.className = 'ist-durum';
@@ -1202,13 +1207,14 @@
         seriZaman = setTimeout(function () {
           kutu.classList.remove('arti-gel', 'alev-yan');
           sayi.classList.remove('degisti');
-        }, 900);
-      }, 850);
-    }, 250);
+        }, 1350);
+      }, 1275);
+    }, 375);
   }
 
   function istatistikCiz() {
     var kendi = istZorluk === S.zorluk;
+    var oyun = istGunOyunu(istZorluk);
     var ist = oku(istAnahtari(S.mod, istZorluk), bosIstatistik());
     var yuzde = ist.oynanan ? Math.round(ist.kazanilan / ist.oynanan * 100) : 0;
 
@@ -1230,7 +1236,9 @@
     var html = '';
     for (i = 1; i <= HAK; i++) {
       var v = ist.dagilim[i] || 0;
-      var son = kendi && S.bitti && S.kazandi && S.gecmis.length === i;
+      /* Bugun bilindiyse o sutun yesil - hangi seviyede oynuyor olursan ol,
+       * grafikte gosterilen seviyenin kendi oyununa bakilir. */
+      var son = oyun && oyun.bitti && oyun.kazandi && oyun.gecmis.length === i;
       html += '<div class="sutun' + (son ? ' aktif' : '') + (v ? '' : ' bos') + '">' +
                 '<span class="sutun-cubuk" style="height:' +
                   (v ? Math.round(v / enCok * 100) : 0) + '%">' +
