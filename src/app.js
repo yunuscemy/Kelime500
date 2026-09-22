@@ -292,7 +292,7 @@
      * olayi her ortamda tetiklenmiyor. */
     setTimeout(function () {
       if (!kazandi) { cevabiGoster = true; modYaz(); }
-      istatistikGoster();
+      istatistikGoster(kazandi);
     }, OYUN_SONU_SURE);
   }
 
@@ -1140,8 +1140,9 @@
 
   /* ---------- istatistik penceresi ---------- */
 
-  var sayimZaman = null;
+  var sayimZaman = null, seriZaman = null;
   var istZorluk = null;   // pencerede gosterilen seviye (oyunun seviyesi degil)
+  var seriArtisi = false; // pencere oyun kazanildiktan sonra mi aciliyor
 
   var ALEV =
     '<svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">' +
@@ -1178,11 +1179,32 @@
       ' · Gizli kelime: <b>' + o.gizli + '</b>' + rozet;
   }
 
-  function istSeriYaz(ist) {
+  /* Seri satiri. artis=true ise (oyun kazanilarak bittiginde) sayi once eski
+   * haliyle durur: ustunde +1 belirir, alev yanar, sonra yeni sayi gelir.
+   * Gunluk donusu en cok bu sayi tetikliyor; artisin gorunmesi onemli. */
+  function istSeriYaz(ist, artis) {
+    var onceki = artis ? Math.max(0, ist.seri - 1) : ist.seri;
     $('#ist-seri').innerHTML =
       '<span class="alev">' + ALEV + '</span>' +
-      '<span class="ist-seri-sayi"><b>' + ist.seri + '</b><span>günlük seri</span></span>' +
+      '<span class="ist-seri-sayi"><b>' + onceki + '</b><span>günlük seri</span>' +
+        (artis ? '<i class="ist-arti">+1</i>' : '') + '</span>' +
       '<span class="ist-seri-eniyi">En iyi seri<b>' + ist.enIyiSeri + '</b></span>';
+    if (!artis) { return; }
+
+    var kutu = $('#ist-seri'), sayi = kutu.querySelector('.ist-seri-sayi b');
+    clearTimeout(seriZaman);
+    seriZaman = setTimeout(function () {
+      kutu.classList.add('arti-gel');
+      seriZaman = setTimeout(function () {
+        kutu.classList.add('alev-yan');
+        sayi.textContent = ist.seri;
+        sayi.classList.add('degisti');
+        seriZaman = setTimeout(function () {
+          kutu.classList.remove('arti-gel', 'alev-yan');
+          sayi.classList.remove('degisti');
+        }, 900);
+      }, 850);
+    }, 250);
   }
 
   function istatistikCiz() {
@@ -1196,7 +1218,7 @@
     $('#ist-mod').textContent = S.mod === 'gunluk' ? 'Günlük kelime'
                               : S.mod === 'arsiv'  ? 'Arşiv' : 'Serbest Mod';
 
-    istSeriYaz(ist);
+    istSeriYaz(ist, seriArtisi && kendi);
     $('#ist-ozet').innerHTML =
       kart(ist.oynanan, 'kez oynadın') + kart(ist.kazanilan, 'kazandın') +
       kart(yuzde + '%', 'kazanma');
@@ -1220,7 +1242,8 @@
     $('#ist-paylas').disabled = !S.bitti || !kendi;
   }
 
-  function istatistikGoster() {
+  function istatistikGoster(kazanarakBitti) {
+    seriArtisi = !!kazanarakBitti && !hareketAzalt_();
     istZorluk = S.zorluk;
     istatistikCiz();
 
@@ -1269,6 +1292,10 @@
     var dd = String(Math.floor(kalan % 3600 / 60)).padStart(2, '0');
     var sn = String(kalan % 60).padStart(2, '0');
     $('#geri-sayim').textContent = 'Yeni günlük kelimeye ' + ss + ':' + dd + ':' + sn;
+  }
+
+  function hareketAzalt_() {
+    return window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
   }
 
   function kart(deger, etiket) {
@@ -1518,6 +1545,7 @@
       var b = e.target.closest('[data-zorluk]');
       if (!b || b.dataset.zorluk === istZorluk) { return; }
       istZorluk = b.dataset.zorluk;
+      seriArtisi = false;
       istatistikCiz();
     });
 

@@ -1326,3 +1326,48 @@ body:not(.giris) { padding-bottom: var(--reklam-alt-boy); }
 .ist-alt-baslik { margin: 9px 0 4px; font-size: 13px; font-weight: 700; }
 #ist-pencere .istatistikler { margin: 8px 0 0; }
 #ist-pencere .ist b { font-size: 19px; }
+
+/* --- ana sayfa: gunluk kart, her seviye kendi satirinda + serisi --- */
+#bugun-durum { margin-bottom: 14px; }
+.durum-satir {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 8px; padding: 4px 0;
+}
+.seri-etiket {
+  display: inline-flex; align-items: center; gap: 5px;
+  font-size: 12px; color: var(--soluk); white-space: nowrap;
+}
+.seri-etiket .alev { display: grid; place-items: center; color: var(--kirmizi); }
+.seri-etiket b { color: var(--metin); font-size: 14px; font-weight: 800; }
+.seri-etiket.bos { opacity: .75; }
+.seri-uyari {
+  margin: 8px 0 0; font-size: 12.5px; font-weight: 600; color: var(--sari);
+}
+
+/* Oyun kazanilinca seri sayisinin artisi: +1 belirir, alev yanar, sayi doner. */
+.ist-seri-sayi { position: relative; }
+.ist-arti {
+  position: absolute; left: 100%; top: -2px; margin-left: 1px;
+  font-style: normal; font-size: 13px; font-weight: 800; color: var(--yesil);
+  opacity: 0; transform: scale(.6) translateY(6px);
+  transition: opacity 260ms ease, transform 260ms cubic-bezier(.2,.9,.3,1.4);
+  text-shadow: 0 0 10px color-mix(in srgb, var(--yesil) 70%, transparent);
+  pointer-events: none;
+}
+.ist-seri.arti-gel .ist-arti { opacity: 1; transform: scale(1) translateY(0); }
+.ist-seri.alev-yan .ist-arti { opacity: 0; transform: scale(1.3) translateY(-10px); }
+.ist-seri.alev-yan .alev { animation: seri-alev 700ms ease-out; }
+@keyframes seri-alev {
+  0%   { transform: scale(1); filter: none; }
+  35%  { transform: scale(1.45); filter: drop-shadow(0 0 10px var(--kirmizi)); }
+  100% { transform: scale(1); filter: none; }
+}
+.ist-seri-sayi b.degisti { animation: seri-sayi 620ms cubic-bezier(.2,.9,.3,1.4); }
+@keyframes seri-sayi {
+  0%   { transform: translateY(10px) scale(.7); opacity: 0; }
+  60%  { transform: translateY(-2px) scale(1.15); opacity: 1; }
+  100% { transform: translateY(0) scale(1); opacity: 1; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ist-arti, .ist-seri.alev-yan .alev, .ist-seri-sayi b.degisti { animation: none; transition: none; }
+}

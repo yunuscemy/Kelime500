@@ -98,12 +98,44 @@
     return { metin: kayit.gecmis.length + '. hak', sinif: 'devam' };
   }
 
+  /* Alev simgesi - istatistik penceresindekiyle ayni cizim (src/app.js). */
+  var ALEV =
+    '<svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true">' +
+    '<path fill="currentColor" d="M13.2 2c.4 3-1.2 4.4-2.6 5.7C9 9.2 7.6 10.6 7.6 13.2' +
+    'c0 1.6.7 3 1.8 3.9-.3-1.7.3-3.2 1.6-4.3.3 2 1.3 3 2.5 4 1.3 1 2 2.2 2 3.6 0 .5-.1 1-.3 1.4' +
+    '2.6-1.1 4.3-3.7 4.3-6.7 0-2.6-1.1-4.5-2.6-6-.3 1-.9 1.8-1.7 2.3.5-2.4-.3-5.3-2-9.4z"/>' +
+    '<path fill="currentColor" opacity=".45" d="M8.3 21.9C6.9 20.9 6 19.3 6 17.5' +
+    'c0-1 .3-2 .8-2.8.1 1.6.9 3 2.1 4 .9.7 1.4 1.5 1.4 2.4 0 .3 0 .6-.1.8z"/>' +
+    '</svg>';
+
+  function seri(zorluk) {
+    var ist = oku('kelime500.ist.gunluk.' + zorluk, null);
+    return ist && ist.seri ? ist.seri : 0;
+  }
+
+  /* Her seviye kendi satirinda: solda bugunun durumu, sagda serisi. Seri
+   * gunluk donusun tek olcusu - kartta gorunmedigi surece kimse bilmiyordu. */
   function durumCiz() {
-    $('#bugun-durum').innerHTML = ZORLUKLAR.map(function (z) {
-      var d = gunDurumu(z);
-      return '<span class="durum-etiket ' + d.sinif + '">' +
-             ADLAR[z] + ' <b>' + d.metin + '</b></span>';
+    var tehlikede = false;
+    var html = ZORLUKLAR.map(function (z) {
+      var d = gunDurumu(z), n = seri(z);
+      if (n > 0 && d.sinif !== 'kazandi') { tehlikede = true; }
+      return '<div class="durum-satir">' +
+               '<span class="durum-etiket ' + d.sinif + '">' +
+                 ADLAR[z] + ' <b>' + d.metin + '</b></span>' +
+               '<span class="seri-etiket' + (n ? '' : ' bos') + '">' +
+                 (n ? '<span class="alev">' + ALEV + '</span><b>' + n + '</b> günlük seri'
+                    : 'günlük seri 😞') +
+               '</span>' +
+             '</div>';
     }).join('');
+
+    /* Uyari yalnizca kaybedecek serisi olana: sifir seriye "serini koru"
+     * demenin anlami yok. */
+    if (tehlikede) {
+      html += '<p class="seri-uyari">Serini korumak için bugünü oyna!</p>';
+    }
+    $('#bugun-durum').innerHTML = html;
   }
 
   /* Oyunun yayina alindigi gun - src/app.js icindeki YAYIN ile ayni olmali.
