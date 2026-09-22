@@ -725,7 +725,7 @@ dialog {
    birakiyordu (zemin karartmasi kalkiyor ama pencere duruyordu). */
 #yardim-pencere {
   max-width: 548px; max-height: 85vh;
-  padding: 0; overflow: hidden;
+  padding: 0; overflow: hidden; outline: none;
 }
 #yardim-pencere[open] { display: flex; flex-direction: column; }
 .pencere-baslik {
@@ -756,20 +756,22 @@ dialog ul { padding-left: 18px; }
    kac kez. Bos sutun da yerinde durur, eksen sabit kalsin. */
 .dagilim {
   display: flex; align-items: flex-end; gap: 6px;
-  height: 128px; padding-top: 4px; border-bottom: 1px solid var(--cizgi);
+  height: 128px; padding-top: 4px;
 }
 /* Pencerede grafik kalan boslugu doldurur; icerik kisalinca bos alan kalmaz. */
 #ist-dagilim { flex: 1 1 auto; min-height: 128px; max-height: 260px; }
 .sutun { flex: 1; display: flex; flex-direction: column; align-items: center; height: 100%; }
-.sutun-deger { font-size: 11.5px; font-weight: 700; color: var(--soluk); margin-bottom: 2px; }
-.sutun.bos .sutun-deger { opacity: .45; }
+/* Sayi cubugun icinde durur; bos sutun da sayinin sigacagi kadar yukselir. */
 .sutun-cubuk {
-  width: 100%; margin-top: auto; min-height: 2px;
-  border-radius: 4px 4px 0 0; background: var(--gri);
+  width: 100%; margin-top: auto; min-height: 26px;
+  display: flex; align-items: flex-start; justify-content: center;
+  padding-top: 4px; border-radius: 5px 5px 0 0; background: var(--gri);
 }
+.sutun-cubuk i { font-style: normal; font-size: 12px; font-weight: 700; color: #fff; }
+.sutun.bos .sutun-cubuk { background: var(--bg); }
+.sutun.bos .sutun-cubuk i { color: var(--soluk); }
 .sutun.aktif .sutun-cubuk { background: var(--yesil); }
-.sutun.aktif .sutun-deger { color: var(--yesil); }
-.sutun-ad { margin-top: 4px; font-size: 11.5px; color: var(--soluk); }
+.sutun-ad { margin-top: 5px; font-size: 11.5px; color: var(--soluk); }
 #geri-sayim { display: block; text-align: center; margin-top: 12px; font-size: 12px; color: var(--soluk); }
 
 /* Giris sayfasinin altindaki gunluk kelime sayaci. */
@@ -1255,7 +1257,7 @@ body:not(.giris) { padding-bottom: var(--reklam-alt-boy); }
 .kontroller.cevap-modu.sag-dugme .mod-etiket { flex: 1 1 auto; text-align: left; }
 
 /* --- istatistik penceresi: sabit boy, ustte baslik, altta paylas --- */
-#ist-pencere { max-width: 420px; padding: 0; overflow: hidden; }
+#ist-pencere { max-width: 420px; padding: 0; overflow: hidden; outline: none; }
 #ist-pencere[open] { display: flex; flex-direction: column; }
 .ist-ust {
   flex: 0 0 auto; display: flex; align-items: center; gap: 10px;
@@ -1276,12 +1278,19 @@ body:not(.giris) { padding-bottom: var(--reklam-alt-boy); }
 /* Oyun sonu ozeti */
 /* Durum satiri: cercevesiz, pencerenin ustunde tek basina durur. Her zaman
    gorunur - seviye degistirince pencerenin icerigi asagi yukari kaymasin. */
-.ist-durum { margin: 0 0 10px; font-size: 14px; text-align: center; color: var(--soluk); }
+/* Iki satira tasan metinle tek satirlik metin ayni yeri kaplasin: seviye
+   degistirince alttaki her sey yerinde kalir. */
+.ist-durum {
+  margin: 0 0 8px; min-height: 48px;   /* iki satirlik en uzun hal */
+  display: flex; align-items: center; justify-content: center;
+  flex-wrap: wrap; gap: 4px 8px;
+  font-size: 14px; text-align: center; color: var(--soluk);
+}
 .ist-durum b { font-size: 15px; letter-spacing: .4px; }
 .ist-durum.kazandi b { color: var(--yesil); }
 .ist-durum.kaybetti b { color: var(--kirmizi); }
 .ist-joker {
-  display: inline-block; margin-left: 8px; padding: 2px 8px;
+  display: inline-block; padding: 1px 7px;
   border-radius: 999px; background: var(--tus-bg, var(--bg-yuksek));
   border: 1px solid var(--cizgi); color: var(--soluk);
   font-size: 12px; font-weight: 600; vertical-align: middle;

@@ -47,6 +47,7 @@ KALIP = '''/* "Nasil oynanir" penceresi.
     if (pencere) { return pencere; }
     pencere = document.createElement('dialog');
     pencere.id = 'yardim-pencere';
+    pencere.tabIndex = -1;   /* odak kapatma tusunda kalip cerceve birakmasin */
     pencere.innerHTML = BASLIK + '<div class="pencere-govde">' + GOVDE + '</div>';
     document.body.appendChild(pencere);
     /* Kapatma tek bir dugmeye bagli kalmasin: olay pencereye baglanir
@@ -82,6 +83,7 @@ KALIP = '''/* "Nasil oynanir" penceresi.
       var p = kur();
       hizala(p);
       p.showModal();
+      p.focus();
     }
   };
 }(window));

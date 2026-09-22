@@ -701,13 +701,25 @@
    * noktadan asagi dogru uzar. Yer olculerek verilir - ekran boyuna, mod
    * satirinin icerigine ve arsivdeki tarih satirina gore degisiyor. */
   function bildirimYerlestir(b) {
+    var c = getComputedStyle(b);
+    var tekSatir = parseFloat(c.paddingTop) + parseFloat(c.paddingBottom) +
+                   parseFloat(c.fontSize) * 1.25;
+
+    /* Acik bir pencere varsa bildirim onun ustune tasinir: pencere tarayicinin
+     * "ust katman"inda durdugu icin disarida kalan bildirim arkada kaliyordu. */
+    var acik = document.querySelector('dialog[open]');
+    if (acik) {
+      if (b.parentNode !== acik) { acik.appendChild(b); }
+      var r = acik.getBoundingClientRect();
+      b.style.top = Math.round((r.top + r.bottom) / 2 - tekSatir / 2) + 'px';
+      return;
+    }
+    if (b.parentNode !== document.body) { document.body.appendChild(b); }
+
     var basvuru = document.querySelector('header'), tahta = $('#tahta');
     if (!basvuru || !tahta) { return; }
     var ust = basvuru.getBoundingClientRect().bottom;
     var alt = tahta.getBoundingClientRect().top;
-    var c = getComputedStyle(b);
-    var tekSatir = parseFloat(c.paddingTop) + parseFloat(c.paddingBottom) +
-                   parseFloat(c.fontSize) * 1.25;
     b.style.top = Math.round((ust + alt) / 2 - tekSatir / 2) + 'px';
   }
 
@@ -1176,9 +1188,9 @@
       var v = ist.dagilim[i] || 0;
       var son = kendi && S.bitti && S.kazandi && S.gecmis.length === i;
       html += '<div class="sutun' + (son ? ' aktif' : '') + (v ? '' : ' bos') + '">' +
-                '<span class="sutun-deger">' + v + '</span>' +
                 '<span class="sutun-cubuk" style="height:' +
-                  (v ? Math.max(6, Math.round(v / enCok * 100)) : 2) + '%"></span>' +
+                  (v ? Math.round(v / enCok * 100) : 0) + '%">' +
+                  '<i>' + v + '</i></span>' +
                 '<span class="sutun-ad">' + i + '</span>' +
               '</div>';
     }
@@ -1196,6 +1208,8 @@
     var pencere = $('#ist-pencere');
     istPencereKonumla(pencere);
     pencere.showModal();
+    /* Odak kapatma tusuna dusup cevresinde cerceve birakmasin. */
+    pencere.focus();
   }
 
   /* Pencere oyun ekraninin uzerine oturur: ust kenari mod satiri ile tahta
@@ -1522,6 +1536,10 @@
     });
 
     $('#ist-pencere').addEventListener('close', function () { clearInterval(sayimZaman); });
+    /* Pencerenin disina (karartilmis zemine) tiklamak da kapatir. */
+    $('#ist-pencere').addEventListener('click', function (e) {
+      if (e.target === this) { this.close(); }
+    });
     Array.prototype.forEach.call(document.querySelectorAll('.kapat'), function (b) {
       b.addEventListener('click', function () { b.closest('dialog').close(); });
     });
