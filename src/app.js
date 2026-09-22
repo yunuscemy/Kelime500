@@ -1118,26 +1118,37 @@
     'c0-1 .3-2 .8-2.8.1 1.6.9 3 2.1 4 .9.7 1.4 1.5 1.4 2.4 0 .3 0 .6-.1.8z"/>' +
     '</svg>';
 
-  /* Oyun sonu ozeti: kac tahminde bilindi, joker kullanildi mi. Yalnizca
-   * oyunun kendi seviyesi gosterilirken anlamli. */
-  function istSonucYaz(kendiSeviyesi) {
+  /* Durum satiri her zaman gorunur - seviye degistirince pencerenin boyu
+   * oynamasin diye. Gosterilen seviyenin O GUNKU oyununu anlatir: bitmisse
+   * sonucu ve gizli kelimeyi, bitmemisse oynamaya cagirir. Bitmemis oyunun
+   * kelimesi elbette yazilmaz. */
+  function istSonucYaz(zorluk) {
     var el = $('#ist-sonuc');
-    if (!S.bitti || !kendiSeviyesi) { el.hidden = true; return; }
-    var joker = (S.joker && S.joker.harf ? 1 : 0) + (S.joker && S.joker.kutu ? 1 : 0);
+    var kendi = zorluk === S.zorluk;
+    var o = kendi ? S : oku(oyunAnahtari(S.mod, zorluk, S.tarih), null);
+
+    if (!o || !o.bitti) {
+      el.className = 'ist-durum';
+      el.innerHTML = o && o.gecmis && o.gecmis.length
+        ? 'Bu oyunu henüz bitirmedin.'
+        : (S.mod === 'gunluk' ? 'Bugün oynamadın. Denemek ister misin?'
+                              : 'Bu oyunu henüz oynamadın.');
+      return;
+    }
+
+    var j = o.joker || {};
+    var joker = (j.harf ? 1 : 0) + (j.kutu ? 1 : 0);
     var rozet = joker ? '<span class="ist-joker">' + joker + ' joker</span>' : '';
-    el.className = S.kazandi ? 'kazandi' : 'kaybetti';
-    el.innerHTML = (S.kazandi
-        ? '<b>' + S.gecmis.length + '. tahminde bildin!</b>'
-        : 'Bilemedin · Gizli kelime: <b>' + S.gizli + '</b>') + rozet;
-    el.hidden = false;
+    el.className = 'ist-durum ' + (o.kazandi ? 'kazandi' : 'kaybetti');
+    el.innerHTML = (o.kazandi ? o.gecmis.length + '. tahminde bildin' : 'Bilemedin') +
+      ' · Gizli kelime: <b>' + o.gizli + '</b>' + rozet;
   }
 
   function istSeriYaz(ist) {
     $('#ist-seri').innerHTML =
       '<span class="alev">' + ALEV + '</span>' +
-      '<span class="ist-seri-sayi"><b>' + ist.seri + '</b>' +
-        '<span>' + (ist.seri === 1 ? 'günlük seri' : 'günlük seri') + '</span></span>' +
-      '<span class="ist-seri-eniyi">En iyi<b>' + ist.enIyiSeri + '</b></span>';
+      '<span class="ist-seri-sayi"><b>' + ist.seri + '</b><span>günlük seri</span></span>' +
+      '<span class="ist-seri-eniyi">En iyi seri<b>' + ist.enIyiSeri + '</b></span>';
   }
 
   function istatistikCiz() {
@@ -1145,7 +1156,7 @@
     var ist = oku(istAnahtari(S.mod, istZorluk), bosIstatistik());
     var yuzde = ist.oynanan ? Math.round(ist.kazanilan / ist.oynanan * 100) : 0;
 
-    istSonucYaz(kendi);
+    istSonucYaz(istZorluk);
     menuIsaretle('#ist-sekme', '[data-zorluk]', 'zorluk', istZorluk);
     /* Mod adi baslikta durur: pencerede ayri bir satira gerek kalmasin. */
     $('#ist-mod').textContent = S.mod === 'gunluk' ? 'Günlük kelime'
@@ -1153,17 +1164,23 @@
 
     istSeriYaz(ist);
     $('#ist-ozet').innerHTML =
-      kart(ist.oynanan, 'oynanan') + kart(ist.kazanilan, 'kazanılan') +
+      kart(ist.oynanan, 'kez oynadın') + kart(ist.kazanilan, 'kazandın') +
       kart(yuzde + '%', 'kazanma');
 
+    /* Sutunlar: yatay eksen kacinci tahminde bilindigi, dikey eksen kac kez.
+     * Bos sutun da yerinde durur, eksen sabit kalsin. */
     var enCok = 1, i;
     for (i = 1; i <= HAK; i++) { enCok = Math.max(enCok, ist.dagilim[i] || 0); }
     var html = '';
     for (i = 1; i <= HAK; i++) {
       var v = ist.dagilim[i] || 0;
       var son = kendi && S.bitti && S.kazandi && S.gecmis.length === i;
-      html += '<div class="cubuk"><i>' + i + '</i><u class="' + (son ? 'aktif' : '') +
-              '" style="width:' + Math.max(8, v / enCok * 100) + '%">' + v + '</u></div>';
+      html += '<div class="sutun' + (son ? ' aktif' : '') + (v ? '' : ' bos') + '">' +
+                '<span class="sutun-deger">' + v + '</span>' +
+                '<span class="sutun-cubuk" style="height:' +
+                  (v ? Math.max(6, Math.round(v / enCok * 100)) : 2) + '%"></span>' +
+                '<span class="sutun-ad">' + i + '</span>' +
+              '</div>';
     }
     $('#ist-dagilim').innerHTML = html;
     $('#ist-paylas').disabled = !S.bitti || !kendi;
@@ -1191,11 +1208,13 @@
     pencere.style.marginBottom = '';
     pencere.style.height = '';
 
-    var satir = $('#kontroller'), tahta = $('#tahta'), klavye = $('#klavye');
+    var basi = document.querySelector('header'), klavye = $('#klavye');
     var baglanti = document.querySelector('.alt-baglanti');
-    if (!satir || !tahta || !klavye) { return; }
+    if (!basi || !klavye) { return; }
 
-    var ust = (satir.getBoundingClientRect().bottom + tahta.getBoundingClientRect().top) / 2;
+    /* Baslik kutusunun govdesi ::before ile 6px disariya tasiyor; teget
+     * durmasin diye ustune biraz daha bosluk birakilir. */
+    var ust = basi.getBoundingClientRect().bottom + 14;
     var kAlt = klavye.getBoundingClientRect().bottom;
     var alt = baglanti ? (kAlt + baglanti.getBoundingClientRect().top) / 2 : kAlt + 12;
     alt = Math.min(alt, window.innerHeight - 8);

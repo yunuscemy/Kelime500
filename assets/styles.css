@@ -752,14 +752,24 @@ dialog ul { padding-left: 18px; }
 .ist { flex: 1; }
 .ist b { display: block; font-size: 22px; }
 .ist span { font-size: 11px; color: var(--soluk); }
-.dagilim { display: grid; gap: 3px; margin-top: 8px; }
-.cubuk { display: flex; align-items: center; gap: 8px; font-size: 13px; }
-.cubuk i { font-style: normal; width: 10px; color: var(--soluk); }
-.cubuk u {
-  text-decoration: none; background: var(--gri); color: #fff;
-  border-radius: 4px; padding: 1px 6px; min-width: 24px; text-align: right;
+/* Kac hakta bildin: yatay eksen kacinci tahminde bilindigi, dikey eksen
+   kac kez. Bos sutun da yerinde durur, eksen sabit kalsin. */
+.dagilim {
+  display: flex; align-items: flex-end; gap: 6px;
+  height: 128px; padding-top: 4px; border-bottom: 1px solid var(--cizgi);
 }
-.cubuk u.aktif { background: var(--yesil); }
+/* Pencerede grafik kalan boslugu doldurur; icerik kisalinca bos alan kalmaz. */
+#ist-dagilim { flex: 1 1 auto; min-height: 128px; max-height: 260px; }
+.sutun { flex: 1; display: flex; flex-direction: column; align-items: center; height: 100%; }
+.sutun-deger { font-size: 11.5px; font-weight: 700; color: var(--soluk); margin-bottom: 2px; }
+.sutun.bos .sutun-deger { opacity: .45; }
+.sutun-cubuk {
+  width: 100%; margin-top: auto; min-height: 2px;
+  border-radius: 4px 4px 0 0; background: var(--gri);
+}
+.sutun.aktif .sutun-cubuk { background: var(--yesil); }
+.sutun.aktif .sutun-deger { color: var(--yesil); }
+.sutun-ad { margin-top: 4px; font-size: 11.5px; color: var(--soluk); }
 #geri-sayim { display: block; text-align: center; margin-top: 12px; font-size: 12px; color: var(--soluk); }
 
 /* Giris sayfasinin altindaki gunluk kelime sayaci. */
@@ -1253,7 +1263,10 @@ body:not(.giris) { padding-bottom: var(--reklam-alt-boy); }
 }
 .ist-ust h2 { margin: 0; flex: 1 1 auto; font-size: 18px; }
 #ist-pencere .kapat { position: static; flex: 0 0 auto; }
-.ist-govde { flex: 1 1 auto; min-height: 0; overflow-y: auto; padding: 10px 18px 12px; }
+.ist-govde {
+  flex: 1 1 auto; min-height: 0; overflow-y: auto; padding: 10px 18px 12px;
+  display: flex; flex-direction: column;
+}
 .ist-alt {
   flex: 0 0 auto; padding: 10px 18px 14px; border-top: 1px solid var(--cizgi);
 }
@@ -1261,13 +1274,12 @@ body:not(.giris) { padding-bottom: var(--reklam-alt-boy); }
 #geri-sayim { margin-top: 8px; }
 
 /* Oyun sonu ozeti */
-#ist-sonuc {
-  margin: 0 0 8px; padding: 7px 12px; border-radius: var(--yuvarlak);
-  background: var(--bg); font-size: 14.5px; text-align: center;
-}
-#ist-sonuc b { font-size: 16px; }
-#ist-sonuc.kazandi b { color: var(--yesil); }
-#ist-sonuc.kaybetti b { color: var(--kirmizi); }
+/* Durum satiri: cercevesiz, pencerenin ustunde tek basina durur. Her zaman
+   gorunur - seviye degistirince pencerenin icerigi asagi yukari kaymasin. */
+.ist-durum { margin: 0 0 10px; font-size: 14px; text-align: center; color: var(--soluk); }
+.ist-durum b { font-size: 15px; letter-spacing: .4px; }
+.ist-durum.kazandi b { color: var(--yesil); }
+.ist-durum.kaybetti b { color: var(--kirmizi); }
 .ist-joker {
   display: inline-block; margin-left: 8px; padding: 2px 8px;
   border-radius: 999px; background: var(--tus-bg, var(--bg-yuksek));
@@ -1286,7 +1298,6 @@ body:not(.giris) { padding-bottom: var(--reklam-alt-boy); }
 }
 .ist-sekme button[aria-current="true"] { background: var(--bg-yuksek); color: var(--metin); }
 #ist-mod { margin-left: 8px; font-size: 12.5px; font-weight: 600; color: var(--soluk); }
-#ist-pencere .cubuk { line-height: 1.3; }
 
 /* Seri: pencerenin en dikkat ceken bilgisi. */
 .ist-seri {
@@ -1294,7 +1305,7 @@ body:not(.giris) { padding-bottom: var(--reklam-alt-boy); }
   padding: 8px 14px; border-radius: var(--yuvarlak);
   background: var(--bg); margin-bottom: 6px;
 }
-.ist-seri .alev { flex: 0 0 auto; display: grid; place-items: center; color: var(--sari); }
+.ist-seri .alev { flex: 0 0 auto; display: grid; place-items: center; color: var(--kirmizi); }
 .ist-seri-sayi { flex: 1 1 auto; display: flex; align-items: baseline; gap: 7px; }
 .ist-seri-sayi b { font-size: 24px; line-height: 1; }
 .ist-seri-sayi span { font-size: 13px; color: var(--soluk); }
@@ -1304,9 +1315,5 @@ body:not(.giris) { padding-bottom: var(--reklam-alt-boy); }
 }
 .ist-seri-eniyi b { font-size: 16px; color: var(--metin); }
 .ist-alt-baslik { margin: 9px 0 4px; font-size: 13px; font-weight: 700; }
-/* Dagilim 8 satir; pencereye sigsin diye satirlar sikistirildi. */
 #ist-pencere .istatistikler { margin: 8px 0 0; }
-#ist-pencere .dagilim { gap: 2px; }
-#ist-pencere .cubuk { font-size: 12.5px; }
-#ist-pencere .cubuk u { padding: 0 6px; }
 #ist-pencere .ist b { font-size: 19px; }
