@@ -1107,28 +1107,71 @@
   /* ---------- istatistik penceresi ---------- */
 
   var sayimZaman = null;
+  var istZorluk = null;   // pencerede gosterilen seviye (oyunun seviyesi degil)
 
-  function istatistikGoster() {
-    var ist = oku(istAnahtari(S.mod, S.zorluk), bosIstatistik());
+  var ALEV =
+    '<svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">' +
+    '<path fill="currentColor" d="M13.2 2c.4 3-1.2 4.4-2.6 5.7C9 9.2 7.6 10.6 7.6 13.2' +
+    'c0 1.6.7 3 1.8 3.9-.3-1.7.3-3.2 1.6-4.3.3 2 1.3 3 2.5 4 1.3 1 2 2.2 2 3.6 0 .5-.1 1-.3 1.4' +
+    '2.6-1.1 4.3-3.7 4.3-6.7 0-2.6-1.1-4.5-2.6-6-.3 1-.9 1.8-1.7 2.3.5-2.4-.3-5.3-2-9.4z"/>' +
+    '<path fill="currentColor" opacity=".45" d="M8.3 21.9C6.9 20.9 6 19.3 6 17.5' +
+    'c0-1 .3-2 .8-2.8.1 1.6.9 3 2.1 4 .9.7 1.4 1.5 1.4 2.4 0 .3 0 .6-.1.8z"/>' +
+    '</svg>';
+
+  /* Oyun sonu ozeti: kac tahminde bilindi, joker kullanildi mi. Yalnizca
+   * oyunun kendi seviyesi gosterilirken anlamli. */
+  function istSonucYaz(kendiSeviyesi) {
+    var el = $('#ist-sonuc');
+    if (!S.bitti || !kendiSeviyesi) { el.hidden = true; return; }
+    var joker = (S.joker && S.joker.harf ? 1 : 0) + (S.joker && S.joker.kutu ? 1 : 0);
+    var rozet = joker ? '<span class="ist-joker">' + joker + ' joker</span>' : '';
+    el.className = S.kazandi ? 'kazandi' : 'kaybetti';
+    el.innerHTML = (S.kazandi
+        ? '<b>' + S.gecmis.length + '. tahminde bildin!</b>'
+        : 'Bilemedin · Gizli kelime: <b>' + S.gizli + '</b>') + rozet;
+    el.hidden = false;
+  }
+
+  function istSeriYaz(ist) {
+    $('#ist-seri').innerHTML =
+      '<span class="alev">' + ALEV + '</span>' +
+      '<span class="ist-seri-sayi"><b>' + ist.seri + '</b>' +
+        '<span>' + (ist.seri === 1 ? 'günlük seri' : 'günlük seri') + '</span></span>' +
+      '<span class="ist-seri-eniyi">En iyi<b>' + ist.enIyiSeri + '</b></span>';
+  }
+
+  function istatistikCiz() {
+    var kendi = istZorluk === S.zorluk;
+    var ist = oku(istAnahtari(S.mod, istZorluk), bosIstatistik());
     var yuzde = ist.oynanan ? Math.round(ist.kazanilan / ist.oynanan * 100) : 0;
 
-    $('#ist-baslik').textContent =
-      (S.mod === 'gunluk' ? 'Günlük' : 'Serbest') + ' · ' + ZORLUKLAR[S.zorluk].ad;
+    istSonucYaz(kendi);
+    menuIsaretle('#ist-sekme', '[data-zorluk]', 'zorluk', istZorluk);
+    /* Mod adi baslikta durur: pencerede ayri bir satira gerek kalmasin. */
+    $('#ist-mod').textContent = S.mod === 'gunluk' ? 'Günlük kelime'
+                              : S.mod === 'arsiv'  ? 'Arşiv' : 'Serbest Mod';
+
+    istSeriYaz(ist);
     $('#ist-ozet').innerHTML =
-      kart(ist.oynanan, 'oynanan') + kart(yuzde + '%', 'kazanma') +
-      kart(ist.seri, 'seri') + kart(ist.enIyiSeri, 'en iyi');
+      kart(ist.oynanan, 'oynanan') + kart(ist.kazanilan, 'kazanılan') +
+      kart(yuzde + '%', 'kazanma');
 
     var enCok = 1, i;
     for (i = 1; i <= HAK; i++) { enCok = Math.max(enCok, ist.dagilim[i] || 0); }
     var html = '';
     for (i = 1; i <= HAK; i++) {
       var v = ist.dagilim[i] || 0;
-      var son = S.bitti && S.kazandi && S.gecmis.length === i;
+      var son = kendi && S.bitti && S.kazandi && S.gecmis.length === i;
       html += '<div class="cubuk"><i>' + i + '</i><u class="' + (son ? 'aktif' : '') +
               '" style="width:' + Math.max(8, v / enCok * 100) + '%">' + v + '</u></div>';
     }
     $('#ist-dagilim').innerHTML = html;
-    $('#ist-paylas').disabled = !S.bitti;
+    $('#ist-paylas').disabled = !S.bitti || !kendi;
+  }
+
+  function istatistikGoster() {
+    istZorluk = S.zorluk;
+    istatistikCiz();
 
     geriSayim();
     clearInterval(sayimZaman);
@@ -1138,31 +1181,29 @@
     pencere.showModal();
   }
 
-  /* Oyun ekranin ust yarisinda durdugu icin, ekranin tamamina gore ortalanan
-   * pencere asagida kaliyordu. Genis ekranlarda pencere "ekranin ustu -
-   * klavyenin alti" araliginin ortasina alinir. Dar ekranlarda (telefon)
-   * oyun zaten ekrani doldurdugu icin varsayilan ortalama korunur. */
+  /* Pencere oyun ekraninin uzerine oturur: ust kenari mod satiri ile tahta
+   * arasindaki boslugun ortasinda, alt kenari klavye ile sayfanin altindaki
+   * baglantilarin arasinda. Boylece icerige yer kalir (ilerideki reklam
+   * yuvasi dahil) ama "Nasıl Oynanır" ve gizlilik baglantilari kapanmaz.
+   * Olculer tutmazsa (cok kisa ekran) tarayicinin ortalamasi korunur. */
   function istPencereKonumla(pencere) {
     pencere.style.marginTop = '';
     pencere.style.marginBottom = '';
-    if (window.innerWidth < 640) { return; }
+    pencere.style.height = '';
 
-    var klavye = $('#klavye');
-    if (!klavye) { return; }
-    var alt = klavye.getBoundingClientRect().bottom;
-    if (alt <= 0 || alt >= window.innerHeight) { return; }
+    var satir = $('#kontroller'), tahta = $('#tahta'), klavye = $('#klavye');
+    var baglanti = document.querySelector('.alt-baglanti');
+    if (!satir || !tahta || !klavye) { return; }
 
-    /* Pencere yuksekligi acilmadan bilinmedigi icin gecici olarak olculur. */
-    pencere.style.visibility = 'hidden';
-    pencere.show();
-    var boy = pencere.getBoundingClientRect().height;
-    pencere.close();
-    pencere.style.visibility = '';
+    var ust = (satir.getBoundingClientRect().bottom + tahta.getBoundingClientRect().top) / 2;
+    var kAlt = klavye.getBoundingClientRect().bottom;
+    var alt = baglanti ? (kAlt + baglanti.getBoundingClientRect().top) / 2 : kAlt + 12;
+    alt = Math.min(alt, window.innerHeight - 8);
+    if (ust < 8 || alt - ust < 320) { return; }   /* sigmiyorsa varsayilana birak */
 
-    var ust = Math.round((alt - boy) / 2);
-    if (ust < 12) { return; }                 /* sigmiyorsa varsayilana birak */
-    pencere.style.marginTop = ust + 'px';
+    pencere.style.marginTop = Math.round(ust) + 'px';
     pencere.style.marginBottom = 'auto';
+    pencere.style.height = Math.round(alt - ust) + 'px';
   }
 
   function geriSayim() {
@@ -1416,6 +1457,13 @@
     $('#yeni-kelime').addEventListener('click', function () {
       yeniOyun('serbest', S.zorluk, S.tarih, true);
       uyar('Yeni kelime');
+    });
+
+    $('#ist-sekme').addEventListener('click', function (e) {
+      var b = e.target.closest('[data-zorluk]');
+      if (!b || b.dataset.zorluk === istZorluk) { return; }
+      istZorluk = b.dataset.zorluk;
+      istatistikCiz();
     });
 
     $('#ist-dugme').addEventListener('click', function (e) {

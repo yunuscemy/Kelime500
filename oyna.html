@@ -6,8 +6,8 @@
 <title>Kelime500</title>
 <meta name="description" content="Gizli Türkçe kelimeyi 8 hakta bul. Her tahminde kaç harfin doğru yerde, kaç harfin yanlış yerde, kaç harfin kelimede hiç olmadığını öğrenirsin — hangileri olduğunu değil.">
 <link rel="canonical" href="https://kelime500.com/oyna">
-<link rel="icon" href="assets/favicon.svg?v=98" type="image/svg+xml">
-<link rel="apple-touch-icon" href="assets/apple-touch-icon.png?v=98">
+<link rel="icon" href="assets/favicon.svg?v=102" type="image/svg+xml">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png?v=102">
 <meta name="theme-color" content="#0f1115">
 <!-- Sosyal paylasim -->
 <meta property="og:url" content="https://kelime500.com/oyna">
@@ -15,15 +15,15 @@
 <meta property="og:site_name" content="Kelime500">
 <meta property="og:title" content="Kelime500 — Türkçe kelime bulmacası">
 <meta property="og:description" content="Gizli Türkçe kelimeyi 8 hakta bul. Her tahminde kaç harfin doğru yerde, kaç harfin yanlış yerde olduğunu öğrenirsin — hangileri olduğunu değil.">
-<meta property="og:image" content="https://kelime500.com/assets/paylasim.png?v=98">
+<meta property="og:image" content="https://kelime500.com/assets/paylasim.png?v=102">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta property="og:locale" content="tr_TR">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Kelime500 — Türkçe kelime bulmacası">
 <meta name="twitter:description" content="Gizli Türkçe kelimeyi 8 hakta bul. Her tahminde kaç harfin doğru yerde, kaç harfin yanlış yerde olduğunu öğrenirsin — hangileri olduğunu değil.">
-<meta name="twitter:image" content="https://kelime500.com/assets/paylasim.png?v=98">
-<link rel="stylesheet" href="assets/styles.css?v=98">
+<meta name="twitter:image" content="https://kelime500.com/assets/paylasim.png?v=102">
+<link rel="stylesheet" href="assets/styles.css?v=102">
 <script>
 /* Tema ilk boyamadan once uygulanir; yoksa sabit yazili koyu tema bir an
    gorunup acik temaya gecerdi. Kayitli bir secim varsa o, yoksa cihazin
@@ -150,26 +150,44 @@
 
 
 <dialog id="ist-pencere">
-  <button class="simge kapat" type="button">✕</button>
-  <h2>İstatistikler</h2>
-  <p id="ist-baslik" style="margin:0"></p>
-  <div class="istatistikler" id="ist-ozet"></div>
-  <p style="margin:0 0 4px"><b>Kaç hakta bildin</b></p>
-  <div class="dagilim" id="ist-dagilim"></div>
-  <button class="tus genis" id="ist-paylas" type="button" style="width:100%;margin-top:14px;height:40px">
-    Sonucu kopyala
-  </button>
-  <span id="geri-sayim"></span>
-  <!-- Oyun bitti, akis zaten kesildi: reklam icin en uygun an. -->
-  <div class="reklam reklam-pencere" id="reklam-istatistik" aria-hidden="true"></div>
+  <div class="ist-ust">
+    <h2>İstatistikler<span id="ist-mod"></span></h2>
+    <button class="simge kapat" type="button" title="Kapat">✕</button>
+  </div>
+
+  <div class="ist-govde">
+    <!-- Oyun bitince en ustte: kac tahminde bilindi, joker kullanildi mi. -->
+    <p id="ist-sonuc" hidden></p>
+
+    <!-- Oyuncunun iki ayri istatistigi var; oyunun seviyesini degistirmeden
+         ikisine de bakabilsin. -->
+    <div class="ist-sekme" id="ist-sekme" role="tablist">
+      <button type="button" role="tab" data-zorluk="standart">Standart</button>
+      <button type="button" role="tab" data-zorluk="ileri">İleri</button>
+    </div>
+
+    <div class="ist-seri" id="ist-seri"></div>
+    <div class="istatistikler" id="ist-ozet"></div>
+
+    <p class="ist-alt-baslik">Kaç hakta bildin</p>
+    <div class="dagilim" id="ist-dagilim"></div>
+
+    <!-- Oyun bitti, akis zaten kesildi: reklam icin en uygun an. -->
+    <div class="reklam reklam-pencere" id="reklam-istatistik" aria-hidden="true"></div>
+  </div>
+
+  <div class="ist-alt">
+    <button class="tus genis" id="ist-paylas" type="button">Sonucu kopyala</button>
+    <span id="geri-sayim"></span>
+  </div>
 </dialog>
 
-<script src="src/cerez.js?v=98"></script>
-<script src="src/turkish.js?v=98"></script>
-<script src="src/engine.js?v=98"></script>
-<script src="src/sozluk.js?v=98"></script>
-<script src="src/words.js?v=98"></script>
-<script src="src/rehber.js?v=98"></script>
-<script src="src/app.js?v=98"></script>
+<script src="src/cerez.js?v=102"></script>
+<script src="src/turkish.js?v=102"></script>
+<script src="src/engine.js?v=102"></script>
+<script src="src/sozluk.js?v=102"></script>
+<script src="src/words.js?v=102"></script>
+<script src="src/rehber.js?v=102"></script>
+<script src="src/app.js?v=102"></script>
 </body>
 </html>
