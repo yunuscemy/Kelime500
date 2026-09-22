@@ -1138,7 +1138,10 @@
    * cogu navigator.share desteklemiyor - orada eski davranis surer. */
   function paylas() {
     if (navigator.share) {
-      navigator.share({ text: paylasMetni(false), url: 'https://' + ADRES })
+      /* Baslik da veriliyor: bazi uygulamalar onizleme kartini bundan kuruyor.
+       * Adres kok sayfa - baglantiya dokunan once oyunu gorsun. */
+      navigator.share({ title: 'Kelime500', text: paylasMetni(false),
+                        url: 'https://' + ADRES + '/' })
         .catch(function (e) {
           /* Kullanici menuyu kapattiysa sessiz kal; gercek hatada kopyalamaya dus. */
           if (!e || e.name !== 'AbortError') { panoyaKopyala(paylasMetni(true)); }
