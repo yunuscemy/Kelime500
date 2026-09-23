@@ -1354,6 +1354,9 @@ body:not(.giris) { padding-bottom: var(--reklam-alt-boy); }
 /* Sayacin ustundeki ve altindaki bosluk esit olsun: baglantilarin kendi ust
    bosluğu sayacinkine ekleniyordu (14 + 12 = 26). */
 #sayac + .alt-baglanti { margin-top: 0; }
+/* Oyun sayfasinda da ayni olcu: klavyenin altindaki bosluk, ana sayfadaki
+   son kart ile sayac arasindaki boslukla esit (14px). */
+body:not(.giris) .alt-baglanti { margin-top: 0; }
 .durum-satir {
   display: flex; align-items: center; justify-content: space-between;
   gap: 8px; padding: 4px 0;
