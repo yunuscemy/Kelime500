@@ -188,7 +188,6 @@
     /* Kurallar giris sayfasinin uzerinde acilir. Onceden oyun sayfasina
      * gidip pencereyi orada aciyordu; kapatinca oyun ekrani bir an gorunup
      * geri donuyordu. */
-    $('#yardim-ac').addEventListener('click', function () { KB.yardim.ac(); });
 
     $('#tema').addEventListener('click', function () {
       tema(document.documentElement.dataset.tema === 'acik' ? 'koyu' : 'acik', true, true);

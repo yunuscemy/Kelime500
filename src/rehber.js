@@ -252,7 +252,16 @@
   }
 
   function git(yon) {
-    if (yon === 'kapat') { kapat(); return; }
+    if (yon === 'kapat') {
+      /* Son adimdaki "Oynamaya başla": giris sayfasindan acildiysa oyuna
+       * goturur. Oyun sayfasindaysak zaten oradayiz, pencere kapanir. */
+      if (adim === ADIMLAR.length - 1 && !document.getElementById('tahta')) {
+        location.href = 'oyna';
+        return;
+      }
+      kapat();
+      return;
+    }
     adim += yon === 'ileri' ? 1 : -1;
     ciz();
   }

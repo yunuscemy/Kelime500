@@ -1100,7 +1100,7 @@
     /* Adres yalnizca panoya kopyalarken metne girer. Isletim sisteminin
      * paylasim menusune adres AYRI alanda veriliyor; boylece WhatsApp gibi
      * uygulamalar baglantiyi tanir ve onizleme gorselini gosterir. */
-    if (adresli) { satirlar.push('', ADRES); }
+    if (adresli) { satirlar.push('', 'https://' + ADRES + '/'); }
     return satirlar.join('\n');
   }
 
@@ -1137,12 +1137,13 @@
    * tek dokunusla cikar, kullanici oyundan hic cikmaz. Masaustu tarayicilarin
    * cogu navigator.share desteklemiyor - orada eski davranis surer. */
   /* ---------- paylasim gorseli ----------
-   * Sonuc izgarasini bir resme cizer. iOS'un paylasim menusu metin
-   * paylasiminda onizleme kutusunu bos birakiyor; dosya eklenince oraya
-   * gorsel geliyor. Cizim bastan sona SENKRON: navigator.share kullanici
-   * dokunusunun hemen ardindan cagrilmali, arada bekleme olmamali. */
+   * iOS'un paylasim menusu metin paylasiminda onizleme kutusunu bos
+   * birakiyor; dosya eklenince oraya gorsel geliyor. Gorsel yalnizca logo:
+   * sonucun kendisi zaten metinde, resimde tekrarlaninca mesaj uzuyordu.
+   * Cizim bastan sona SENKRON - navigator.share dokunusun hemen ardindan
+   * cagrilmali, arada bekleme olmamali. */
 
-  var G_RENK = { bg: '#0f1115', kart: '#171a21', metin: '#e8eaf0', soluk: '#9aa3b2',
+  var G_RENK = { bg: '#0f1115', metin: '#e8eaf0', koyu: '#2a2f3a', kutuMetin: '#12141a',
                  yesil: '#3fa66a', sari: '#cfae3f', kirmizi: '#d1495b' };
 
   function yuvarlakKutu(c, x, y, en, boy, r) {
@@ -1164,95 +1165,47 @@
   }
 
   function paylasimGorseli() {
-    var E = 1080, tuval = document.createElement('canvas');
-    tuval.width = E; tuval.height = E;
+    var EN = 1080, BOY = 360;
+    var tuval = document.createElement('canvas');
+    tuval.width = EN; tuval.height = BOY;
     var c = tuval.getContext && tuval.getContext('2d');
     if (!c) { return null; }
     var yazi = '-apple-system, "Segoe UI", Roboto, sans-serif';
 
     c.fillStyle = G_RENK.bg;
-    c.fillRect(0, 0, E, E);
+    c.fillRect(0, 0, EN, BOY);
 
     /* Logo: KELIME harfleri + 5 0 0 rozetleri, sitedekinin sadelestirilmisi. */
-    var lh = 78, la = 8, harfler = 'KELİME', sayilar = ['5', '0', '0'];
-    var toplam = harfler.length * lh + 5 * la + 18 + sayilar.length * lh + 2 * la;
-    var lx = Math.round((E - toplam) / 2), ly = 92;
+    var lh = 96, la = 10, harfler = 'KELİME', sayilar = ['5', '0', '0'];
+    var toplam = harfler.length * lh + 5 * la + 22 + sayilar.length * lh + 2 * la;
+    var lx = Math.round((EN - toplam) / 2), ly = Math.round((BOY - lh) / 2);
     c.textAlign = 'center'; c.textBaseline = 'middle';
     harfler.split('').forEach(function (h, i) {
       var x = lx + i * (lh + la);
-      c.fillStyle = i % 2 ? G_RENK.metin : '#2a2f3a';
-      yuvarlakKutu(c, x, ly, lh, lh, 14); c.fill();
-      c.fillStyle = i % 2 ? '#12141a' : G_RENK.metin;
-      c.font = '800 44px ' + yazi;
-      c.fillText(h, x + lh / 2, ly + lh / 2 + 2);
+      c.fillStyle = i % 2 ? G_RENK.metin : G_RENK.koyu;
+      yuvarlakKutu(c, x, ly, lh, lh, 16); c.fill();
+      c.fillStyle = i % 2 ? G_RENK.kutuMetin : G_RENK.metin;
+      c.font = '800 54px ' + yazi;
+      c.fillText(h, x + lh / 2, ly + lh / 2 + 3);
     });
-    var sx = lx + harfler.length * (lh + la) + 18;
+    var sx = lx + harfler.length * (lh + la) + 22;
     [G_RENK.yesil, G_RENK.sari, G_RENK.kirmizi].forEach(function (renk, i) {
       var x = sx + i * (lh + la);
       c.fillStyle = renk;
-      yuvarlakKutu(c, x, ly, lh, lh, 14); c.fill();
-      c.fillStyle = '#fff'; c.font = '800 44px ' + yazi;
-      c.fillText(sayilar[i], x + lh / 2, ly + lh / 2 + 2);
+      yuvarlakKutu(c, x, ly, lh, lh, 16); c.fill();
+      c.fillStyle = '#fff'; c.font = '800 54px ' + yazi;
+      c.fillText(sayilar[i], x + lh / 2, ly + lh / 2 + 3);
     });
-
-    /* Baslik satirlari */
-    var joker = jokerSayisi(S);
-    c.fillStyle = G_RENK.soluk; c.font = '600 34px ' + yazi;
-    c.fillText((S.mod === 'serbest' ? 'Serbest Mod · ' : '') +
-               'Seviye: ' + ZORLUKLAR[S.zorluk].ad, E / 2, 232);
-    c.fillStyle = S.kazandi ? G_RENK.yesil : G_RENK.kirmizi;
-    c.font = '800 46px ' + yazi;
-    c.fillText(S.kazandi ? S.gecmis.length + '. tahminde bildim!'
-                         : S.gecmis.length + ' tahminde bulamadım',
-               E / 2, 296);
-    if (joker) {
-      c.fillStyle = G_RENK.soluk; c.font = '600 30px ' + yazi;
-      c.fillText(joker + ' joker kullandım', E / 2, 348);
-    }
-
-    /* Satirlar: sira numarasi + uc rozet (+ joker isareti) */
-    var jokerSatir = jokerSatirlari(S);
-    var n = S.gecmis.length;
-    var alanUst = joker ? 396 : 364, alanAlt = E - 130;   /* adres yazisina kadar */
-    var boy = Math.min(84, Math.floor((alanAlt - alanUst) / Math.max(n, 1)) - 12);
-    var ara = 14, rozet = Math.round(boy * 1.25);
-    var genislik = 3 * rozet + 2 * ara;
-    var gx = Math.round((E - genislik) / 2);
-    /* Satirlar az oldugunda ortada dursun, ustte toplanmasin. */
-    var ust = Math.round(alanUst + ((alanAlt - alanUst) - (n * (boy + 12) - 12)) / 2);
-    S.gecmis.forEach(function (g, i) {
-      var y = ust + i * (boy + 12);
-      c.fillStyle = G_RENK.soluk; c.font = '600 30px ' + yazi; c.textAlign = 'right';
-      c.fillText((i + 1) + '.', gx - 26, y + boy / 2);
-      c.textAlign = 'center';
-      [[g.yer, G_RENK.yesil], [g.harf, G_RENK.sari], [g.yok, G_RENK.kirmizi]]
-        .forEach(function (p, k) {
-          var x = gx + k * (rozet + ara);
-          c.fillStyle = p[1];
-          yuvarlakKutu(c, x, y, rozet, boy, 12); c.fill();
-          c.fillStyle = '#fff'; c.font = '800 ' + Math.round(boy * 0.5) + 'px ' + yazi;
-          c.fillText(String(p[0]), x + rozet / 2, y + boy / 2 + 2);
-        });
-      if (jokerSatir[i]) {
-        /* Jokerin kullanildigi satir: altin J, oyundaki tusun rengi. */
-        c.fillStyle = '#d9a52b'; c.font = '800 34px ' + yazi; c.textAlign = 'left';
-        c.fillText('J', gx + genislik + 20, y + boy / 2 + 2);
-        c.textAlign = 'center';
-      }
-    });
-
-    c.fillStyle = G_RENK.metin; c.font = '700 36px ' + yazi;
-    c.fillText(ADRES, E / 2, E - 62);
 
     return veriyiDosyayaCevir(tuval.toDataURL('image/png'), 'kelime500.png');
   }
 
   function paylas() {
     if (navigator.share) {
-      /* Baslik da veriliyor: bazi uygulamalar onizleme kartini bundan kuruyor.
-       * Adres kok sayfa - baglantiya dokunan once oyunu gorsun. */
-      var veri = { title: 'Kelime500', text: paylasMetni(false),
-                   url: 'https://' + ADRES + '/' };
+      /* Adres AYRI url alaninda degil, metnin sonunda gonderiliyor: iki
+       * alan birden verilince telefon "1 Link and 1 Image" diye iki ayri
+       * parca gosteriyordu ve baglantiyi metne bitisik ekliyordu. */
+      var veri = { title: 'Kelime500 · Oyun sonucum', text: paylasMetni(true) };
       var dosya = paylasimGorseli();
       if (dosya && navigator.canShare && navigator.canShare({ files: [dosya] })) {
         veri.files = [dosya];
@@ -1334,7 +1287,9 @@
     var onceki = artis ? Math.max(0, ist.seri - 1) : ist.seri;
     $('#ist-seri').innerHTML =
       '<span class="alev">' + ALEV + '</span>' +
-      '<span class="ist-seri-sayi"><b>' + onceki + '</b><span>günlük seri</span>' +
+      /* Serbest modda gun kavrami yok: sayac ust uste dogru bilme sayisi. */
+      '<span class="ist-seri-sayi"><b>' + onceki + '</b><span>' +
+        (S.mod === 'serbest' ? 'üst üste bildin' : 'günlük seri') + '</span>' +
         (artis ? '<i class="ist-arti">+1</i>' : '') + '</span>' +
       '<span class="ist-seri-eniyi">En iyi seri<b>' + ist.enIyiSeri + '</b></span>';
     if (!artis) { return; }

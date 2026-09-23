@@ -6,7 +6,7 @@
 <title>Gizlilik ve Çerez Politikası — Kelime500</title>
 <meta name="description" content="Kelime500'ün hangi verileri sakladığı, çerez kullanımı ve haklarınız.">
 <link rel="canonical" href="https://kelime500.com/gizlilik">
-<link rel="icon" href="assets/favicon.svg?v=120" type="image/svg+xml">
+<link rel="icon" href="assets/favicon.svg?v=123" type="image/svg+xml">
 <meta name="theme-color" content="#0f1115">
 <script>
 (function () {
@@ -32,7 +32,7 @@
   } catch (e) { /* yoksay */ }
 }());
 </script>
-<link rel="stylesheet" href="assets/styles.css?v=120">
+<link rel="stylesheet" href="assets/styles.css?v=123">
 </head>
 <body class="giris">
 
@@ -47,6 +47,7 @@
 
 <main class="giris-icerik">
   <section class="kart yazi">
+    <button class="simge kapat geri-don" type="button" title="Kapat" aria-label="Kapat">✕</button>
     <h1>Gizlilik ve Çerez Politikası</h1>
     <p class="guncelleme">Son güncelleme: 7 Eylül 2026</p>
 
@@ -104,7 +105,7 @@
     <p>Soru ve talepler için: <b><a href="mailto:iletisim@kelime500.com">iletisim@kelime500.com</a></b></p>
     <p>Veri sorumlusu: <b>Yunus Cem Yar</b></p>
 
-    <a class="kart-dugme yesil" href="/">← Oyuna dön</a>
+    <a class="kart-dugme yesil" href="oyna">Oynamaya başla →</a>
   </section>
 </main>
 
@@ -115,6 +116,18 @@
   <a href="sss">SSS</a>
 </p>
 
-<script src="src/cerez.js?v=120"></script>
+<script>
+/* Kapatma: ziyaretci nereden geldiyse oraya doner. */
+(function () {
+  Array.prototype.forEach.call(document.querySelectorAll('.geri-don'), function (d) {
+    d.addEventListener('click', function () {
+      var r = document.referrer;
+      if (r && r.indexOf(location.origin) === 0 && history.length > 1) { history.back(); }
+      else { location.href = '/'; }
+    });
+  });
+}());
+</script>
+<script src="src/cerez.js?v=123"></script>
 </body>
 </html>

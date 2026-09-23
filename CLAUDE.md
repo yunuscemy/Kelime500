@@ -124,11 +124,11 @@ Geri alma: Cloudflare panelinden önceki dağıtıma dönülebiliyor.
 
 | Dosya | Kaynağı | Üreten |
 |---|---|---|
-| `src/yardim.js` | `nasil-oynanir.html` içindeki `#kurallar` | `python3 tools/yardim-uret.py` |
 | `kelime-listesi.md` | `src/words.js` | `python3 tools/liste-cikar.py` |
 
-Kural metnini değiştirmek gerekiyorsa `nasil-oynanir.html` içinde değiştir,
-sonra betiği çalıştır. İki yeri elle senkron tutmaya çalışma.
+Kural metninin tek kaynağı `nasil-oynanir.html`. Oyun içindeki kural
+penceresi (`src/yardim.js`) 23 Eylül'de kaldırıldı: ana sayfadaki kart da
+oyun sayfasının altındaki bağlantı da artık aynı sayfayı açıyor.
 
 ---
 
