@@ -980,6 +980,12 @@ body.giris main { max-width: 576px; }
   body.giris #bugun-durum { margin-bottom: 10px; min-height: 0; }
   body.giris .durum-satir { padding: 3px 0; }
   body.giris #sayac { margin: 10px 0; }
+
+  /* Deneme (24 Eylul): giris sayfasinin tamami web'de %10 kucuk. Yazi,
+     dolgu ve kutu olculeri birlikte olceklensin diye zoom kullaniliyor;
+     tek tek deger degistirmek oranlari bozuyordu. Begenilmezse bu tek
+     satir silinir. */
+  body.giris { zoom: 0.9; }
 }
 
 /* Giris sayfasinda baslik da bir kart: logo solda, tema dugmesi sagda.
