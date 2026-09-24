@@ -1121,11 +1121,17 @@ body.giris main { max-width: 576px; }
   z-index: 30;
 }
 
-/* --- istatistik penceresi ici: 320x100 --- */
+/* --- istatistik penceresi ici: 320x100 ---
+   Pencere sabit boylu ve govdesi esnek bir sutun; yuva kucultulebilir
+   birakilinca reklam 16px'e eziliyordu. Yuva artik kucultulmez, yerini
+   grafik verir. */
 .reklam-pencere {
+  flex: 0 0 auto;
   width: 100%; max-width: 336px; height: 100px;
-  margin: 14px auto 2px;
+  margin: 10px auto 0;
 }
+/* Reklam varken grafik daha kisa olabilir; yuva icin yer acar. */
+:root[data-reklam] #ist-dagilim { min-height: 104px; }
 
 /* --- gorunurluk kesme noktalari ---
    Mobilde yalnizca icerik ici yuva, masaustunde bant + yan bantlar. */

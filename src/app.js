@@ -1413,6 +1413,14 @@
      * davranis: klavye ile alttaki baglantilarin ortasi. */
     var alt = window.innerWidth >= 760 ? kAlt - 16
             : (baglanti ? (kAlt + baglanti.getBoundingClientRect().top) / 2 : kAlt + 12);
+
+    /* Reklam kusagi acikken pencere kusagin hemen ustune kadar uzar:
+     * penceredeki reklam yuvasi 100px yer istiyor, kusakla klavye arasindaki
+     * bosluk de zaten bos duruyor. */
+    var kusak = document.getElementById('reklam-alt');
+    if (kusak && getComputedStyle(kusak).display !== 'none') {
+      alt = Math.max(alt, kusak.getBoundingClientRect().top - 12);
+    }
     alt = Math.min(alt, window.innerHeight - 8);
     if (ust < 8 || alt - ust < 320) { return; }   /* sigmiyorsa varsayilana birak */
 
