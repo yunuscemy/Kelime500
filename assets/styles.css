@@ -941,17 +941,45 @@ body.giris main { max-width: 576px; }
    ve kartin ust etiketi basligin sagina gecer; boylece dort kart birden bir
    satir kisalir ve sayfa dizustu ekranda tek ekrana sigar. */
 @media (min-width: 760px) {
+  /* Baslik kutusu da kartlarla ayni genislikte. */
+  body.giris header,
   body.giris main { max-width: 640px; }
 
   body.giris main .kart:not(.yazi) {
     display: grid; grid-template-columns: 1fr auto;
-    align-items: baseline; column-gap: 14px;
+    /* Baslik ile ust etiket ORTADAN hizali: taban hizasinda kucuk yazi
+       buyugun altina yapisik duruyordu. */
+    align-items: center; column-gap: 14px;
   }
   body.giris main .kart:not(.yazi) > * { grid-column: 1 / -1; }
-  body.giris main .kart:not(.yazi) > h2 { grid-column: 1; grid-row: 1; margin-top: 0; }
   body.giris main .kart:not(.yazi) > .kart-ust {
     grid-column: 2; grid-row: 1; text-align: right; white-space: nowrap;
+    /* Basligin alt boslugunun aynisi: iki oge de kendi kutusuyla ortalandigi
+       icin, esit bosluk olmadan kucuk yazi asagi kayiyordu. */
+    margin: 0 0 16px;
   }
+  /* Basligin ustundeki ve altindaki bosluk esit: kart dolgusu 16px, baslik
+     satirinin kendi ust boslugu sifirlanip altina 16px birakiliyor. */
+  body.giris main .kart:not(.yazi) > h2 {
+    grid-column: 1; grid-row: 1; margin: 0 0 16px;
+  }
+
+  /* Logo kutusu dikeyde daralir: logonun ust/alt boslugu yariya iner. */
+  body.giris .marka-kart { padding-block: 10px; }
+
+  /* Kart dugmeleri dikeyde %10 kisa. */
+  body.giris .kart-dugme { padding-block: 11px; }
+
+  /* Sayfayi tek ekrana sigdirmak icin kutu kutu kisaltma: kart dolgusu,
+     baslik alti, kartlar arasi ve sayac boslugu. Hepsi kucuk paylar ama
+     dort kart ustuste ciddi yer aciyor. */
+  body.giris main .kart:not(.yazi) { padding: 13px 16px; }
+  body.giris main .kart:not(.yazi) > h2,
+  body.giris main .kart:not(.yazi) > .kart-ust { margin-bottom: 12px; }
+  body.giris .giris-icerik { gap: 10px; }
+  body.giris #bugun-durum { margin-bottom: 10px; min-height: 0; }
+  body.giris .durum-satir { padding: 3px 0; }
+  body.giris #sayac { margin: 10px 0; }
 }
 
 /* Giris sayfasinda baslik da bir kart: logo solda, tema dugmesi sagda.
