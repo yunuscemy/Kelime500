@@ -1422,6 +1422,21 @@
       alt = Math.max(alt, kusak.getBoundingClientRect().top - 12);
     }
     alt = Math.min(alt, window.innerHeight - 8);
+
+    /* Icerik (ozellikle reklam yuvasi acikken) bu araliga sigmiyorsa pencere
+     * YUKARI dogru uzar: alt kenar yerinde kalir, ust kenar gerekirse baslik
+     * kutusunun hizasina kadar cikar. Boylece kaydirma cubugu cikmaz.
+     * Dogal boy olculmek zorunda: pencere gorunmeden acilip kapatilir. */
+    var dogal = 0;
+    pencere.style.height = '';
+    pencere.style.visibility = 'hidden';
+    pencere.show();
+    dogal = pencere.getBoundingClientRect().height;
+    pencere.close();
+    pencere.style.visibility = '';
+
+    if (dogal > alt - ust) { ust = Math.max(12, alt - dogal); }
+
     if (ust < 8 || alt - ust < 320) { return; }   /* sigmiyorsa varsayilana birak */
 
     pencere.style.marginTop = Math.round(ust) + 'px';

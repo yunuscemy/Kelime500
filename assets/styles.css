@@ -1136,9 +1136,11 @@ body.giris main { max-width: 576px; }
 /* Reklam varken grafik daha kisa olabilir; yuva icin yer acar. */
 :root[data-reklam] #ist-dagilim { min-height: 84px; }
 :root[data-reklam] .reklam-pencere { margin-top: 6px; }
-/* Kisa ekranlarda pencereye 100px'lik yuva sigmiyor; reklam yerine bos
-   kalmasi ve icerigin kaymasi yerine yuva hic gosterilmez. */
-@media (max-height: 719px) {
+/* Cok kisa ekranlarda (ornegin yatay telefon) pencereye 100px'lik yuva
+   hicbir sekilde sigmiyor; yarim gorunmesindense hic gosterilmez. Sinir
+   dusuk tutuldu: iPhone'da Safari'nin gorunur alani 715px'e kadar iniyor,
+   orada reklam gorunmeliydi. */
+@media (max-height: 620px) {
   .reklam-pencere { display: none; }
 }
 
