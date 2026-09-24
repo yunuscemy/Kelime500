@@ -6,8 +6,8 @@
 <title>Oyna — Kelime500</title>
 <meta name="description" content="Gizli Türkçe kelimeyi 8 hakta bul. Her tahminde kaç harfin doğru yerde, kaç harfin yanlış yerde, kaç harfin kelimede hiç olmadığını öğrenirsin — hangileri olduğunu değil.">
 <link rel="canonical" href="https://kelime500.com/oyna">
-<link rel="icon" href="assets/favicon.svg?v=155" type="image/svg+xml">
-<link rel="apple-touch-icon" href="assets/apple-touch-icon.png?v=155">
+<link rel="icon" href="assets/favicon.svg?v=156" type="image/svg+xml">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png?v=156">
 <meta name="theme-color" content="#0f1115">
 <!-- Sosyal paylasim -->
 <meta property="og:url" content="https://kelime500.com/oyna">
@@ -15,7 +15,7 @@
 <meta property="og:site_name" content="Kelime500">
 <meta property="og:title" content="Kelime500 — Türkçe kelime bulmacası">
 <meta property="og:description" content="Gizli Türkçe kelimeyi 8 hakta bul. Her tahminde kaç harfin doğru yerde, kaç harfin yanlış yerde olduğunu öğrenirsin — hangileri olduğunu değil.">
-<meta property="og:image" content="https://kelime500.com/assets/paylasim.png?v=155">
+<meta property="og:image" content="https://kelime500.com/assets/paylasim.png?v=156">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta property="og:image:type" content="image/png">
@@ -24,8 +24,8 @@
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Kelime500 — Türkçe kelime bulmacası">
 <meta name="twitter:description" content="Gizli Türkçe kelimeyi 8 hakta bul. Her tahminde kaç harfin doğru yerde, kaç harfin yanlış yerde olduğunu öğrenirsin — hangileri olduğunu değil.">
-<meta name="twitter:image" content="https://kelime500.com/assets/paylasim.png?v=155">
-<link rel="stylesheet" href="assets/styles.css?v=155">
+<meta name="twitter:image" content="https://kelime500.com/assets/paylasim.png?v=156">
+<link rel="stylesheet" href="assets/styles.css?v=156">
 <script>
 /* Tema ilk boyamadan once uygulanir; yoksa sabit yazili koyu tema bir an
    gorunup acik temaya gecerdi. Kayitli bir secim varsa o, yoksa cihazin
@@ -122,14 +122,22 @@
     </svg>
     <span>Yeni kelime</span>
   </button>
-</div>
-
-<!-- Yalnizca arsivde gorunur; JS acar. Baslangicta gizli olmasi
-     yuklenirken tahtanin asagi kaymasini onler. -->
-<div class="tarih-nav" id="tarih-nav" hidden>
-  <button class="simge" id="onceki" type="button" title="Önceki gün">‹</button>
-  <input type="date" id="tarih" title="Arşiv: eski günleri oyna">
-  <button class="simge" id="sonraki" type="button" title="Sonraki gün">›</button>
+  <!-- Yalnizca arsivde gorunur; JS acar. Tarih secici ayri bir satirdaydi ve
+       tahtayi asagi kaydiriyordu: artik "Yeni kelime" ile ayni yerde, ayni
+       boyutta. Tarih girdisi dugmenin uzerinde saydam duruyor - showPicker
+       desteklemeyen tarayicilarda dokunma dogrudan ona gidiyor (JS acar). -->
+  <span class="tarih-sec" id="tarih-sec" hidden>
+    <button class="yeni-kelime" id="tarih-dugme" type="button" title="Tarih seç">
+      <svg viewBox="0 0 24 24" width="13" height="13" aria-hidden="true"
+           fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
+        <rect x="3" y="5" width="18" height="16" rx="2"/>
+        <path d="M3 10h18M8 3v4M16 3v4"/>
+      </svg>
+      <span>Tarih seç</span>
+    </button>
+    <input type="date" id="tarih" tabindex="-1" aria-label="Tarih seç"
+           title="Arşiv: eski günleri oyna">
+  </span>
 </div>
 
 <p id="hata" hidden></p>
@@ -191,12 +199,12 @@
   </div>
 </dialog>
 
-<script src="src/cerez.js?v=155"></script>
-<script src="src/turkish.js?v=155"></script>
-<script src="src/engine.js?v=155"></script>
-<script src="src/sozluk.js?v=155"></script>
-<script src="src/words.js?v=155"></script>
-<script src="src/rehber.js?v=155"></script>
-<script src="src/app.js?v=155"></script>
+<script src="src/cerez.js?v=156"></script>
+<script src="src/turkish.js?v=156"></script>
+<script src="src/engine.js?v=156"></script>
+<script src="src/sozluk.js?v=156"></script>
+<script src="src/words.js?v=156"></script>
+<script src="src/rehber.js?v=156"></script>
+<script src="src/app.js?v=156"></script>
 </body>
 </html>

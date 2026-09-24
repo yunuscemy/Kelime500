@@ -1524,14 +1524,6 @@
             String(d.getDate()).padStart(2, '0')].join('-');
   }
 
-  function tarihGit(gun) {
-    var hedef = gunEkle(S.tarih, gun);
-    if (hedef > enGecTarih(S.mod) || hedef < enErkenTarih(S.mod)) { return; }
-    $('#tarih').value = hedef;
-    yaz('kelime500.tarih', hedef);
-    yeniOyun(S.mod, S.zorluk, hedef);
-  }
-
   /* Baslik satiri: hangi moddayiz, hangi gunun kelimesi.
    * Gunlukte tek bir bulmaca var (bugun), o yuzden tarih gezinmesi yalnizca arsivde. */
   var ZORLUK_ISARET = { standart: 'S', ileri: 'İ' };
@@ -1551,9 +1543,7 @@
 
   function modYaz() {
     var arsiv = S.mod === 'arsiv';
-    $('#tarih-nav').hidden = !arsiv;
-    $('#sonraki').disabled = S.tarih >= enGecTarih(S.mod);
-    $('#onceki').disabled = S.tarih <= enErkenTarih(S.mod);
+    $('#tarih-sec').hidden = !arsiv;
 
     var etiket = $('#mod-etiket'), kutu = $('#kontroller');
     var bitti = S.bitti && cevabiGoster;
@@ -1593,7 +1583,9 @@
      * sola dayali kalir - dogru cevap yazisi dugmeye yapismasin. */
     var serbest = S.mod === 'serbest';
     $('#yeni-kelime').hidden = !serbest;
-    kutu.classList.toggle('sag-dugme', serbest);
+    /* Arsivde de satirin saginda dugme var: dogru cevap yazisi ona
+       yapismasin diye etiket yine sola dayali kaliyor. */
+    kutu.classList.toggle('sag-dugme', serbest || arsiv);
   }
 
   function menuIsaretle(menu, secici, alan, deger) {
@@ -1671,8 +1663,16 @@
       yeniOyun(S.mod, S.zorluk, this.value);
     });
 
-    $('#onceki').addEventListener('click', function () { tarihGit(-1); });
-    $('#sonraki').addEventListener('click', function () { tarihGit(1); });
+    /* Dugme yerli tarih penceresini acar. showPicker yoksa (eski Safari)
+       dugmenin ustundeki saydam girdi dokunmayi kendisi alsin. */
+    var tarihSec = $('#tarih-sec');
+    if (typeof tarihGirdi.showPicker !== 'function') {
+      tarihSec.classList.add('dokunmali');
+    }
+    $('#tarih-dugme').addEventListener('click', function () {
+      try { tarihGirdi.showPicker(); }
+      catch (e) { tarihGirdi.focus(); }
+    });
 
     /* Dugme yaptigi isi soylesin: telefonda isletim sisteminin paylasim
      * menusu aciliyor, desteklemeyen masaustu tarayicilarda panoya kopyaliyor.
