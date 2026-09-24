@@ -1112,8 +1112,11 @@ body.giris main { max-width: 576px; }
    Sayfayi kaydirmadan gorunur olsun diye sabit; icerik altindan akar.
    Yukseklik 728x90 reklam olcusunden geliyor (90 + ust/alt bosluk). */
 .reklam-alt {
+  /* Gorsel yukseklik, yerlesim hesabindaki --reklam-alt-boy'dan AYRI:
+     kusagi buyutmek tahtanin kutu boyunu kucultmesin diye. Yerlesim hesabi
+     (tahta olculeri, sayfa alt dolgusu) --reklam-alt-boy ile yapilir. */
   position: fixed; left: 0; right: 0; bottom: 0;
-  width: auto; height: var(--reklam-alt-boy);
+  width: auto; height: var(--reklam-alt-gorsel, var(--reklam-alt-boy));
   margin: 0;
   background: var(--bg);
   border: 0; border-top: 1px solid var(--cizgi);
@@ -1131,11 +1134,26 @@ body.giris main { max-width: 576px; }
   margin: 10px auto 0;
 }
 /* Reklam varken grafik daha kisa olabilir; yuva icin yer acar. */
-:root[data-reklam] #ist-dagilim { min-height: 104px; }
+:root[data-reklam] #ist-dagilim { min-height: 84px; }
+:root[data-reklam] .reklam-pencere { margin-top: 6px; }
+/* Kisa ekranlarda pencereye 100px'lik yuva sigmiyor; reklam yerine bos
+   kalmasi ve icerigin kaymasi yerine yuva hic gosterilmez. */
+@media (max-height: 719px) {
+  .reklam-pencere { display: none; }
+}
 
 /* --- gorunurluk kesme noktalari ---
    Mobilde yalnizca icerik ici yuva, masaustunde bant + yan bantlar. */
 .reklam-yan, .reklam-alt { display: none; }
+
+/* Telefonda oyun sayfasinda klavyenin altinda olu bosluk kaliyor; kusak
+   o bosluga dogru buyur. Yalnizca GORSEL yukseklik artar, yerlesim hesabi
+   60px'te kalir - kutular ve klavye ayni boyutta duruyor. Boyu 780px'ten
+   kisa telefonlarda icerik asagi indigi icin buyutme kapali, yoksa kusak
+   alttaki baglantilarin ustune binerdi. */
+@media (max-width: 759px) and (min-height: 780px) {
+  body:not(.giris) { --reklam-alt-gorsel: 150px; }
+}
 
 /* Oyun sayfasinda kusak her ekran boyutunda duruyor: icerik zaten ekrana
    sigiyor, kusak sabit oldugu icin kaydirilsa bile kaybolmuyor. */
