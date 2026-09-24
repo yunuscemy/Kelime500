@@ -332,6 +332,7 @@
       (JOKER_BEKLE - (jokerSecim ? (Date.now() - jokerBasladi) / 1000 : 0)) + 's');
     tahta.classList.toggle('oyun-bitti', !!S.bitti);
     var kesinYok = kesinYok_(), kesinRenk = kesinRenkler(), ko = kirmiziOlamaz();
+    var jokerHarf = jokerHarfKutulari();
     var cevrilecek = [];
 
     /* Perde açıldıysa her tahmindeki harflerin gerçek renkleri hesaplanır. */
@@ -406,14 +407,17 @@
             } else {
               var not = notDegeri(r, c, ko);
               if (not) { kutu.classList.add(NOT_SINIF[not]); }
-              if (ko[r + ':' + c]) {
-                /* Cerceve sadece harf jokerinin sordugu satirda; diger
-                 * satirlarda kural (kirmizi yok) gecerli ama isaret yok. */
-                if (r === jokerHarfSatiri()) { kutu.classList.add('joker-iz'); }
-                kutu.title = 'Kesin: harf kelimede var · sarı ya da yeşil';
-              } else {
-                kutu.title = 'Not almak için tıkla';
-              }
+              kutu.title = ko[r + ':' + c]
+                ? 'Kesin: harf kelimede var · sarı ya da yeşil'
+                : 'Not almak için tıkla';
+            }
+            /* Cerceve tek bir sey anlatir: "jokeri burada kullandim". Harf
+             * jokerinin sordugu harfin, kullanildigi satirdaki kutusu -
+             * rengi kesinlessin ya da kesinlesmesin - cerceve alir. Ayni
+             * harfin diger tahminlerdeki kutulari duz renk kalir. */
+            if (jokerHarf[r + ':' + c]) {
+              kutu.classList.add('joker-iz');
+              if (kesinYok[harf] || kr) { kutu.title = 'Harf jokeri · ' + kutu.title; }
             }
             kutu.dataset.r = r; kutu.dataset.c = c;
           }
@@ -615,6 +619,21 @@
       }
     });
     return sonuc;
+  }
+
+  /* Harf jokerinin sordugu harfin, jokerin kullanildigi satirdaki kutulari:
+   * { 'r:c': true }. Cerceve burada durur - oyuncu jokeri hangi harf icin
+   * kullandigini gorsun. Ileri'de harf satirda iki kez geciyorsa ikisi de
+   * isaretlenir; hangisinin soruldugu zaten belli degil. */
+  function jokerHarfKutulari() {
+    var j = S.joker || {}, s = {};
+    if (!j.harf) { return s; }
+    var r = jokerHarfSatiri(), g = S.gecmis[r];
+    if (!g) { return s; }
+    for (var c = 0; c < g.tahmin.length; c++) {
+      if (g.tahmin[c] === j.harf.harf) { s[r + ':' + c] = true; }
+    }
+    return s;
   }
 
   /* Harf jokerinin kullanildigi satir, yoksa -1. */
