@@ -1663,15 +1663,13 @@
       yeniOyun(S.mod, S.zorluk, this.value);
     });
 
-    /* Dugme yerli tarih penceresini acar. showPicker yoksa (eski Safari)
-       dugmenin ustundeki saydam girdi dokunmayi kendisi alsin. */
-    var tarihSec = $('#tarih-sec');
-    if (typeof tarihGirdi.showPicker !== 'function') {
-      tarihSec.classList.add('dokunmali');
-    }
-    $('#tarih-dugme').addEventListener('click', function () {
-      try { tarihGirdi.showPicker(); }
-      catch (e) { tarihGirdi.focus(); }
+    /* Dokunma zaten dugmenin ustundeki saydam tarih girdisine gidiyor;
+       telefonda yerli secici boylece kendiliginden aciliyor. Masaustunde
+       tiklamak girdiye odaklanmakla kaliyor, pencereyi showPicker() aciyor.
+       Iki yol birlestirildi: hangisi calisirsa. */
+    $('#tarih-sec').addEventListener('click', function () {
+      if (typeof tarihGirdi.showPicker !== 'function') { return; }
+      try { tarihGirdi.showPicker(); } catch (e) { /* zaten acik */ }
     });
 
     /* Dugme yaptigi isi soylesin: telefonda isletim sisteminin paylasim
