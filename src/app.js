@@ -1524,6 +1524,72 @@
             String(d.getDate()).padStart(2, '0')].join('-');
   }
 
+  /* --- arsiv takvimi ---
+   * Tarayicinin kendi tarih penceresi masaustunde siteye hic benzemiyor ve
+   * bicimlendirilemiyor; orada bu takvim aciliyor. Telefonda dokunma saydam
+   * girdiye gidip isletim sisteminin secicisini aciyor - o zaten iyi. */
+  var AYLAR = ['Ocak', 'Şubat', 'Mart', 'Nisan', 'Mayıs', 'Haziran',
+               'Temmuz', 'Ağustos', 'Eylül', 'Ekim', 'Kasım', 'Aralık'];
+  var GUN_BASLIK = ['Pt', 'Sa', 'Ça', 'Pe', 'Cu', 'Ct', 'Pa'];
+  var takvimAy = '';                      /* gosterilen ay: 'YYYY-MM' */
+
+  function iki(n) { return String(n).padStart(2, '0'); }
+
+  function ayKaydir(ay, adim) {
+    var p = ay.split('-'), y = Number(p[0]), a = Number(p[1]) + adim;
+    y += Math.floor((a - 1) / 12);
+    a = ((a - 1) % 12 + 12) % 12 + 1;
+    return y + '-' + iki(a);
+  }
+
+  function takvimCiz() {
+    var p = takvimAy.split('-'), yil = Number(p[0]), ay = Number(p[1]);
+    var bosluk = (new Date(yil, ay - 1, 1).getDay() + 6) % 7;   /* hafta pazartesi baslar */
+    var gunSayisi = new Date(yil, ay, 0).getDate();
+    var enErken = enErkenTarih('arsiv'), enGec = enGecTarih('arsiv');
+
+    var html = '<div class="takvim-ust">' +
+      '<button class="simge" type="button" data-adim="-1" title="Önceki ay">‹</button>' +
+      '<span class="takvim-ay">' + AYLAR[ay - 1] + ' ' + yil + '</span>' +
+      '<button class="simge" type="button" data-adim="1" title="Sonraki ay">›</button>' +
+      '</div><div class="takvim-baslik">';
+    GUN_BASLIK.forEach(function (g) { html += '<span>' + g + '</span>'; });
+    html += '</div><div class="takvim-izgara">';
+    for (var b = 0; b < bosluk; b++) { html += '<span></span>'; }
+    for (var g = 1; g <= gunSayisi; g++) {
+      var t = yil + '-' + iki(ay) + '-' + iki(g);
+      var kapali = t < enErken || t > enGec;
+      html += '<button class="takvim-gun' + (t === S.tarih ? ' secili' : '') + '"' +
+              ' type="button" data-tarih="' + t + '"' + (kapali ? ' disabled' : '') +
+              '>' + g + '</button>';
+    }
+    html += '</div>';
+
+    var kutu = $('#tarih-kutu');
+    kutu.innerHTML = html;
+    /* Yayin gununden onceye ve dunden sonraya gidilemiyor: o yonde
+       secilebilecek gun kalmadiysa ok sonuyor. */
+    kutu.querySelector('[data-adim="-1"]').disabled =
+      (yil + '-' + iki(ay) + '-01') <= enErken;
+    kutu.querySelector('[data-adim="1"]').disabled =
+      (yil + '-' + iki(ay) + '-' + iki(gunSayisi)) >= enGec;
+  }
+
+  function takvimAc() {
+    var acik = !$('#tarih-kutu').hidden;
+    menuKapat();
+    if (acik) { return; }                 /* ikinci tiklama kapatir */
+    takvimAy = S.tarih.slice(0, 7);
+    takvimCiz();
+    $('#tarih-kutu').hidden = false;
+  }
+
+  function takvimSec(t) {
+    $('#tarih').value = t;
+    yaz('kelime500.tarih', t);
+    yeniOyun(S.mod, S.zorluk, t);
+  }
+
   /* Baslik satiri: hangi moddayiz, hangi gunun kelimesi.
    * Gunlukte tek bir bulmaca var (bugun), o yuzden tarih gezinmesi yalnizca arsivde. */
   var ZORLUK_ISARET = { standart: 'S', ileri: 'İ' };
@@ -1663,13 +1729,28 @@
       yeniOyun(S.mod, S.zorluk, this.value);
     });
 
-    /* Dokunma zaten dugmenin ustundeki saydam tarih girdisine gidiyor;
-       telefonda yerli secici boylece kendiliginden aciliyor. Masaustunde
-       tiklamak girdiye odaklanmakla kaliyor, pencereyi showPicker() aciyor.
-       Iki yol birlestirildi: hangisi calisirsa. */
-    $('#tarih-sec').addEventListener('click', function () {
+    /* Fareyle kullanilan cihazlarda kendi takvimimiz aciliyor. Dokunmatikte
+       dokunma dugmenin ustundeki saydam girdiye gidip isletim sisteminin
+       secicisini aciyor - o zaten iyi gorunuyor, ona dokunulmuyor. */
+    var tarihSec = $('#tarih-sec');
+    var fareli = window.matchMedia
+      && window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+    if (fareli) { tarihSec.classList.add('ozel'); }
+
+    tarihSec.addEventListener('click', function (e) {
+      if (fareli) { e.stopPropagation(); takvimAc(); return; }
       if (typeof tarihGirdi.showPicker !== 'function') { return; }
-      try { tarihGirdi.showPicker(); } catch (e) { /* zaten acik */ }
+      try { tarihGirdi.showPicker(); } catch (er) { /* zaten acik */ }
+    });
+
+    $('#tarih-kutu').addEventListener('click', function (e) {
+      e.stopPropagation();                /* kutu icindeki tiklama menuyu kapatmasin */
+      var ok = e.target.closest('[data-adim]');
+      if (ok) { takvimAy = ayKaydir(takvimAy, Number(ok.dataset.adim)); takvimCiz(); return; }
+      var gun = e.target.closest('[data-tarih]');
+      if (!gun) { return; }
+      menuKapat();
+      takvimSec(gun.dataset.tarih);
     });
 
     /* Dugme yaptigi isi soylesin: telefonda isletim sisteminin paylasim

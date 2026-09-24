@@ -917,6 +917,35 @@ body:not(.giris) .logo {
 }
 .simge[disabled] { opacity: .35; cursor: not-allowed; }
 
+/* Masaustu takvimi acikken saydam girdi dokunmayi almasin: tiklama
+   dugmeye gidip kendi takvimimizi acsin (JS .ozel sinifini koyar). */
+.tarih-sec.ozel input[type="date"] { pointer-events: none; }
+
+/* Kendi tarih takvimimiz - menulerle ayni kutu (.acilir), icinde ay
+   basligi, gun basliklari ve gun izgarasi var. */
+.takvim { width: 246px; min-width: 0; padding: 8px; gap: 6px; }
+.takvim-ust { display: flex; align-items: center; gap: 4px; }
+.takvim-ay { flex: 1 1 auto; text-align: center; font-size: 13.5px; font-weight: 700; }
+.takvim-ust .simge { width: 26px; height: 26px; font-size: 14px; }
+.takvim-baslik, .takvim-izgara {
+  display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px;
+}
+.takvim-baslik span {
+  text-align: center; font-size: 11px; font-weight: 600;
+  color: var(--soluk); padding-bottom: 2px;
+}
+/* .acilir button kurali (sola yasli, genis dolgu) gun kutularini eziyor. */
+.takvim-izgara .takvim-gun {
+  display: flex; align-items: center; justify-content: center;
+  width: 100%; height: 30px; padding: 0;
+  border-radius: 8px; font-size: 13px; font-weight: 600;
+}
+.takvim-gun:disabled { opacity: .25; cursor: default; }
+.takvim-gun.secili { background: var(--vurgu); color: #17181c; }
+@media (hover: hover) {
+  .takvim-gun:not(:disabled):not(.secili):hover { background: var(--tus-bg); }
+}
+
 /* --- giris sayfasi --- */
 body.giris { padding-bottom: 8px; }
 
