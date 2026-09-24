@@ -6,7 +6,7 @@
 <title>Gizlilik ve Çerez Politikası — Kelime500</title>
 <meta name="description" content="Kelime500'ün hangi verileri sakladığı, çerez kullanımı ve haklarınız.">
 <link rel="canonical" href="https://kelime500.com/gizlilik">
-<link rel="icon" href="assets/favicon.svg?v=158" type="image/svg+xml">
+<link rel="icon" href="assets/favicon.svg?v=159" type="image/svg+xml">
 <meta name="theme-color" content="#0f1115">
 <script>
 (function () {
@@ -32,7 +32,21 @@
   } catch (e) { /* yoksay */ }
 }());
 </script>
-<link rel="stylesheet" href="assets/styles.css?v=158">
+<link rel="stylesheet" href="assets/styles.css?v=159">
+
+<!-- AdSense. Kod her sayfanin <head> kismindadir - dogrulama ve inceleme
+     bunu ariyor. Cerez reddedildiyse kisisellestirilmemis reklam isteniyor;
+     karari cerez.js veriyor, burada yalnizca kayitli secim okunuyor. -->
+<script>
+window.adsbygoogle = window.adsbygoogle || [];
+try {
+  if (JSON.parse(localStorage.getItem('kelime500.cerez')) === 'ret') {
+    window.adsbygoogle.requestNonPersonalizedAds = 1;
+  }
+} catch (e) { /* depolama kapali - varsayilan davranis */ }
+</script>
+<script async crossorigin="anonymous"
+        src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5431814536619305"></script>
 </head>
 <body class="giris">
 
@@ -128,6 +142,6 @@
   });
 }());
 </script>
-<script src="src/cerez.js?v=158"></script>
+<script src="src/cerez.js?v=159"></script>
 </body>
 </html>

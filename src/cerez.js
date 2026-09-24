@@ -7,8 +7,8 @@
  * Orasi acilirsa bu bildirim Avrupa ziyaretcileri icin devre disi birakilmali,
  * yoksa iki bildirim ust uste cikar. Turkiye trafigi icin bu bildirim yeterli.
  *
- * Reklam kodu KB.reklam.yukle() icine konur; boylece reddedildiginde
- * kisisellestirilmis reklam cerezleri hic yuklenmez. */
+ * AdSense kodunun kendisi her sayfanin <head> kismindadir; burasi yalnizca
+ * bildirimi gosterir ve reddedilirse kisisellestirmeyi kapatir. */
 (function (global) {
   'use strict';
 
@@ -21,23 +21,16 @@
     try { localStorage.setItem(ANAHTAR, JSON.stringify(deger)); } catch (e) { /* yoksay */ }
   }
 
-  /* --- reklam yukleme kapisi ---
-   * Reklam kodu buraya gelecek. kisisel=false ise reklamlar
-   * kisisellestirilmemis olarak yuklenmeli (AdSense: requestNonPersonalizedAds). */
-  var yuklendi = false;
+  /* --- reklam kisisellestirmesi ---
+   * AdSense kodu her sayfanin <head> kisminda duruyor: Google'in dogrulamasi
+   * ve incelemesi orada olmasini istiyor, cerez bildirimini de beklemiyor.
+   * Burada yalnizca kisisellestirme kapatiliyor - ziyaretci "Reddet" derse
+   * reklam yine cikar ama kisisel veriye dayanmaz. Sayfa ilk acilirken ayni
+   * bayragi <head> icindeki kucuk betik kayitli secime bakarak koyuyor;
+   * burasi karar oturum icinde degisirse devreye giriyor. */
   function reklamlariYukle(kisisel) {
-    if (yuklendi) { return; }
-    yuklendi = true;
-    /* TODO: AdSense kodu buraya. Ornek:
-     *   window.adsbygoogle = window.adsbygoogle || [];
-     *   if (!kisisel) { adsbygoogle.requestNonPersonalizedAds = 1; }
-     *   var s = document.createElement('script');
-     *   s.async = true;
-     *   s.src = 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXX';
-     *   s.crossOrigin = 'anonymous';
-     *   document.head.appendChild(s);
-     */
-    void kisisel;
+    window.adsbygoogle = window.adsbygoogle || [];
+    if (!kisisel) { window.adsbygoogle.requestNonPersonalizedAds = 1; }
   }
 
   function bildirimiKaldir() {
