@@ -67,14 +67,17 @@
    Web'e ozel tasarim buradan ayarlanir; su an mobil ile ayni degerler. */
 @media (min-width: 760px) {
   :root {
-    --oyun-genislik: 480px;
+    /* Web turu (24 Eylul): genis ekranda oyun dar bir sutunda kaliyor,
+       altta olu bosluk oluyordu. Sutun genisletildi, kutular ve tuslar
+       dikey alani daha cok kullaniyor. */
+    --oyun-genislik: 560px;
     --kutu-en-kucuk: 28px;
-    --kutu-en-buyuk: 52px;
-    --kutu-dikey-pay: 0.056;
-    --tahta-olcek: 0.8;
+    --kutu-en-buyuk: 60px;
+    --kutu-dikey-pay: 0.062;
+    --tahta-olcek: 0.86;
     --tus-en-kucuk: 34px;
-    --tus-dikey-pay: 5.4vh;
-    --tus-en-buyuk: 48px;
+    --tus-dikey-pay: 5.6vh;
+    --tus-en-buyuk: 52px;
     --tus-olcek: 0.96;
     --tus-yazi: 14px;
     --tus-genis-yazi: 13px;
@@ -85,6 +88,19 @@
     --kutu-boy-carpan: 1.287;
     --tahta-aralik: 0.4375;
     --kare-olcek: 0.94;
+  }
+}
+
+/* Boyu uzun ekranlar (masaustu monitorler): dikey alan bol, kutular ve
+   tuslar buyur. Dizustu boyutlarinda (720-768) ustteki degerler gecerli;
+   orada buyutmek sayfayi tasiriyordu. */
+@media (min-width: 760px) and (min-height: 900px) {
+  :root {
+    --kutu-en-buyuk: 66px;
+    --kutu-dikey-pay: 0.072;
+    --tahta-olcek: 0.9;
+    --tus-dikey-pay: 6.2vh;
+    --tus-en-buyuk: 56px;
   }
 }
 
@@ -1356,7 +1372,10 @@ body:not(.giris) { padding-bottom: var(--reklam-alt-boy); }
 #sayac + .alt-baglanti { margin-top: 0; }
 /* Oyun sayfasinda da ayni olcu: klavyenin altindaki bosluk, ana sayfadaki
    son kart ile sayac arasindaki boslukla esit (14px). */
-body:not(.giris) .alt-baglanti { margin-top: 0; }
+body:not(.giris) .alt-baglanti {
+  margin-top: 0;
+  max-width: var(--oyun-genislik, 480px);   /* tahta ve klavyeyle ayni sutun */
+}
 .durum-satir {
   display: flex; align-items: center; justify-content: space-between;
   gap: 8px; padding: 4px 0;
