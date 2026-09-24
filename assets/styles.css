@@ -990,6 +990,15 @@ body.giris main { max-width: 576px; }
     --kutu: 40px; --kutu-en: 40px; --kare: 40px; --aralik: 3px;
   }
   :root { --tus-boy: 39px; }
+
+  /* Baslik -> mod satiri -> tahta -> klavye araliklarinin ucu de esit (10px).
+     Toplam 30px, yani alttaki baglantilar yine 662'de kaliyor. Mod satirinin
+     yuksekligi sabit: dogru cevap yazisi ya da "Yeni kelime" dugmesi
+     girdiginde tahta asagi kaymasin. */
+  body:not(.giris) .kontroller { margin-top: 10px; height: 26px; }
+  body:not(.giris) #tahta { margin-block: 10px 0; }
+  /* Alt bosluk 12: baglantilari giris sayfasindaki yukseklige (662) oturtur. */
+  body:not(.giris) #klavye { margin-top: 10px; margin-bottom: 12px; }
 }
 
 /* Giris sayfasinda baslik da bir kart: logo solda, tema dugmesi sagda.
