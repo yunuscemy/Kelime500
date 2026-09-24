@@ -1389,7 +1389,11 @@
      * durmasin diye ustune biraz daha bosluk birakilir. */
     var ust = basi.getBoundingClientRect().bottom + 14;
     var kAlt = klavye.getBoundingClientRect().bottom;
-    var alt = baglanti ? (kAlt + baglanti.getBoundingClientRect().top) / 2 : kAlt + 12;
+    /* Web'de pencerenin alti klavyenin bitiminin biraz USTUNDE durur; daha
+     * asagida oyun alaninin disina tasmis gibi duruyordu. Telefonda eski
+     * davranis: klavye ile alttaki baglantilarin ortasi. */
+    var alt = window.innerWidth >= 760 ? kAlt - 16
+            : (baglanti ? (kAlt + baglanti.getBoundingClientRect().top) / 2 : kAlt + 12);
     alt = Math.min(alt, window.innerHeight - 8);
     if (ust < 8 || alt - ust < 320) { return; }   /* sigmiyorsa varsayilana birak */
 

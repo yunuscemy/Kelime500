@@ -982,7 +982,12 @@ body.giris main { max-width: 576px; }
      - alttaki baglantilar iki sayfada da ayni yukseklikte (662)
      Bunun icin olculer SABIT piksel: ekran boyuna gore buyuseydi
      baglantilar oyun sayfasinda asagi yukari kayardi. */
-  body:not(.giris) header { margin-top: 12px; padding-block: 10.5px; }
+  /* Ic bosluk 30 = kutu kenari (14) + giris sayfasindaki kart dolgusu (16):
+     logo ve sagdaki dugmeler iki sayfada da kutunun ayni kadar icinde. */
+  body:not(.giris) header { margin-top: 12px; padding-block: 11px; padding-inline: 31px; }   /* 31 = 14 kutu + 1 cerceve + 16 dolgu */
+  /* Logo giris sayfasindakiyle birebir ayni olcude (varsayilan 30px kutu);
+     oyun sayfasinin kendi esnek formulu web'de devre disi. */
+  body:not(.giris) .logo { --logo-kutu: 30px; }
   body:not(.giris) header::before { inset-inline: 14px; }
   body:not(.giris) #klavye::before { inset-inline: 0; }
   body:not(.giris) #klavye { gap: 4px; }
