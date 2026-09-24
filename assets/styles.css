@@ -933,20 +933,25 @@ body.giris { padding-bottom: 8px; }
    Oyun sayfasi 480'de kaliyor: orada genislik tahtanin kutu boyunu
    belirliyor, buyutmek kutulari da buyutup dikeyde tasmaya yol acar. */
 body.giris header,
-/* Giris sayfasi kartlari web turunda %11 genisledi (576 -> 640): icerik
-   yataya yayilinca sayfa dizustu ekranda tek ekrana siğiyor. */
-body.giris main { max-width: 640px; }
+body.giris main { max-width: 576px; }
 
-/* Kartin ust etiketi ("Günde bir kez oyna") basligin sagina alindi; her
-   kart bir satir kisaldi. Yazi sayfalarinda (.yazi) bu duzen gecmez. */
-body.giris main .kart:not(.yazi) {
-  display: grid; grid-template-columns: 1fr auto;
-  align-items: baseline; column-gap: 14px;
-}
-body.giris main .kart:not(.yazi) > * { grid-column: 1 / -1; }
-body.giris main .kart:not(.yazi) > h2 { grid-column: 1; grid-row: 1; margin-top: 0; }
-body.giris main .kart:not(.yazi) > .kart-ust {
-  grid-column: 2; grid-row: 1; text-align: right; white-space: nowrap;
+/* --- GIRIS SAYFASI: YALNIZCA WEB ---
+   Mobil tasarim 23 Eylul'de finalize edildi, buraya dokunulmuyor. Asagidaki
+   duzen 760px ve genis ekranlarda gecerli: kartlar %11 genisler (576 -> 640)
+   ve kartin ust etiketi basligin sagina gecer; boylece dort kart birden bir
+   satir kisalir ve sayfa dizustu ekranda tek ekrana sigar. */
+@media (min-width: 760px) {
+  body.giris main { max-width: 640px; }
+
+  body.giris main .kart:not(.yazi) {
+    display: grid; grid-template-columns: 1fr auto;
+    align-items: baseline; column-gap: 14px;
+  }
+  body.giris main .kart:not(.yazi) > * { grid-column: 1 / -1; }
+  body.giris main .kart:not(.yazi) > h2 { grid-column: 1; grid-row: 1; margin-top: 0; }
+  body.giris main .kart:not(.yazi) > .kart-ust {
+    grid-column: 2; grid-row: 1; text-align: right; white-space: nowrap;
+  }
 }
 
 /* Giris sayfasinda baslik da bir kart: logo solda, tema dugmesi sagda.
