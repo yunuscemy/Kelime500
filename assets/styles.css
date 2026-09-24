@@ -70,7 +70,7 @@
     /* Web turu (24 Eylul): genis ekranda oyun dar bir sutunda kaliyor,
        altta olu bosluk oluyordu. Sutun genisletildi, kutular ve tuslar
        dikey alani daha cok kullaniyor. */
-    --oyun-genislik: 560px;
+    --oyun-genislik: 640px;   /* giris sayfasindaki kartlarla ayni */
     --kutu-en-kucuk: 28px;
     --kutu-en-buyuk: 60px;
     --kutu-dikey-pay: 0.062;
@@ -91,18 +91,6 @@
   }
 }
 
-/* Boyu uzun ekranlar (masaustu monitorler): dikey alan bol, kutular ve
-   tuslar buyur. Dizustu boyutlarinda (720-768) ustteki degerler gecerli;
-   orada buyutmek sayfayi tasiriyordu. */
-@media (min-width: 760px) and (min-height: 900px) {
-  :root {
-    --kutu-en-buyuk: 66px;
-    --kutu-dikey-pay: 0.072;
-    --tahta-olcek: 0.9;
-    --tus-dikey-pay: 6.2vh;
-    --tus-en-buyuk: 56px;
-  }
-}
 
 :root[data-tema="acik"] {
   --bg: #f6f7f9;
@@ -980,6 +968,28 @@ body.giris main { max-width: 576px; }
   body.giris #bugun-durum { margin-bottom: 10px; min-height: 0; }
   body.giris .durum-satir { padding: 3px 0; }
   body.giris #sayac { margin: 10px 0; }
+
+}
+
+/* Oyun ekrani olculeri web'de SABIT: giris sayfasiyla ayni hizada dursun.
+   Yalnizca dikeyde yer varken (>= 720px); daha kisa pencerelerde yukaridaki
+   esnek olculer devreye girer, yoksa oyun ekrani kayar. */
+@media (min-width: 760px) and (min-height: 720px) {
+  /* --- OYUN EKRANI: GIRIS SAYFASIYLA HIZALI (yalnizca web) ---
+     Iki sayfa arasinda gecerken hicbir sey yerinden oynamasin:
+     - baslik kutusu giris sayfasindaki logo kutusuyla ayni (612x57, ust 12)
+     - klavye kutusu giris kartlariyla ayni genislikte (612)
+     - alttaki baglantilar iki sayfada da ayni yukseklikte (662)
+     Bunun icin olculer SABIT piksel: ekran boyuna gore buyuseydi
+     baglantilar oyun sayfasinda asagi yukari kayardi. */
+  body:not(.giris) header { margin-top: 12px; padding-block: 10.5px; }
+  body:not(.giris) header::before { inset-inline: 14px; }
+  body:not(.giris) #klavye::before { inset-inline: 0; }
+  body:not(.giris) #klavye { gap: 4px; }
+  body:not(.giris) #tahta {
+    --kutu: 40px; --kutu-en: 40px; --kare: 40px; --aralik: 3px;
+  }
+  :root { --tus-boy: 39px; }
 }
 
 /* Giris sayfasinda baslik da bir kart: logo solda, tema dugmesi sagda.
