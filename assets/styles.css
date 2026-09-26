@@ -1022,7 +1022,11 @@ body.giris main { max-width: 576px; }
   body:not(.giris) .logo { --logo-kutu: 30px; }
   body:not(.giris) header::before { inset-inline: 14px; }
   body:not(.giris) #klavye::before { inset-inline: 0; }
-  body:not(.giris) #klavye { gap: 4px; }
+  /* Kutu kartlarla ayni genislikte kaliyor (inset 0), tuslar iki yandan
+     8px iceri aliniyor: web'de en soldaki ve en sagdaki tus kutunun
+     kenarina yapisiktı. Mobilde kutu zaten tuslarin 8px disina tasiyor,
+     oradaki bosluk bu satirla degismiyor. */
+  body:not(.giris) #klavye { gap: 4px; padding-inline: 8px; }
   body:not(.giris) #tahta {
     --kutu: 40px; --kutu-en: 40px; --kare: 40px; --aralik: 3px;
   }
